@@ -368,12 +368,13 @@ struct yy_trans_info
 	flex_int32_t yy_verify;
 	flex_int32_t yy_nxt;
 	};
-static yyconst flex_int16_t yy_accept[40] =
+static yyconst flex_int16_t yy_accept[43] =
     {   0,
         0,    0,   28,   26,   22,   22,   19,   20,   12,   10,
-       18,   11,   15,   13,    1,   17,   14,    9,   16,    8,
-        3,   26,    1,    0,   24,    4,    7,    5,    6,    3,
-        0,   21,    2,   25,   23,   24,   25,   23,    0
+       18,   11,   16,   13,    1,   17,   15,    9,   14,    8,
+        3,   26,    0,    0,    1,   24,    4,    7,    5,    6,
+        3,    0,   21,    0,    2,   25,   23,   24,    0,   25,
+       23,    0
     } ;
 
 static yyconst flex_int32_t yy_ec[256] =
@@ -414,44 +415,46 @@ static yyconst flex_int32_t yy_meta[21] =
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1
     } ;
 
-static yyconst flex_int16_t yy_base[41] =
+static yyconst flex_int16_t yy_base[44] =
     {   0,
-        0,    0,   51,   52,   52,   52,   52,   52,   52,   52,
-       52,   38,   52,   52,   11,   33,   52,    8,   52,   31,
-       10,   26,    0,   14,   21,   52,   52,   52,   52,   18,
-       25,   52,   22,   23,   25,    0,   26,   30,   52,   26
+        0,    0,   58,   59,   59,   59,   59,   59,   59,   59,
+       59,   45,   59,   59,   11,   40,   59,    8,   59,   39,
+       10,   32,   20,   15,    0,   24,   59,   59,   59,   59,
+       19,   31,   59,   23,   27,   28,   31,    0,   32,   35,
+       36,   59,   25
     } ;
 
-static yyconst flex_int16_t yy_def[41] =
+static yyconst flex_int16_t yy_def[44] =
     {   0,
-       39,    1,   39,   39,   39,   39,   39,   39,   39,   39,
-       39,   39,   39,   39,   39,   39,   39,   39,   39,   39,
-       39,   40,   15,   39,   39,   39,   39,   39,   39,   39,
-       40,   39,   39,   39,   39,   25,   39,   39,    0,   39
+       42,    1,   42,   42,   42,   42,   42,   42,   42,   42,
+       42,   42,   42,   42,   42,   42,   42,   42,   42,   42,
+       42,   43,   42,   42,   15,   42,   42,   42,   42,   42,
+       42,   43,   42,   42,   42,   42,   42,   26,   42,   42,
+       42,    0,   42
     } ;
 
-static yyconst flex_int16_t yy_nxt[73] =
+static yyconst flex_int16_t yy_nxt[80] =
     {   0,
         4,    5,    6,    7,    8,    9,   10,   11,   12,   13,
        14,   15,   16,   17,   18,   19,   20,   21,   22,    4,
-       24,   30,   23,   27,   28,   33,   31,   30,   25,   30,
-       35,   34,   36,   33,   37,   30,   38,   37,   36,   34,
-       37,   38,   38,   37,   32,   32,   29,   38,   26,   23,
-       39,    3,   39,   39,   39,   39,   39,   39,   39,   39,
-       39,   39,   39,   39,   39,   39,   39,   39,   39,   39,
-       39,   39
+       24,   31,   25,   28,   29,   32,   35,   31,   26,   34,
+       31,   23,   36,   37,   39,   38,   31,   26,   35,   40,
+       36,   38,   41,   39,   36,   40,   40,   41,   41,   36,
+       33,   33,   40,   41,   30,   27,   23,   42,    3,   42,
+       42,   42,   42,   42,   42,   42,   42,   42,   42,   42,
+       42,   42,   42,   42,   42,   42,   42,   42,   42
     } ;
 
-static yyconst flex_int16_t yy_chk[73] =
+static yyconst flex_int16_t yy_chk[80] =
     {   0,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
-       15,   21,   15,   18,   18,   24,   40,   21,   15,   30,
-       25,   24,   25,   33,   34,   30,   35,   37,   25,   33,
-       34,   38,   35,   37,   31,   22,   20,   38,   16,   12,
-        3,   39,   39,   39,   39,   39,   39,   39,   39,   39,
-       39,   39,   39,   39,   39,   39,   39,   39,   39,   39,
-       39,   39
+       15,   21,   15,   18,   18,   43,   24,   21,   15,   23,
+       31,   23,   24,   26,   34,   26,   31,   23,   35,   36,
+       34,   26,   37,   39,   35,   36,   40,   41,   37,   39,
+       32,   22,   40,   41,   20,   16,   12,    3,   42,   42,
+       42,   42,   42,   42,   42,   42,   42,   42,   42,   42,
+       42,   42,   42,   42,   42,   42,   42,   42,   42
     } ;
 
 static yy_state_type yy_last_accepting_state;
@@ -477,9 +480,85 @@ char *yytext;
 #include"trie.h"
 
 Trie pr;
+char ctext[100001];
+double num_real;
+int num_int;
 
+#define ER_IFL 1
+#define NRO_REAL 2
+#define IDENT 3
+#define ER_IDG 4
+#define OP_AT 5
+#define	OP_DF 6
+#define OP_GE 7
+#define OP_LE 8
+#define OP_GR 9
+#define OP_LS 10
+#define OP_PL 11
+#define OP_MI 12
+#define OP_ML 13
+#define OP_DV 14
+#define OP_EQ 15
+#define SB_PV 16
+#define SB_PF 17
+#define SB_DP 18
+#define SB_VG 19
+#define SB_PO 20
+#define SB_PC 21
+#define ER_NMF 22
+#define ER_CIN 41
+#define NRO_INTEIRO 42
 
-#line 483 "lex.yy.c"
+const char * token_list[] = { 
+	 /* Vetor com os nomes dos tokens */
+	"dummy", 
+	"er_ifl",  
+	"nro_real", 
+	"ident",
+	"er_idg",
+	"op_at",
+	"op_df",
+	"op_ge",
+	"op_le",
+	"op_gr",
+	"op_ls",
+	"op_pl",	
+	"op_mi",
+	"op_ml",
+	"op_dv",
+	"op_eq",
+	"sb_pv",
+	"sb_pf",
+	"sb_dp",
+	"sb_vg",
+	"sb_po",
+	"sb_pc",
+	"er_nmf", 
+	"program",
+	"begin",
+	"end",
+	"const",
+	"var",
+	"real",
+	"integer",
+	"char",
+	"procedure",
+	"if",
+	"else",
+	"readln",
+	"writeln",
+	"repeat",
+	"then",
+	"until",
+	"while",
+	"function",
+	"err_cin",
+	"nro_inteiro"
+};
+
+int tok_idx; /* Será retornado pelo yylex() */
+
+#line 562 "lex.yy.c"
 
 #define INITIAL 0
 
@@ -661,10 +740,10 @@ YY_DECL
 	register char *yy_cp, *yy_bp;
 	register int yy_act;
     
-#line 14 "lalg.l"
+#line 90 "lalg.l"
 
 	/*numeros e identificador*/
-#line 668 "lex.yy.c"
+#line 747 "lex.yy.c"
 
 	if ( !(yy_init) )
 		{
@@ -717,13 +796,13 @@ yy_match:
 			while ( yy_chk[yy_base[yy_current_state] + yy_c] != yy_current_state )
 				{
 				yy_current_state = (int) yy_def[yy_current_state];
-				if ( yy_current_state >= 40 )
+				if ( yy_current_state >= 43 )
 					yy_c = yy_meta[(unsigned int) yy_c];
 				}
 			yy_current_state = yy_nxt[yy_base[yy_current_state] + (unsigned int) yy_c];
 			++yy_cp;
 			}
-		while ( yy_base[yy_current_state] != 52 );
+		while ( yy_base[yy_current_state] != 59 );
 
 yy_find_action:
 		yy_act = yy_accept[yy_current_state];
@@ -749,171 +828,276 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 16 "lalg.l"
+#line 92 "lalg.l"
 {	/* numero inteiro */
+	
 	long long x;
 	sscanf (yytext, "%lld", &x);
-	if (x < INT_MAX && x > -INT_MAX)
-		printf ("%s nro_inteiro\n", yytext);
-	else
-		printf ("%s er_ifl\n", yytext);	/* erro de inteiro fora do limite */
+	
+	if (x < INT_MAX && x > -INT_MAX) {
+		tok_idx = NRO_INTEIRO; /* Número inteiro */
+	} else {
+		tok_idx = ER_IFL; /* Inteiro fora dos limites */
+	}
+
+	strcpy(ctext, yytext);
+	return (tok_idx);
+
 	}
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 24 "lalg.l"
+#line 108 "lalg.l"
 {	/* numero real */
-	printf ("%s nro_real\n", yytext);
+	
+	strcpy(ctext, yytext);
+
+	return NRO_REAL;
+
 	}
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 28 "lalg.l"
-{	/* identificador */
+#line 116 "lalg.l"
+{	/* identificador ou palavra reservada */
 	
 	const char * identifier; 
 
-	identifier = find(&pr, yytext, 0, strlen(yytext));
+	identifier = find(&pr, yytext, &tok_idx);
 
 	if(identifier == NULL) {
 
-		if (strlen (yytext) <= 20)
-			printf ("%s ident\n", yytext);
-		else
-			printf ("%s er_idg\n", yytext);	/* erro de tamanho muito grande */
-	} else {
-		printf("%s %s\n", yytext, identifier);
+		if (yyleng <= 20) 
+			tok_idx = IDENT; /* Identificador */
+		else 
+			tok_idx = ER_IDG; /* Erro de identificador grande */
+	} 
+
+	/* Se não entrou no if anterior eh palavra reservada */
+
+	strcpy(ctext, yytext); /* Copia o texto */
+
+	return (tok_idx);
+	
 	}
-}
 	YY_BREAK
 /* operadores */
 case 4:
 YY_RULE_SETUP
-#line 47 "lalg.l"
-printf("%s op_at\n", yytext);
+#line 142 "lalg.l"
+{ 
+	strcpy(ctext, yytext); 
+	return OP_AT; /* ATtribution */
+	
+	}
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 48 "lalg.l"
-printf("%s op_df\n", yytext);
+#line 148 "lalg.l"
+{
+	strcpy(ctext, yytext); 
+	return OP_DF; /* DiFference */
+
+	}
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 49 "lalg.l"
-printf("%s op_ge\n", yytext);
+#line 154 "lalg.l"
+{
+	strcpy(ctext, yytext); 
+	return OP_GE; /* Greater Equal */
+
+	}
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 50 "lalg.l"
-printf("%s op_le\n", yytext);
+#line 160 "lalg.l"
+{
+	strcpy(ctext, yytext); 
+	return OP_LE; /* Less Equal */
+
+	}
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 51 "lalg.l"
-printf("%s op_gr\n", yytext);
+#line 166 "lalg.l"
+{
+	strcpy(ctext, yytext); 
+	return OP_GR; /* GReater */
+	
+	}
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 52 "lalg.l"
-printf("%s op_ls\n", yytext);
+#line 172 "lalg.l"
+{
+	strcpy(ctext, yytext); 
+	return OP_LS; /* LesS */
+	
+	}
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 53 "lalg.l"
-printf("%s op_pl\n", yytext);
+#line 178 "lalg.l"
+{
+	strcpy(ctext, yytext); 
+	return OP_PL; /* PLus */
+	
+	}
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 54 "lalg.l"
-printf("%s op_mi\n", yytext);
+#line 184 "lalg.l"
+{
+	strcpy(ctext, yytext); 
+	return OP_MI; /* MInus */
+	
+	}
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 55 "lalg.l"
-printf("%s op_ml\n", yytext);
+#line 190 "lalg.l"
+{
+	strcpy(ctext, yytext); 
+	return OP_ML; /* MultipLation */
+
+	}
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 56 "lalg.l"
-printf("%s op_dv\n", yytext);
+#line 196 "lalg.l"
+{
+	strcpy(ctext, yytext); 
+	return OP_DV; /* DiVision */
+	
+	}
 	YY_BREAK
-/* simbolos */
 case 14:
 YY_RULE_SETUP
-#line 58 "lalg.l"
-printf("%s sb_pv\n", yytext);
+#line 202 "lalg.l"
+{
+	strcpy(ctext, yytext); 
+	return OP_EQ; /* EQual */
+	
+	}
 	YY_BREAK
+/* simbolos */
 case 15:
 YY_RULE_SETUP
-#line 59 "lalg.l"
-printf("%s sb_pf\n", yytext);
+#line 210 "lalg.l"
+{
+	strcpy(ctext, yytext); 
+	return SB_PV; /* Ponto e Virgula */
+
+	}
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 60 "lalg.l"
-printf("%s sb_eq\n", yytext);
+#line 216 "lalg.l"
+{
+	strcpy(ctext, yytext); 
+	return SB_PF; /* Ponto Final */
+	
+	}
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 61 "lalg.l"
-printf("%s sb_dp\n", yytext);
+#line 222 "lalg.l"
+{
+	strcpy(ctext, yytext); 
+	return SB_DP; /* Dois Pontos */
+
+	}
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 62 "lalg.l"
-printf("%s sb_vg\n", yytext);
+#line 228 "lalg.l"
+{
+	strcpy(ctext, yytext); 
+	return SB_VG; /* VirGula */
+
+	}
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 63 "lalg.l"
-printf("%s sb_pa\n", yytext);
+#line 234 "lalg.l"
+{
+	strcpy(ctext, yytext); 
+	return SB_PO; /* Parenthesis Opening */
+
+	}
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 64 "lalg.l"
-printf("%s sb_pf\n", yytext);
+#line 240 "lalg.l"
+{
+	strcpy(ctext, yytext); 
+	return SB_PC; /* Parenthesis Closing */
+
+	}
 	YY_BREAK
 case 21:
 /* rule 21 can match eol */
 YY_RULE_SETUP
-#line 66 "lalg.l"
+#line 247 "lalg.l"
 /* apaga comentario (pode ter mais de uma linha) */
 	YY_BREAK
 case 22:
 /* rule 22 can match eol */
 YY_RULE_SETUP
-#line 67 "lalg.l"
+#line 248 "lalg.l"
 /* apaga caracteres inuteis */
 	YY_BREAK
 /* outros erros */
 case 23:
 YY_RULE_SETUP
-#line 70 "lalg.l"
-printf ("%s er_nmf\n", yytext);	/* numero mal formado */
+#line 251 "lalg.l"
+{
+	
+	strcpy(ctext, yytext); 
+	return ER_NMF;	/* Numero Mal Formado */
+
+	}
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 71 "lalg.l"
-printf ("%s er_nmf\n", yytext);	/* numero mal formado */
+#line 258 "lalg.l"
+{
+	
+	strcpy(ctext, yytext); 
+	return ER_NMF;	/* Numero Mal Formado */	
+
+	}
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 72 "lalg.l"
-printf ("%s er_nmf\n", yytext); /* numero mal formado */
+#line 265 "lalg.l"
+{
+	strcpy(ctext, yytext); 
+	return ER_NMF;	/* Numero Mal Formado */	
+
+	}	
+	YY_BREAK
+case YY_STATE_EOF(INITIAL):
+#line 271 "lalg.l"
+yyterminate();
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 73 "lalg.l"
-printf ("%s er_cin\n", yytext); /* caractere inexistente */
+#line 273 "lalg.l"
+{
+	
+	strcpy(ctext, yytext); 
+	return ER_CIN; /* Caractere INexistente */
+	
+	}
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 75 "lalg.l"
+#line 280 "lalg.l"
 ECHO;
 	YY_BREAK
-#line 915 "lex.yy.c"
-case YY_STATE_EOF(INITIAL):
-	yyterminate();
+#line 1101 "lex.yy.c"
 
 	case YY_END_OF_BUFFER:
 		{
@@ -1203,7 +1387,7 @@ static int yy_get_next_buffer (void)
 		while ( yy_chk[yy_base[yy_current_state] + yy_c] != yy_current_state )
 			{
 			yy_current_state = (int) yy_def[yy_current_state];
-			if ( yy_current_state >= 40 )
+			if ( yy_current_state >= 43 )
 				yy_c = yy_meta[(unsigned int) yy_c];
 			}
 		yy_current_state = yy_nxt[yy_base[yy_current_state] + (unsigned int) yy_c];
@@ -1231,11 +1415,11 @@ static int yy_get_next_buffer (void)
 	while ( yy_chk[yy_base[yy_current_state] + yy_c] != yy_current_state )
 		{
 		yy_current_state = (int) yy_def[yy_current_state];
-		if ( yy_current_state >= 40 )
+		if ( yy_current_state >= 43 )
 			yy_c = yy_meta[(unsigned int) yy_c];
 		}
 	yy_current_state = yy_nxt[yy_base[yy_current_state] + (unsigned int) yy_c];
-	yy_is_jam = (yy_current_state == 39);
+	yy_is_jam = (yy_current_state == 42);
 
 	return yy_is_jam ? 0 : yy_current_state;
 }
@@ -1909,31 +2093,42 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 75 "lalg.l"
+#line 280 "lalg.l"
 
 
 
+int get_token(char *tok, char *text) {
+	int tk = yylex(); 
+	
+	if(tk) {
+		strcpy(tok, token_list[tk]);
+		strcpy(text, ctext);
+	}
+	return tk;
+}
 
-main(int argc, char **argv )
+int main(int argc, char **argv )
 {
 	initializeTrie(&pr);
 
-	insert(&pr, "program", "program");
-	insert(&pr, "begin", "begin");
-	insert(&pr, "end", "end");
-	insert(&pr, "const", "const");
-	insert(&pr, "var", "var");
-	insert(&pr, "real", "real");
-	insert(&pr, "integer", "integer");
-	insert(&pr, "char", "char");
-	insert(&pr, "procedure", "procedure");
-	insert(&pr, "if", "if");
-	insert(&pr, "else", "else");
-	insert(&pr, "readln", "readln");
-	insert(&pr, "writeln", "writeln");
-	insert(&pr, "repeat", "repeat");
-	insert(&pr, "then", "then");
-	insert(&pr, "until", "until");
+	insert(&pr, "program", "program", 23);
+	insert(&pr, "begin", "begin", 24);
+	insert(&pr, "end", "end", 25);
+	insert(&pr, "const", "const", 26);
+	insert(&pr, "var", "var", 27);
+	insert(&pr, "real", "real", 28);
+	insert(&pr, "integer", "integer", 29);
+	insert(&pr, "char", "char", 30);
+	insert(&pr, "procedure", "procedure", 31);
+	insert(&pr, "if", "if", 32);
+	insert(&pr, "else", "else", 33);
+	insert(&pr, "readln", "readln", 34);
+	insert(&pr, "writeln", "writeln", 35);
+	insert(&pr, "repeat", "repeat", 36);
+	insert(&pr, "then", "then", 37);
+	insert(&pr, "until", "until", 38);
+	insert(&pr, "while", "while", 39);
+	insert(&pr, "function", "function", 40);
 	
 	++argv, --argc;  /* skip over program name */
 	if ( argc > 0 )
@@ -1941,6 +2136,15 @@ main(int argc, char **argv )
 	else
 		yyin = stdin;
 
-	 yylex();
+	char next_text[1000];
+	char next_token[1000];
+
+	 /*yylex();*/
+	while(get_token(next_token, next_text)) {
+			/* Pega um indice que aponta para o vetor de tokens */
+	 		printf("%s %s \n", next_text, next_token);
+	}
+
+	return 0;
 }
 
