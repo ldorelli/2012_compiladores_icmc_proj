@@ -17,12 +17,12 @@ LETRA	[[:alpha:]]
 	long long x;
 	sscanf (yytext, "%lld", &x);
 	if (x < INT_MAX && x > -INT_MAX)
-		printf ("%s inteiro\n", yytext);
+		printf ("%s nro_inteiro\n", yytext);
 	else
 		printf ("%s er_ifl\n", yytext);	/* erro de inteiro fora do limite */
 	}
 -{0,1}{DIGITO}+"."{DIGITO}+	{	/* numero real */
-	printf ("%s real\n", yytext);	
+	printf ("%s nro_real\n", yytext);
 	}
 
 {LETRA}({LETRA}|{DIGITO})*	{	/* identificador */
@@ -43,8 +43,6 @@ LETRA	[[:alpha:]]
 }
 
 
-	/**program|begin|end|const|var|real|real|integer|char|procedure|else|readln|writeln|repeat|until|if|then|while|function	{/* palavras reservadas */
-	
 	/* operadores */
 ":="	printf("%s op_at\n", yytext);
 "<>"	printf("%s op_df\n", yytext);
@@ -56,11 +54,11 @@ LETRA	[[:alpha:]]
 "-"	printf("%s op_mi\n", yytext);
 "*"	printf("%s op_ml\n", yytext);
 "/"	printf("%s op_dv\n", yytext);
+"="	printf("%s op_eq\n", yytext);
 	/* simbolos */
 ";"	printf("%s sb_pv\n", yytext);
 "."	printf("%s sb_pf\n", yytext);
-"="	printf("%s sb_eq\n", yytext);
-	/*":"	printf("%s sb_dp\n", yytext);*/
+":"	printf("%s sb_dp\n", yytext);
 ","	printf("%s sb_vg\n", yytext);
 "("	printf("%s sb_pa\n", yytext);
 ")"	printf("%s sb_pf\n", yytext);
@@ -69,8 +67,9 @@ LETRA	[[:alpha:]]
 [\n\t\r ]	/* apaga caracteres inuteis */
 
 	/* outros erros */
--{0,1}{DIGITO}+{LETRA}+	printf ("%s er_nmf\n", yytext);	/* numero mal formado */
-	/*-{0,1}{DIGITO}+"."*/
+-{0,1}{DIGITO}+{LETRA}({LETRA}|{DIGITO})*"."({LETRA}|{DIGITO})*	printf ("%s er_nmf\n", yytext);	/* numero mal formado */
+-{0,1}{DIGITO}+{LETRA}({LETRA}|{DIGITO})*	printf ("%s er_nmf\n", yytext);	/* numero mal formado */
+-{0,1}{DIGITO}+"."{DIGITO}*{LETRA}({LETRA}|{DIGITO})*	printf ("%s er_nmf\n", yytext); /* numero mal formado */
 .	printf ("%s er_cin\n", yytext); /* caractere inexistente */
 
 %%
@@ -96,6 +95,8 @@ main(int argc, char **argv )
 	insert(&pr, "repeat", "repeat");
 	insert(&pr, "then", "then");
 	insert(&pr, "until", "until");
+	insert(&pr, "while", "while");
+	insert(&pr, "function", "function");
 	
 	++argv, --argc;  /* skip over program name */
 	if ( argc > 0 )
