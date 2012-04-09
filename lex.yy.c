@@ -53,7 +53,6 @@ typedef int flex_int32_t;
 typedef unsigned char flex_uint8_t; 
 typedef unsigned short int flex_uint16_t;
 typedef unsigned int flex_uint32_t;
-#endif /* ! C99 */
 
 /* Limits of integral types. */
 #ifndef INT8_MIN
@@ -83,6 +82,8 @@ typedef unsigned int flex_uint32_t;
 #ifndef UINT32_MAX
 #define UINT32_MAX             (4294967295U)
 #endif
+
+#endif /* ! C99 */
 
 #endif /* ! FLEXINT_H */
 
@@ -140,7 +141,15 @@ typedef unsigned int flex_uint32_t;
 
 /* Size of default input buffer. */
 #ifndef YY_BUF_SIZE
+#ifdef __ia64__
+/* On IA-64, the buffer size is 16k, not 8k.
+ * Moreover, YY_BUF_SIZE is 2*YY_READ_BUF_SIZE in the general case.
+ * Ditto for the __ia64__ case accordingly.
+ */
+#define YY_BUF_SIZE 32768
+#else
 #define YY_BUF_SIZE 16384
+#endif /* __ia64__ */
 #endif
 
 /* The state buf must be large enough to hold one state per character in the main buffer.
@@ -371,7 +380,7 @@ struct yy_trans_info
 static yyconst flex_int16_t yy_accept[40] =
     {   0,
         0,    0,   28,   26,   22,   22,   19,   20,   12,   10,
-       18,   11,   15,   13,    1,   17,   14,    9,   16,    8,
+       18,   11,   16,   13,    1,   17,   15,    9,   14,    8,
         3,   26,    1,    0,   24,    4,    7,    5,    6,    3,
         0,   21,    2,   25,   23,   24,   25,   23,    0
     } ;
@@ -479,7 +488,7 @@ char *yytext;
 Trie pr;
 
 
-#line 483 "lex.yy.c"
+#line 492 "lex.yy.c"
 
 #define INITIAL 0
 
@@ -560,7 +569,12 @@ static int input (void );
 
 /* Amount of stuff to slurp up with each read. */
 #ifndef YY_READ_BUF_SIZE
+#ifdef __ia64__
+/* On IA-64, the buffer size is 16k, not 8k */
+#define YY_READ_BUF_SIZE 16384
+#else
 #define YY_READ_BUF_SIZE 8192
+#endif /* __ia64__ */
 #endif
 
 /* Copy whatever the last rule matched to the standard output. */
@@ -568,7 +582,7 @@ static int input (void );
 /* This used to be an fputs(), but since the string might contain NUL's,
  * we now use fwrite().
  */
-#define ECHO fwrite( yytext, yyleng, 1, yyout )
+#define ECHO do { if (fwrite( yytext, yyleng, 1, yyout )) {} } while (0)
 #endif
 
 /* Gets input and stuffs it into "buf".  number of characters read, or YY_NULL,
@@ -579,7 +593,7 @@ static int input (void );
 	if ( YY_CURRENT_BUFFER_LVALUE->yy_is_interactive ) \
 		{ \
 		int c = '*'; \
-		yy_size_t n; \
+		size_t n; \
 		for ( n = 0; n < max_size && \
 			     (c = getc( yyin )) != EOF && c != '\n'; ++n ) \
 			buf[n] = (char) c; \
@@ -664,7 +678,7 @@ YY_DECL
 #line 14 "lalg.l"
 
 	/*numeros e identificador*/
-#line 668 "lex.yy.c"
+#line 682 "lex.yy.c"
 
 	if ( !(yy_init) )
 		{
@@ -837,21 +851,21 @@ YY_RULE_SETUP
 #line 56 "lalg.l"
 printf("%s op_dv\n", yytext);
 	YY_BREAK
-/* simbolos */
 case 14:
 YY_RULE_SETUP
-#line 58 "lalg.l"
-printf("%s sb_pv\n", yytext);
+#line 57 "lalg.l"
+printf("%s op_eq\n", yytext);
 	YY_BREAK
+/* simbolos */
 case 15:
 YY_RULE_SETUP
 #line 59 "lalg.l"
-printf("%s sb_pf\n", yytext);
+printf("%s sb_pv\n", yytext);
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
 #line 60 "lalg.l"
-printf("%s sb_eq\n", yytext);
+printf("%s sb_pf\n", yytext);
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
@@ -866,12 +880,12 @@ printf("%s sb_vg\n", yytext);
 case 19:
 YY_RULE_SETUP
 #line 63 "lalg.l"
-printf("%s sb_pa\n", yytext);
+printf("%s sb_po\n", yytext);
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
 #line 64 "lalg.l"
-printf("%s sb_pf\n", yytext);
+printf("%s sb_pc\n", yytext);
 	YY_BREAK
 case 21:
 /* rule 21 can match eol */
@@ -911,7 +925,7 @@ YY_RULE_SETUP
 #line 75 "lalg.l"
 ECHO;
 	YY_BREAK
-#line 915 "lex.yy.c"
+#line 929 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -1669,8 +1683,8 @@ YY_BUFFER_STATE yy_scan_string (yyconst char * yystr )
 
 /** Setup the input buffer state to scan the given bytes. The next call to yylex() will
  * scan from a @e copy of @a bytes.
- * @param bytes the byte buffer to scan
- * @param len the number of bytes in the buffer pointed to by @a bytes.
+ * @param yybytes the byte buffer to scan
+ * @param _yybytes_len the number of bytes in the buffer pointed to by @a bytes.
  * 
  * @return the newly allocated buffer state object.
  */
@@ -1934,6 +1948,8 @@ main(int argc, char **argv )
 	insert(&pr, "repeat", "repeat");
 	insert(&pr, "then", "then");
 	insert(&pr, "until", "until");
+	insert(&pr, "while", "while");
+	insert(&pr, "function", "function");
 	
 	++argv, --argc;  /* skip over program name */
 	if ( argc > 0 )

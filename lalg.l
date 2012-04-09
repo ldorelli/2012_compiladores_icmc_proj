@@ -60,8 +60,8 @@ LETRA	[[:alpha:]]
 "."	printf("%s sb_pf\n", yytext);
 ":"	printf("%s sb_dp\n", yytext);
 ","	printf("%s sb_vg\n", yytext);
-"("	printf("%s sb_pa\n", yytext);
-")"	printf("%s sb_pf\n", yytext);
+"("	printf("%s sb_po\n", yytext);
+")"	printf("%s sb_pc\n", yytext);
 
 "{"[^}]*"}"	/* apaga comentario (pode ter mais de uma linha) */
 [\n\t\r ]	/* apaga caracteres inuteis */
