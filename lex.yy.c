@@ -478,36 +478,12 @@ char *yytext;
 #include<stdio.h>
 #include<limits.h>
 #include"trie.h"
+#include"y.tab.h"
 
 Trie pr;
 char ctext[100001];
 double num_real;
 int num_int;
-
-#define ER_IFL 1
-#define NRO_REAL 2
-#define IDENT 3
-#define ER_IDG 4
-#define OP_AT 5
-#define	OP_DF 6
-#define OP_GE 7
-#define OP_LE 8
-#define OP_GR 9
-#define OP_LS 10
-#define OP_PL 11
-#define OP_MI 12
-#define OP_ML 13
-#define OP_DV 14
-#define OP_EQ 15
-#define SB_PV 16
-#define SB_PF 17
-#define SB_DP 18
-#define SB_VG 19
-#define SB_PO 20
-#define SB_PC 21
-#define ER_NMF 22
-#define ER_CIN 41
-#define NRO_INTEIRO 42
 
 const char * token_list[] = { 
 	 /* Vetor com os nomes dos tokens */
@@ -558,7 +534,7 @@ const char * token_list[] = {
 
 int tok_idx; /* Será retornado pelo yylex() */
 
-#line 562 "lex.yy.c"
+#line 538 "lex.yy.c"
 
 #define INITIAL 0
 
@@ -740,10 +716,10 @@ YY_DECL
 	register char *yy_cp, *yy_bp;
 	register int yy_act;
     
-#line 90 "lalg.l"
+#line 66 "lalg.l"
 
 	/*numeros e identificador*/
-#line 747 "lex.yy.c"
+#line 723 "lex.yy.c"
 
 	if ( !(yy_init) )
 		{
@@ -828,7 +804,7 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 92 "lalg.l"
+#line 68 "lalg.l"
 {	/* numero inteiro */
 	
 	long long x;
@@ -847,7 +823,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 108 "lalg.l"
+#line 84 "lalg.l"
 {	/* numero real */
 	
 	strcpy(ctext, yytext);
@@ -858,7 +834,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 116 "lalg.l"
+#line 92 "lalg.l"
 {	/* identificador ou palavra reservada */
 	
 	const char * identifier; 
@@ -884,7 +860,7 @@ YY_RULE_SETUP
 /* operadores */
 case 4:
 YY_RULE_SETUP
-#line 142 "lalg.l"
+#line 118 "lalg.l"
 { 
 	strcpy(ctext, yytext); 
 	return OP_AT; /* ATtribution */
@@ -893,7 +869,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 148 "lalg.l"
+#line 124 "lalg.l"
 {
 	strcpy(ctext, yytext); 
 	return OP_DF; /* DiFference */
@@ -902,7 +878,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 154 "lalg.l"
+#line 130 "lalg.l"
 {
 	strcpy(ctext, yytext); 
 	return OP_GE; /* Greater Equal */
@@ -911,7 +887,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 160 "lalg.l"
+#line 136 "lalg.l"
 {
 	strcpy(ctext, yytext); 
 	return OP_LE; /* Less Equal */
@@ -920,7 +896,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 166 "lalg.l"
+#line 142 "lalg.l"
 {
 	strcpy(ctext, yytext); 
 	return OP_GR; /* GReater */
@@ -929,7 +905,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 172 "lalg.l"
+#line 148 "lalg.l"
 {
 	strcpy(ctext, yytext); 
 	return OP_LS; /* LesS */
@@ -938,7 +914,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 178 "lalg.l"
+#line 154 "lalg.l"
 {
 	strcpy(ctext, yytext); 
 	return OP_PL; /* PLus */
@@ -947,7 +923,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 184 "lalg.l"
+#line 160 "lalg.l"
 {
 	strcpy(ctext, yytext); 
 	return OP_MI; /* MInus */
@@ -956,7 +932,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 190 "lalg.l"
+#line 166 "lalg.l"
 {
 	strcpy(ctext, yytext); 
 	return OP_ML; /* MultipLation */
@@ -965,7 +941,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 196 "lalg.l"
+#line 172 "lalg.l"
 {
 	strcpy(ctext, yytext); 
 	return OP_DV; /* DiVision */
@@ -974,7 +950,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 202 "lalg.l"
+#line 178 "lalg.l"
 {
 	strcpy(ctext, yytext); 
 	return OP_EQ; /* EQual */
@@ -984,7 +960,7 @@ YY_RULE_SETUP
 /* simbolos */
 case 15:
 YY_RULE_SETUP
-#line 210 "lalg.l"
+#line 186 "lalg.l"
 {
 	strcpy(ctext, yytext); 
 	return SB_PV; /* Ponto e Virgula */
@@ -993,7 +969,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 216 "lalg.l"
+#line 192 "lalg.l"
 {
 	strcpy(ctext, yytext); 
 	return SB_PF; /* Ponto Final */
@@ -1002,7 +978,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 222 "lalg.l"
+#line 198 "lalg.l"
 {
 	strcpy(ctext, yytext); 
 	return SB_DP; /* Dois Pontos */
@@ -1011,7 +987,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 228 "lalg.l"
+#line 204 "lalg.l"
 {
 	strcpy(ctext, yytext); 
 	return SB_VG; /* VirGula */
@@ -1020,7 +996,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 234 "lalg.l"
+#line 210 "lalg.l"
 {
 	strcpy(ctext, yytext); 
 	return SB_PO; /* Parenthesis Opening */
@@ -1029,7 +1005,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 240 "lalg.l"
+#line 216 "lalg.l"
 {
 	strcpy(ctext, yytext); 
 	return SB_PC; /* Parenthesis Closing */
@@ -1039,19 +1015,19 @@ YY_RULE_SETUP
 case 21:
 /* rule 21 can match eol */
 YY_RULE_SETUP
-#line 247 "lalg.l"
+#line 223 "lalg.l"
 /* apaga comentario (pode ter mais de uma linha) */
 	YY_BREAK
 case 22:
 /* rule 22 can match eol */
 YY_RULE_SETUP
-#line 248 "lalg.l"
+#line 224 "lalg.l"
 /* apaga caracteres inuteis */
 	YY_BREAK
 /* outros erros */
 case 23:
 YY_RULE_SETUP
-#line 251 "lalg.l"
+#line 227 "lalg.l"
 {
 	
 	strcpy(ctext, yytext); 
@@ -1061,7 +1037,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 258 "lalg.l"
+#line 234 "lalg.l"
 {
 	
 	strcpy(ctext, yytext); 
@@ -1071,7 +1047,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 265 "lalg.l"
+#line 241 "lalg.l"
 {
 	strcpy(ctext, yytext); 
 	return ER_NMF;	/* Numero Mal Formado */	
@@ -1079,12 +1055,12 @@ YY_RULE_SETUP
 	}	
 	YY_BREAK
 case YY_STATE_EOF(INITIAL):
-#line 271 "lalg.l"
+#line 247 "lalg.l"
 yyterminate();
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 273 "lalg.l"
+#line 249 "lalg.l"
 {
 	
 	strcpy(ctext, yytext); 
@@ -1094,10 +1070,10 @@ YY_RULE_SETUP
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 280 "lalg.l"
+#line 256 "lalg.l"
 ECHO;
 	YY_BREAK
-#line 1101 "lex.yy.c"
+#line 1077 "lex.yy.c"
 
 	case YY_END_OF_BUFFER:
 		{
@@ -2093,7 +2069,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 280 "lalg.l"
+#line 256 "lalg.l"
 
 
 
@@ -2107,44 +2083,7 @@ int get_token(char *tok, char *text) {
 	return tk;
 }
 
-int main(int argc, char **argv )
-{
-	initializeTrie(&pr);
-
-	insert(&pr, "program", "program", 23);
-	insert(&pr, "begin", "begin", 24);
-	insert(&pr, "end", "end", 25);
-	insert(&pr, "const", "const", 26);
-	insert(&pr, "var", "var", 27);
-	insert(&pr, "real", "real", 28);
-	insert(&pr, "integer", "integer", 29);
-	insert(&pr, "char", "char", 30);
-	insert(&pr, "procedure", "procedure", 31);
-	insert(&pr, "if", "if", 32);
-	insert(&pr, "else", "else", 33);
-	insert(&pr, "readln", "readln", 34);
-	insert(&pr, "writeln", "writeln", 35);
-	insert(&pr, "repeat", "repeat", 36);
-	insert(&pr, "then", "then", 37);
-	insert(&pr, "until", "until", 38);
-	insert(&pr, "while", "while", 39);
-	insert(&pr, "function", "function", 40);
-	
-	++argv, --argc;  /* skip over program name */
-	if ( argc > 0 )
-			    yyin = fopen( argv[0], "r" );
-	else
-		yyin = stdin;
-
-	char next_text[1000];
-	char next_token[1000];
-
-	 /*yylex();*/
-	while(get_token(next_token, next_text)) {
-			/* Pega um indice que aponta para o vetor de tokens */
-	 		printf("%s %s \n", next_text, next_token);
-	}
-
-	return 0;
+int yywrap(void) {
+	return 1;
 }
 

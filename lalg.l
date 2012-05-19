@@ -4,36 +4,12 @@
 #include<stdio.h>
 #include<limits.h>
 #include"trie.h"
+#include"y.tab.h"
 
 Trie pr;
 char ctext[100001];
 double num_real;
 int num_int;
-
-#define ER_IFL 1
-#define NRO_REAL 2
-#define IDENT 3
-#define ER_IDG 4
-#define OP_AT 5
-#define	OP_DF 6
-#define OP_GE 7
-#define OP_LE 8
-#define OP_GR 9
-#define OP_LS 10
-#define OP_PL 11
-#define OP_MI 12
-#define OP_ML 13
-#define OP_DV 14
-#define OP_EQ 15
-#define SB_PV 16
-#define SB_PF 17
-#define SB_DP 18
-#define SB_VG 19
-#define SB_PO 20
-#define SB_PC 21
-#define ER_NMF 22
-#define ER_CIN 41
-#define NRO_INTEIRO 42
 
 const char * token_list[] = { 
 	 /* Vetor com os nomes dos tokens */
@@ -289,43 +265,6 @@ int get_token(char *tok, char *text) {
 	return tk;
 }
 
-int main(int argc, char **argv )
-{
-	initializeTrie(&pr);
-
-	insert(&pr, "program", "program", 23);
-	insert(&pr, "begin", "begin", 24);
-	insert(&pr, "end", "end", 25);
-	insert(&pr, "const", "const", 26);
-	insert(&pr, "var", "var", 27);
-	insert(&pr, "real", "real", 28);
-	insert(&pr, "integer", "integer", 29);
-	insert(&pr, "char", "char", 30);
-	insert(&pr, "procedure", "procedure", 31);
-	insert(&pr, "if", "if", 32);
-	insert(&pr, "else", "else", 33);
-	insert(&pr, "readln", "readln", 34);
-	insert(&pr, "writeln", "writeln", 35);
-	insert(&pr, "repeat", "repeat", 36);
-	insert(&pr, "then", "then", 37);
-	insert(&pr, "until", "until", 38);
-	insert(&pr, "while", "while", 39);
-	insert(&pr, "function", "function", 40);
-	
-	++argv, --argc;  /* skip over program name */
-	if ( argc > 0 )
-			    yyin = fopen( argv[0], "r" );
-	else
-		yyin = stdin;
-
-	char next_text[1000];
-	char next_token[1000];
-
-	 /*yylex();*/
-	while(get_token(next_token, next_text)) {
-			/* Pega um indice que aponta para o vetor de tokens */
-	 		printf("%s %s \n", next_text, next_token);
-	}
-
-	return 0;
+int yywrap(void) {
+	return 1;
 }

@@ -1,0 +1,8 @@
+program lalg;
+{isto aqui eh
+um comentario
+de entrada}
+var a: integer;
+begin
+readd(a, @, 1a.31);
+end

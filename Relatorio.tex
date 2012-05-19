@@ -1,0 +1,247 @@
+\documentclass {article}
+\usepackage[brazil]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{indentfirst}
+\usepackage{cite}
+\usepackage{multirow}
+\usepackage{verbatim}
+\usepackage{listings}
+\usepackage{booktabs}
+\usepackage{float}
+\usepackage{subfig}
+\usepackage{graphicx}
+
+\title {Trabalho 1}
+\author {Bianca Madoka Shimizu Oe \\ 
+		Luís Fernando Dorelli de Abreu \\  
+		Rafael Umino Nakanishi}
+
+\begin{document}
+
+\titlepage
+\maketitle
+
+\section{Objetivo}
+	Nesse relatório descrevemos como o usar o analisador léxico FLEX. Nas seções seguintes relatamos as principais decisões de projeto que foram feitas e as justificativas para tais escolhas. Em seguida, uma breve explicação de como utilzar o analisador e por fim alguns exemplos.
+	
+\section{Decisões de Projeto}
+	\subsection{Palavras Reservadas}
+		Para palavras reservadas do sistema, foi criado uma \emph{trie}(árvore de prefixos), por ser consideravelmente rápida para buscar por strings.
+		
+		Cada palavra reservada é retornada com o próprio valor. Na tabela \ref{tb_pr} estão listadas as palavras reservadas do sistema.
+		\begin{table}[ht]
+		
+		\centering
+		\begin{tabular}{cccc}
+			\toprule
+			program & begin & end & const \\
+			var & real & integer& char\\
+			procedure & if & else & readln \\
+			writeln & repeat & then & until\\
+			while & function & & \\
+			\bottomrule
+		\end{tabular}
+		\caption{Tabela de operadores}
+		\label{tb_pr}
+		
+		\end{table}
+
+	Optamos por utilizar variáveis globais para interagir com a função yylex(). Como a \emph{yylex} deve retornar um inteiro, associamos um inteiro a cada token e criamos uma estrutura auxiliar que armazena, para cada índice, o nome do token (por exemplo, $"nro\_real" , 2$ ). Dessa forma, os tokens continuam com sentido semântico, bastando acessar a estrutura auxiliar. Os tokens para as palavras reservadas são armazenados diretamente na Trie; os demais tokens são dados por \emph{defines}.
+		
+	\subsection{Tokens}
+		
+		Existem cinco tipos de tokens que foram usados: operadores, símbolos, identificadores, números e erros. Cada um desses tokens são retornados como:
+		
+		\begin{equation}
+			<palavra\_reservada> \hspace{3mm} <token> \nonumber
+		\end{equation}
+		
+		Além disso, para cada classe dos tokens foram escolhidos alguns padrões que são descritos nas tabelas \ref{tb_op} e \ref{tb_sb}. Os identificadores são retornados como \emph{ident} e dígitos são descritos como \emph{nro\_inteiro} ou \emph{nro\_real}.
+		
+		\begin{table}[ht]
+		
+		\centering
+		\begin{tabular}{ccc}
+			\toprule
+			Nome do operador & Token & Símbolo\\
+			\hline
+			\hline
+				Atribuição & op\_at & := \\
+				Igualdade & op\_eq & = \\ 
+				Diferença &  op\_df & $<>$ \\ 
+				Maior ou igual & op\_ge & $>=$ \\ 
+				Menor ou igual & op\_le & $<=$ \\ 
+				Maior & op\_gr & $>$ \\
+				Menor &op\_ls & $<$ \\ 
+				Soma & op\_pl & + \\ 
+				Subtração & op\_mi & - \\ 
+				Multiplicação & op\_ml & * \\
+				Divisão & op\_dv & / \\
+			\bottomrule
+		\end{tabular}
+		\caption{Tabela de operadores}
+		\label{tb_op}
+		
+		\end{table}		\begin{table}[ht]
+		
+		\centering
+		\begin{tabular}{ccc}
+			\toprule
+			Nome do símbolo & Token & Símbolo\\
+			\hline
+			\hline
+				Ponto e vírgula & sb\_pv & ; \\
+				Ponto final &  sb\_pf & . \\ 
+				Dois pontos & sb\_dp & : \\ 
+				Vírgula & sb\_vg & , \\
+				Abre parênteses &sb\_po & ( \\ 
+				Fecha parênteses & sb\_pc & ) \\ 
+			\bottomrule
+		\end{tabular}
+		\caption{Tabela de símbolos}
+		\label{tb_sb}
+		
+		\end{table}
+		
+	\subsection{Comentários}
+		Para análise de comentários consideramos que eles podem ter mais de uma linha. Com isso, o analisador vai consumindo todos os valores que estiverem entre dos caracteres de comentário( "\emph{\{}" e "\emph{\}}"), inclusive valores de tabulação, espaços vazios e quebra de linhas.
+		
+	\subsection{Erros}
+		Os erros também são retornados com tokens. Os erros que são tratados na análise léxica podem ser vistos na tabela \ref{tb_er}.
+		
+		\begin{table}[ht]
+		\begin{center}
+		\begin{tabular}{p{5cm}cp{5cm}}
+			\toprule
+			Nome do Erro & Token & Causa\\
+			\hline
+			\hline
+				Número mal formado & er\_nmf & Dígitos e caracteres concatenados. Ex.: 12a34b5\\
+				Caractere inexistente & er\_cin & Caracteres que não são dígitos, letras, operadores ou símbolos\\
+				Tamanho de variável muito grande & er\_idg & Identificador com mais de 20 caracteres\\
+				Número muito grande & er\_ifl & Número está fora dos valores máximos e mínimos\\
+			\bottomrule
+		\end{tabular}
+		\caption{Tabela de erros}
+		\label{tb_er}
+		\end{center}
+		\end{table}
+	
+
+\section{Compilação}
+	
+	Em anexo está um arquivo \emph{makefile} que pode ser executado para gerar o executável. Os comandos que estão no arquivo são:
+	
+	\begin{verbatim}
+        flex lalg.l
+        gcc lex.yy.c trie.c -lfl -o t1
+	\end{verbatim}
+	
+	Em seguida pode-se utilizar o executável \emph{t1} juntamente com o código fonte escrito em linguagem \emph{lalg}.
+	
+	\begin{verbatim}
+        t1 <arquivo_fonte>
+	\end{verbatim}
+	
+	A saída gerada será o próprio arquivo fonte com os respectivos tokens.
+	
+\section{Exemplo}
+
+    \subsection{Exemplo 1}
+	\begin{verbatim}
+        program lalg;
+        {entrada}
+        var a: integer; 
+        begin
+        readd(a, @, 1); 
+        1.000
+        1a222
+        1a.000
+        1.00a0
+        a1ksjdhfgkjsdhfgesuhrguhsfkushdfkguh = 2222222222222222222222222222222222222;
+        x <= a;
+        ?
+
+        end.
+	\end{verbatim}
+	
+	Saída:
+	\begin{verbatim}
+        program program
+        lalg ident
+        ; sb_pv
+        var var
+        a ident
+        : sb_dp
+        integer integer
+        ; sb_pv
+        begin begin
+        readd ident
+        ( sb_po
+        a ident
+        , sb_vg
+        @ er_cin
+        , sb_vg
+        1 nro_inteiro
+        ) sb_pc
+        ; sb_pv
+        1.000 nro_real
+        1a222 er_nmf
+        1a.000 er_nmf
+        1.00a0 er_nmf
+        a1ksjdhfgkjsdhfgesuhrguhsfkushdfkguh er_idg
+        = op_eq
+        2222222222222222222222222222222222222 er_ifl
+        ; sb_pv
+        x ident
+        <= op_le
+        a ident
+        ; sb_pv
+        ? er_cin
+        end end
+        . sb_pf
+
+	\end{verbatim}
+	
+    \subsection{Exemplo 2}
+    
+    \begin{verbatim}
+        program lalg;
+        {isto aqui eh
+        um comentario
+        de entrada}
+        var a: integer;
+        begin
+        readd(a, @, 1a.31);
+        end
+    \end{verbatim}
+    
+    Saida:
+    
+    \begin{verbatim}
+        program program
+        lalg ident
+        ; sb_pv
+        var var
+        a ident
+        : sb_dp
+        integer integer
+        ; sb_pv
+        begin begin
+        readd ident
+        ( sb_po
+        a ident
+        , sb_vg
+        @ er_cin
+        , sb_vg
+        1a.31 er_nmf
+        ) sb_pc
+        ; sb_pv
+        end end
+
+    \end{verbatim}
+    
+    
+    
+\end{document}
