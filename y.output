@@ -1,4 +1,4 @@
-Terminals which are not used
+Terminals unused in grammar
 
    ER_IFL
    ER_IDG
@@ -17,6 +17,7 @@ Terminals which are not used
    SB_PC
    ER_NMF
    ER_CIN
+   ER_CNF
    END
    CHAR
    PROCEDURE
@@ -35,17 +36,17 @@ Grammar
 
     0 $accept: program $end
 
-    1 @1: /* empty */
+    1 $@1: /* empty */
 
-    2 program: PROGRAM IDENT SB_PV @1 corpo
+    2 program: PROGRAM IDENT SB_PV $@1 corpo
 
-    3 @2: /* empty */
+    3 $@2: /* empty */
 
-    4 program: PROGRAM error SB_PV @2 corpo
+    4 program: PROGRAM error SB_PV $@2 corpo
 
-    5 @3: /* empty */
+    5 $@3: /* empty */
 
-    6 program: error IDENT SB_PV @3 corpo
+    6 program: error IDENT SB_PV $@3 corpo
 
     7 corpo: dc
 
@@ -57,9 +58,9 @@ Grammar
    12     | CONST IDENT OP_AT error SB_PV
    13     | /* empty */
 
-   14 @4: /* empty */
+   14 $@4: /* empty */
 
-   15 dc_v: VAR variaveis SB_DP tipo_var SB_PV @4 dc_v
+   15 dc_v: VAR variaveis SB_DP tipo_var SB_PV $@4 dc_v
    16     | /* empty */
 
    17 tipo_var: INTEGER
@@ -101,56 +102,57 @@ SB_PO (277)
 SB_PC (278)
 ER_NMF (279)
 ER_CIN (280)
-NRO_INTEIRO (281) 23
-PROGRAM (282) 2 4
-BEG (283) 8
-END (284)
-CONST (285) 9 11 12
-VAR (286) 15
-REAL (287) 18
-INTEGER (288) 17
-CHAR (289)
-PROCEDURE (290)
-IF (291)
-ELSE (292)
-READLN (293)
-WRITELN (294)
-REPEAT (295)
-THEN (296)
-UNTIL (297)
-WHILE (298)
-FUNCTION (299)
+ER_CNF (281)
+NRO_INTEIRO (282) 23
+PROGRAM (283) 2 4
+BEG (284) 8
+END (285)
+CONST (286) 9 11 12
+VAR (287) 15
+REAL (288) 18
+INTEGER (289) 17
+CHAR (290)
+PROCEDURE (291)
+IF (292)
+ELSE (293)
+READLN (294)
+WRITELN (295)
+REPEAT (296)
+THEN (297)
+UNTIL (298)
+WHILE (299)
+FUNCTION (300)
 
 
 Nonterminals, with rules where they appear
 
-$accept (45)
+$accept (46)
     on left: 0
-program (46)
+program (47)
     on left: 2 4 6, on right: 0
-@1 (47)
+$@1 (48)
     on left: 1, on right: 2
-@2 (48)
+$@2 (49)
     on left: 3, on right: 4
-@3 (49)
+$@3 (50)
     on left: 5, on right: 6
-corpo (50)
+corpo (51)
     on left: 7, on right: 2 4 6
-dc (51)
+dc (52)
     on left: 8, on right: 7
-dc_c (52)
+dc_c (53)
     on left: 9 10 11 12 13, on right: 8 9
-dc_v (53)
+dc_v (54)
     on left: 15 16, on right: 8 15
-@4 (54)
+$@4 (55)
     on left: 14, on right: 15
-tipo_var (55)
+tipo_var (56)
     on left: 17 18, on right: 15
-variaveis (56)
+variaveis (57)
     on left: 19, on right: 15 20
-mais_var (57)
+mais_var (58)
     on left: 20 21, on right: 19
-numero (58)
+numero (59)
     on left: 22 23, on right: 9 11
 
 
@@ -166,15 +168,15 @@ state 0
 
 state 1
 
-    6 program: error . IDENT SB_PV @3 corpo
+    6 program: error . IDENT SB_PV $@3 corpo
 
     IDENT  shift, and go to state 4
 
 
 state 2
 
-    2 program: PROGRAM . IDENT SB_PV @1 corpo
-    4        | PROGRAM . error SB_PV @2 corpo
+    2 program: PROGRAM . IDENT SB_PV $@1 corpo
+    4        | PROGRAM . error SB_PV $@2 corpo
 
     error  shift, and go to state 5
     IDENT  shift, and go to state 6
@@ -189,21 +191,21 @@ state 3
 
 state 4
 
-    6 program: error IDENT . SB_PV @3 corpo
+    6 program: error IDENT . SB_PV $@3 corpo
 
     SB_PV  shift, and go to state 8
 
 
 state 5
 
-    4 program: PROGRAM error . SB_PV @2 corpo
+    4 program: PROGRAM error . SB_PV $@2 corpo
 
     SB_PV  shift, and go to state 9
 
 
 state 6
 
-    2 program: PROGRAM IDENT . SB_PV @1 corpo
+    2 program: PROGRAM IDENT . SB_PV $@1 corpo
 
     SB_PV  shift, and go to state 10
 
@@ -217,34 +219,34 @@ state 7
 
 state 8
 
-    6 program: error IDENT SB_PV . @3 corpo
+    6 program: error IDENT SB_PV . $@3 corpo
 
-    $default  reduce using rule 5 (@3)
+    $default  reduce using rule 5 ($@3)
 
-    @3  go to state 11
+    $@3  go to state 11
 
 
 state 9
 
-    4 program: PROGRAM error SB_PV . @2 corpo
+    4 program: PROGRAM error SB_PV . $@2 corpo
 
-    $default  reduce using rule 3 (@2)
+    $default  reduce using rule 3 ($@2)
 
-    @2  go to state 12
+    $@2  go to state 12
 
 
 state 10
 
-    2 program: PROGRAM IDENT SB_PV . @1 corpo
+    2 program: PROGRAM IDENT SB_PV . $@1 corpo
 
-    $default  reduce using rule 1 (@1)
+    $default  reduce using rule 1 ($@1)
 
-    @1  go to state 13
+    $@1  go to state 13
 
 
 state 11
 
-    6 program: error IDENT SB_PV @3 . corpo
+    6 program: error IDENT SB_PV $@3 . corpo
 
     error  shift, and go to state 14
     CONST  shift, and go to state 15
@@ -259,7 +261,7 @@ state 11
 
 state 12
 
-    4 program: PROGRAM error SB_PV @2 . corpo
+    4 program: PROGRAM error SB_PV $@2 . corpo
 
     error  shift, and go to state 14
     CONST  shift, and go to state 15
@@ -274,7 +276,7 @@ state 12
 
 state 13
 
-    2 program: PROGRAM IDENT SB_PV @1 . corpo
+    2 program: PROGRAM IDENT SB_PV $@1 . corpo
 
     error  shift, and go to state 14
     CONST  shift, and go to state 15
@@ -306,7 +308,7 @@ state 15
 
 state 16
 
-    6 program: error IDENT SB_PV @3 corpo .
+    6 program: error IDENT SB_PV $@3 corpo .
 
     $default  reduce using rule 6 (program)
 
@@ -331,14 +333,14 @@ state 18
 
 state 19
 
-    4 program: PROGRAM error SB_PV @2 corpo .
+    4 program: PROGRAM error SB_PV $@2 corpo .
 
     $default  reduce using rule 4 (program)
 
 
 state 20
 
-    2 program: PROGRAM IDENT SB_PV @1 corpo .
+    2 program: PROGRAM IDENT SB_PV $@1 corpo .
 
     $default  reduce using rule 2 (program)
 
@@ -367,7 +369,7 @@ state 23
 
 state 24
 
-   15 dc_v: VAR . variaveis SB_DP tipo_var SB_PV @4 dc_v
+   15 dc_v: VAR . variaveis SB_DP tipo_var SB_PV $@4 dc_v
 
     IDENT  shift, and go to state 29
 
@@ -423,7 +425,7 @@ state 29
 
 state 30
 
-   15 dc_v: VAR variaveis . SB_DP tipo_var SB_PV @4 dc_v
+   15 dc_v: VAR variaveis . SB_DP tipo_var SB_PV $@4 dc_v
 
     SB_DP  shift, and go to state 40
 
@@ -495,7 +497,7 @@ state 39
 
 state 40
 
-   15 dc_v: VAR variaveis SB_DP . tipo_var SB_PV @4 dc_v
+   15 dc_v: VAR variaveis SB_DP . tipo_var SB_PV $@4 dc_v
 
     REAL     shift, and go to state 46
     INTEGER  shift, and go to state 47
@@ -560,7 +562,7 @@ state 47
 
 state 48
 
-   15 dc_v: VAR variaveis SB_DP tipo_var . SB_PV @4 dc_v
+   15 dc_v: VAR variaveis SB_DP tipo_var . SB_PV $@4 dc_v
 
     SB_PV  shift, and go to state 50
 
@@ -574,16 +576,16 @@ state 49
 
 state 50
 
-   15 dc_v: VAR variaveis SB_DP tipo_var SB_PV . @4 dc_v
+   15 dc_v: VAR variaveis SB_DP tipo_var SB_PV . $@4 dc_v
 
-    $default  reduce using rule 14 (@4)
+    $default  reduce using rule 14 ($@4)
 
-    @4  go to state 51
+    $@4  go to state 51
 
 
 state 51
 
-   15 dc_v: VAR variaveis SB_DP tipo_var SB_PV @4 . dc_v
+   15 dc_v: VAR variaveis SB_DP tipo_var SB_PV $@4 . dc_v
 
     VAR  shift, and go to state 24
 
@@ -594,6 +596,6 @@ state 51
 
 state 52
 
-   15 dc_v: VAR variaveis SB_DP tipo_var SB_PV @4 dc_v .
+   15 dc_v: VAR variaveis SB_DP tipo_var SB_PV $@4 dc_v .
 
     $default  reduce using rule 15 (dc_v)

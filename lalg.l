@@ -10,54 +10,6 @@ Trie pr;
 char ctext[100001];
 double num_real;
 int num_int;
-
-const char * token_list[] = { 
-	 /* Vetor com os nomes dos tokens */
-	"dummy", 
-	"er_ifl",  
-	"nro_real", 
-	"ident",
-	"er_idg",
-	"op_at",
-	"op_df",
-	"op_ge",
-	"op_le",
-	"op_gr",
-	"op_ls",
-	"op_pl",	
-	"op_mi",
-	"op_ml",
-	"op_dv",
-	"op_eq",
-	"sb_pv",
-	"sb_pf",
-	"sb_dp",
-	"sb_vg",
-	"sb_po",
-	"sb_pc",
-	"er_nmf", 
-	"program",
-	"begin",
-	"end",
-	"const",
-	"var",
-	"real",
-	"integer",
-	"char",
-	"procedure",
-	"if",
-	"else",
-	"readln",
-	"writeln",
-	"repeat",
-	"then",
-	"until",
-	"while",
-	"function",
-	"err_cin",
-	"nro_inteiro"
-};
-
 int tok_idx; /* Será retornado pelo yylex() */
 
 %}
@@ -223,6 +175,10 @@ LETRA	[[:alpha:]]
 "{"[^}]*"}"	/* apaga comentario (pode ter mais de uma linha) */
 [\n\t\r ]	/* apaga caracteres inuteis */
 
+	/* erro de comentario nao fechado */
+"{". {
+	return ER_CNF; /* Comentario nao fechado */
+	}
 	/* outros erros */
 -{0,1}{DIGITO}+{LETRA}({LETRA}|{DIGITO})*"."({LETRA}|{DIGITO})*	{
 	
@@ -254,16 +210,6 @@ LETRA	[[:alpha:]]
 	}
 
 %%
-
-int get_token(char *tok, char *text) {
-	int tk = yylex(); 
-	
-	if(tk) {
-		strcpy(tok, token_list[tk]);
-		strcpy(text, ctext);
-	}
-	return tk;
-}
 
 int yywrap(void) {
 	return 1;

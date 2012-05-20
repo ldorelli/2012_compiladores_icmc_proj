@@ -21,6 +21,7 @@
 %token SB_PC 
 %token ER_NMF 
 %token ER_CIN 
+%token ER_CNF
 %token NRO_INTEIRO 
 %token PROGRAM
 %token BEG
@@ -74,7 +75,7 @@ mais_var:	SB_VG variaveis
 		| 	;
 
 numero: NRO_REAL
-		| NRO_INTEIRO;
+		| NRO_INTEIRO ;
 
 %%
 
