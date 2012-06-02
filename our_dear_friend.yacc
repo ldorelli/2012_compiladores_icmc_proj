@@ -62,7 +62,7 @@ program:
 	;
 
 corpo:
-		dc BEG END 
+		dc BEG comandos END 
 	;
 
 dc:
@@ -155,14 +155,54 @@ mais_var:
 comandos:
 		cmd SB_PV comandos
 	|	error SB_PV { yyerrok; } comandos
-	|
+	|	error END { yyerrok; yyless(0); }
 	;
 
 cmd:
 		READLN SB_PO variaveis SB_PC
 	|	WRITELN SB_PO variaveis SB_PC
+	|	IDENT OP_AT expressao
 	;
 
+expressao:
+		termo outros_termos
+	;
+
+termo:
+		op_un fator mais_fatores
+	;
+
+op_un:
+		OP_PL
+	|	OP_MI
+	|
+	;
+
+fator:
+		IDENT
+	|	numero
+	|	SB_PO expressao SB_PC
+	;
+
+mais_fatores:
+		op_mul fator mais_fatores
+	|
+	;
+
+op_mul:
+		OP_ML
+	|	OP_DV
+	;
+
+outros_termos:
+		op_ad termo outros_termos
+	|
+	;
+
+op_ad:
+		OP_PL
+	|	OP_MI
+	;
 %%
 
 void yyerror(const char *s) {

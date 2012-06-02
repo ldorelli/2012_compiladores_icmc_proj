@@ -11,6 +11,7 @@ char ctext[100001];
 double num_real;
 int num_int;
 int tok_idx; /* Será retornado pelo yylex() */
+	/*int yylineno = 1;*/
 
 %}
 DIGITO	[[:digit:]]
@@ -173,12 +174,15 @@ LETRA	[[:alpha:]]
 	
 
 "{"[^}]*"}"	/* apaga comentario (pode ter mais de uma linha) */
-[\n\t\r ]	/* apaga caracteres inuteis */
+[\t\r ]	/* apaga caracteres inuteis */
+"\n"	yylineno++;
 
 	/* erro de comentario nao fechado */
-"{". {
+"{".* {
+	printf ("hellolo\n");
 	return ER_CNF; /* Comentario nao fechado */
 	}
+	
 	/* outros erros */
 -{0,1}{DIGITO}+{LETRA}({LETRA}|{DIGITO})*"."({LETRA}|{DIGITO})*	{
 	
