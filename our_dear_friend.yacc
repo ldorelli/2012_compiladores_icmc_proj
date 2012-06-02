@@ -88,9 +88,16 @@ dc_v:
 
 dc_p:
 		PROCEDURE IDENT parametros SB_PV corpo_p { printf ("%d: Reduziu procedimento\n", yylineno); } dc_p 
-	|	error SB_PV { yyerrok; printf ("errodcp\n"); } corpo_p dc_p
-	| PROCEDURE IDENT parametros SB_PV { yyerrok; } error dc_p
+	|	error SB_PV { yyerrok; printf ("errodcp\n"); } dc_p
 	|
+	;
+
+corpo_p:
+		dc_loc BEG comandos END SB_PV
+	|	dc_loc BEG comandos END { sprintf(errv, "syntax error, unexpected %s, expecting SB_PV", yytext); yyerror(errv); yyerrok; }
+	|	error BEG { yyerrok; } comandos END { yyerrok; } SB_PV
+	| error SB_PV { yyerrok; }
+	|	{ sprintf(errv, "syntax error, unexpected %s, expecting BEG", yytext);  yyerror(errv); yyerrok; }
 	;
 
 parametros:
@@ -114,13 +121,6 @@ mais_par:
 	// para aceitar na regra parametros
 	|	error SB_PC { yyerrok; yyless(0); }
 	|
-	;
-
-corpo_p:
-		dc_loc BEG comandos END SB_PV
-	|	dc_loc error SB_PV { yyerrok; }
-	|	error BEG { yyerrok; } comandos END SB_PV
-	|	{ sprintf(errv, "syntax error, unexpected %s, expecting BEG", yytext);  yyerror(errv);}
 	;
 
 dc_loc:
