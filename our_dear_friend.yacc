@@ -1,5 +1,3 @@
-%token NRO_REAL
-%token NRO_INTEIRO 
 %token IDENT 
 %token OP_AT 
 %token OP_DF 
@@ -23,6 +21,8 @@
 %token ER_NMF 
 %token ER_CIN 
 %token ER_CNF
+%token NRO_INTEIRO 
+%token NRO_REAL
 %token PROGRAM
 %token BEG
 %token END
@@ -57,8 +57,8 @@
 %%
 
 program: 
-		PROGRAM IDENT SB_PV corpo SB_PF { printf("Fim da analise sintatica.\n"); }
-	|	error SB_PV { yyerrok; yyclearin; } corpo SB_PF { printf("Fim da analise sintatica.\n"); }
+		PROGRAM IDENT SB_PV corpo SB_PF { printf ("Fim da analise sintatica\n"); }
+	|	error SB_PV { yyerrok; } corpo SB_PF { printf("Fim da analise sintatica.\n"); }
 	;
 
 corpo:
@@ -66,58 +66,70 @@ corpo:
 	;
 
 dc:
-		dc_c dc_v dc_p
-	;
- 
-dc_c:
-		CONST IDENT OP_AT numero SB_PV dc_c { printf("%d: Reduziu constante\n", yylineno); }
-	|	error SB_PV { yyerrok; yyclearin; } dc_c
-	| 	
+		dc_c {printf ("Fim da declaracao de constantes\n");} 
+		dc_v {printf ("Fim da declaracao de variaveis\n");} 
+		dc_p {printf ("Fim da declaracao de procedimentos\n");} 
+		{ printf ("Fim da declaracao\n"); }
 	;
 
+	//NAKAterminado
+dc_c:
+		CONST IDENT OP_AT numero SB_PV { printf ("%d: Reduziu constante\n", yylineno); } dc_c
+	|	error SB_PV { yyerrok; } dc_c
+	| 	
+	;
+	
+	//NAKAterminado
 dc_v:
-		VAR variaveis SB_DP tipo_var SB_PV dc_v { printf("%d: Reduziu variaveis\n", yylineno); }
-	|	error SB_PV { yyerrok;  } dc_v
+		VAR variaveis SB_DP tipo_var SB_PV { printf ("%d: Reduziu variavel\n", yylineno); } dc_v
+	|	error SB_PV { yyerrok; } dc_v
 	|	
 	;
 
 dc_p:
 		PROCEDURE IDENT parametros SB_PV { printf ("%d: Reduziu procedimento\n", yylineno); } dc_p 
-	|	error SB_PV { yyerrok;  } dc_p  
+	|	error SB_PV { yyerrok; printf ("errodcp\n"); } dc_p  
 	|
 	;
 
 parametros:
-		SB_PO lista_par	SB_PC { printf ("%d: Reduziu parametros\n", yylineno); }
+		SB_PO lista_par	SB_PC
 	|	error SB_PC { yyerrok; }
 	;
 
+	//NAKAterminado
 lista_par:
-		variaveis SB_DP tipo_var mais_par { printf ("%d: Reduziu lista\n", yylineno); }
-	|	error mais_par { yyerrok; yyclearin; }
+		variaveis SB_DP tipo_var mais_par
+		//NAKApossivel erro no clearin
+	|	error { yyclearin; printf ("%d: errolpar\n", yylineno); } mais_par { yyerrok; }
 	|
 	;
 
+	//NAKAterminado
 mais_par:
-		SB_PV { yyerrok; } lista_par { printf("%d: Reduziu mais parametros\n", yylineno); }
+		SB_PV { yyerrok; } lista_par
 	|
 	;
 
-
+	//NAKAterminado
 numero:
 		NRO_REAL
 	|	NRO_INTEIRO
 	;
 
+	//NAKAterminado
 tipo_var:
 		INTEGER
 	|	REAL
+	|	CHAR
 	;
 
+	//NAKAterminado
 variaveis:
 		IDENT mais_var
 	;
 
+	//NAKAterminado
 mais_var:
 		SB_VG variaveis
 	|
@@ -129,8 +141,9 @@ void yyerror(const char *s) {
 	/* Parsing do erro (Modo verbose identifica os lugares, basta recuperar) */
 	/* Pega os tokens esperado e obtido */
 	char esperado[50], obtido[50];
-	sscanf(s, "syntax error, unexpected %[^,], expecting %s", obtido, esperado);
-	printf("Erro na linha %d: unexpected %s, expecting %s (%s) \n", yylineno, obtido, esperado, yytext);
+	int n;
+	sscanf(s, "syntax error, unexpected %[^,], expecting%n", obtido, &n);
+	printf("Erro na linha %d: unexpected %s, expecting %s (%s) \n", yylineno, obtido, s+n+1, yytext);
 }
 
 int main(int argc, char **argv )

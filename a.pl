@@ -1,12 +1,4 @@
 program plo;
-procedurehgv ploplo();
-procedure plo(x:integer);
-begin
-end.
-
-
-
-{ program plo;
 
 const x = 8;
 const x := 10; 
@@ -37,5 +29,12 @@ var y: y;
 
 begin
 
-end. }
+end.
 
+{program plo;
+procedurehgv ploplo();
+procedure plo(x:integer; x:int; x:int; x:integer);
+procedure plo x:integer);
+const x:=3;
+begin
+end.}
