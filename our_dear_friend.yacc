@@ -1,4 +1,4 @@
-%token IDENT 
+%token IDENT "identificador"
 %token OP_AT 
 %token OP_DF 
 %token OP_GE 
@@ -156,6 +156,7 @@ comandos:
 		cmd SB_PV comandos
 	|	error SB_PV { yyerrok; } comandos
 	|	error END { yyerrok; yyless(0); }
+	|
 	;
 
 cmd:
