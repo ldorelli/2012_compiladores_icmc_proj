@@ -1,26 +1,24 @@
-program plo;
+program 1plo;
 
-const x := 10; 
+var x:integer;
+const x=3;
+procedure ploplote ());
 
-{
-procedure plo (y:integer); 
-	var x : integer;
 begin
-	readln(x);
-	x := 2.33b*3;
-	x = 3*2;
-	x := (x+1);
-	x := (x*)
+		x := 2;
+end;
+procedure plop (int x, y:integer)
+begin
+end;
+
+procedure plop (x:integer; y:integer);
+begin
 end;
 
 begin
-
-end.
-
-{program plo;
-procedurehgv ploplo();
-procedure plo(x:integer; x:int; 1plox=1; x:integer);
-procedure plo x:integer);
-begin
-end.
-
+	begin
+		begin
+			readln(x);
+		end;
+		x = 4
+	end;
