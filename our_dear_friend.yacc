@@ -101,13 +101,17 @@ parametros:
 lista_par:
 		variaveis SB_DP tipo_var mais_par
 		//NAKApossivel erro no clearin
-	|	error { yyclearin; printf ("%d: errolpar\n", yylineno); } mais_par { yyerrok; }
+	|	error { yyclearin; printf ("%d: %s errolpar\n", yylineno, yytext); } mais_par { yyerrok; }
 	|
 	;
 
 	//NAKAterminado
 mais_par:
-		SB_PV { yyerrok; } lista_par
+		SB_PV lista_par
+	|	error SB_PV { yyerrok; } lista_par
+	// yyless aqui serve para retornar o parenteses para a cadeia a ser analisada
+	// para aceitar na regra parametros
+	|	error SB_PC { yyerrok; yyless(0); }
 	|
 	;
 
@@ -143,7 +147,7 @@ void yyerror(const char *s) {
 	char esperado[50], obtido[50];
 	int n;
 	sscanf(s, "syntax error, unexpected %[^,], expecting%n", obtido, &n);
-	printf("Erro na linha %d: unexpected %s, expecting %s (%s) \n", yylineno, obtido, s+n+1, yytext);
+	printf("Erro na linha %d: unexpected %s [ %s ], expecting %s \n", yylineno, obtido, yytext, s+n+1);
 }
 
 int main(int argc, char **argv )
