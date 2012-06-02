@@ -57,12 +57,12 @@
 %%
 
 program: 
-		PROGRAM IDENT SB_PV corpo SB_PF { printf ("Fim da analise sintatica\n"); }
-	|	error SB_PV { yyerrok; } corpo SB_PF { printf("Fim da analise sintatica.\n"); }
+		PROGRAM IDENT SB_PV corpo  { printf ("Fim da analise sintatica\n"); }
+	|	error SB_PV { yyerrok; } corpo  { printf("Fim da analise sintatica.\n"); }
 	;
 
 corpo:
-		dc BEG comandos END 
+		dc BEG  { printf("Reduzindo \n"); } comandos { printf("Reduziu corpo\n"); }  END SB_PF 
 	;
 
 dc:
@@ -88,6 +88,7 @@ dc_v:
 
 dc_p:
 		PROCEDURE IDENT parametros SB_PV corpo_p { printf ("%d: Reduziu procedimento\n", yylineno); } dc_p 
+	|	PROCEDURE IDENT parametros corpo_p { printf ("%d: Reduziu procedimento errado\n", yylineno); } dc_p 
 	|	error SB_PV { yyerrok; printf ("errodcp\n"); } dc_p
 	|
 	;
@@ -153,16 +154,18 @@ mais_var:
 	;
 
 comandos:
-		cmd SB_PV comandos
+		cmd SB_PV comandos 
 	|	error SB_PV { yyerrok; } comandos
-	|	error END { yyerrok; yyless(0); }
+	|	error END { yyerrok; yyless(0); printf("ELUCITADO\n"); }
 	|
 	;
 
 cmd:
 		READLN SB_PO variaveis SB_PC
 	|	WRITELN SB_PO variaveis SB_PC
+	|	IDENT lista_arg
 	|	IDENT OP_AT expressao
+	|	BEG comandos END 
 	;
 
 expressao:
@@ -204,6 +207,26 @@ op_ad:
 		OP_PL
 	|	OP_MI
 	;
+
+lista_arg:
+		SB_PO argumentos SB_PC 
+	|	error SB_PC { yyerrok; }
+	|
+	;
+
+argumentos:
+		IDENT mais_ident
+	|	error mais_ident { yyerrok; }
+	|
+	;
+
+mais_ident:
+		SB_PV argumentos
+	|	error SB_PV { yyerrok; }
+	|	error SB_PC { yyless(0); yyerrok; }
+	|
+	;
+
 %%
 
 void yyerror(const char *s) {
@@ -212,7 +235,11 @@ void yyerror(const char *s) {
 	char esperado[50], obtido[50];
 	int n;
 	sscanf(s, "syntax error, unexpected %[^,], expecting%n", obtido, &n);
-	printf("Erro na linha %d: unexpected %s [ %s ], expecting %s \n", yylineno, obtido, yytext, s+n+1);
+
+	if(strcmp(obtido, "$end") == 0) {
+		printf("Final inesperado de arquivo.\n");
+	} else 
+		printf("Erro na linha %d: unexpected %s [ %s ], expecting %s \n", yylineno, obtido, yytext, s+n+1);
 }
 
 int main(int argc, char **argv )
