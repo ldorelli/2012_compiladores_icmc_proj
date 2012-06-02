@@ -8,6 +8,10 @@ var y: y;
 var t, z: integer;
 
 procedure plo () ; 
+begin
+	var x : integer;
+	readln(x);
+end
 
 procedure ploft) ;
 procedure ;
@@ -18,8 +22,8 @@ procedure plo (x:integer);
 
 procedure plo (x:int; y:real; 1plo=13; naka:integer);
 procedure plo (x:int; y:real; 1plo=13; 
-	naka:integer; procedure plo ( x:integer);
-
+	naka:integer; procedure plo ( x:integer );
+	
 procedure plo2  x: integer);
 procedure plo2 ( x: int); 
 
@@ -33,8 +37,8 @@ end.
 
 {program plo;
 procedurehgv ploplo();
-procedure plo(x:integer; x:int; x:int; x:integer);
+procedure plo(x:integer; x:int; 1plox=1; x:integer);
 procedure plo x:integer);
-const x:=3;
 begin
 end.}
+
