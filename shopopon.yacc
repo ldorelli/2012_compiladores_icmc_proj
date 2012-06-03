@@ -60,14 +60,15 @@ program:
 		//regra correta
 		PROGRAM IDENT SB_PV corpo  { printf ("Fim da analise sintatica\n"); } SB_PF
 		//erro no inicio do programa
-	|	error SB_PV corpo SB_PF
+	|	PROGRAM error corpo { printf ("Fim da analise sintatica\n"); } SB_PF
+	|	error SB_PV { yyerrok; } corpo SB_PF
 		//falta de begin or so
 	|	error SB_PF
 	;
 
 corpo:
 		//regra correta
-		dc BEG  { printf("Reduzindo \n"); } { printf("Reduziu corpo\n"); } END
+		dc BEG  { printf("Reduzindo programa\n"); } { printf("Reduziu corpo do programa\n"); } END
 	;
 
 dc:
@@ -80,88 +81,87 @@ dc:
 
 dc_c:
 		//regra correta
-		CONST IDENT OP_AT numero SB_PV { printf ("%d: Reduziu constante\n", yylineno); } dc_c
-	/**
-		//erros na declaracao de constantes
-	|	CONST error SB_PV { yyerrok; printf ("%d: erro com ;\n", yylineno); } dc_c
-	/**/
-	/**/
+		CONST { yyerrok; } IDENT OP_AT numero SB_PV { printf ("%d: Reduziu constante\n", yylineno); } dc_c
 		//erros nao tratatados da declaracao anterior
-	|	error { printf ("%d: errc\n", yylineno); } err_c
-	|	CONST error { printf ("%d: erro na vida c\n", yylineno); } dc_c
-	/**/
+	|	error err_c dc_c
+		//erros passados para a proxima declaracao
+	|	CONST { yyerrok; } error dc_c
 	|
 	;
 	
 dc_v:
 		//regra correta
-		VAR variaveis SB_DP tipo_var SB_PV { printf ("%d: Reduziu variavel\n", yylineno); } dc_v
-	/**/
+		VAR { yyerrok; } variaveis SB_DP tipo_var SB_PV { printf ("%d: Reduziu variavel\n", yylineno); } dc_v
 		//erros nao tratatados da declaracao anterior
-	| error { printf ("%d: errv\n", yylineno); } err_v
-	|	VAR error { printf ("%d: erro na vida v\n", yylineno); } dc_v
-	/**/
+	| error err_v dc_v
+		//erros passados para a proxima declaracao
+	|	VAR { yyerrok; } error dc_v
 	|	
 	;
 
 dc_p:
 		//regra correta
-		PROCEDURE { printf ("Proc\n"); } IDENT parametros SB_PV corpo_p { printf ("%d: Reduziu procedimento\n", yylineno); } dc_p
-	|	error { printf ("%d: errp\n", yylineno); } err_p
-	/**|	error dc_p/**/	
+		PROCEDURE IDENT { yyerrok; } parametros SB_PV corpo_p { printf ("%d: Reduziu procedimento\n", yylineno); } dc_p
+	/**/
 		//erros na declaracao de parametros
-	|	PROCEDURE { printf ("Proc\n"); } error { printf ("%d: Erro na vida p\n", yylineno); } corpo_p dc_p
-	
+	|	PROCEDURE error corpo_p { printf ("%d: Reduziu procedimento\n", yylineno); } dc_p/**/
+		//erros nao tratados na declaracao anterior
+	|	error err_p dc_p
 	|
 	;
 
 err_c:
-		SB_PV { yyerrok; } dc_c
-	|	CONST { yyerrok; yyless(0); } dc_c
-	|	VAR { yyerrok; yyless(0); } dc_c
-	|	PROCEDURE { yyerrok; yyless(0); } dc_c
-	|	BEG { yyerrok; yyless(0); } dc_c
+		SB_PV { yyerrok; }
+	|	CONST { yyerrok; yyless(0); printf ("foi aqui\n"); }
+	|	VAR { yyerrok; yyless(0); printf ("foi aqui\n");}
+	|	PROCEDURE { yyerrok; yyless(0); }
+	|	BEG { yyerrok; yyless(0); }
 	;
 
 err_v:
-		SB_PV { yyerrok; } dc_v
-	|	VAR { yyerrok; yyless(0); } dc_v
-	|	PROCEDURE { yyerrok; yyless(0); } dc_v
-	|	BEG { yyerrok; yyless(0); } dc_v
+		SB_PV { yyerrok; }
+	|	VAR { yyerrok; yyless(0); }
+	|	PROCEDURE { yyerrok; yyless(0); }
+	|	BEG { yyerrok; yyless(0); }
 	;
 	
 err_p:
-		SB_PV { yyerrok; } dc_p
-	|	PROCEDURE { yyerrok; yyless(0); } dc_p
-	|	BEG { yyerrok; yyless(0); } dc_p
+		SB_PV { yyerrok; }
+	|	PROCEDURE { yyerrok; yyless(0); }
+	|	BEG { yyerrok; yyless(0); } corpo_p { printf ("%d: Reduziu procedimento\n", yylineno); }
 	;
 
 parametros:
 		//regra correta
 		SB_PO lista_par	SB_PC
+	|
 	;
 
 lista_par:
 		//regra correta
 		variaveis SB_DP tipo_var mais_par
-	|
+	| error variaveis SB_DP tipo_var { yyerrok; } mais_par
+	|	error mais_par { yyerrok; }
 	;
 
 mais_par:
 		//regra correta
 		SB_PV lista_par
+		//erro vindo de lista_par
+	|	error SB_PV { yyerrok; } lista_par
+	| error lista_par
 	|
 	;
 
 corpo_p:
 		//regra correta
-		BEG END SB_PV
+		BEG { yyerrok; } END SB_PV
 		//erro vindo da declaracao do procedimento
-	|	error BEG END SB_PV
+	|	error corpo_p
 	;
 
 variaveis:
-		IDENT mais_var
+		IDENT { yyerrok; } mais_var
 	;
 
 mais_var:
@@ -178,6 +178,7 @@ tipo_var:
 		INTEGER
 	|	REAL
 	|	CHAR
+	| error { yyclearin; }
 	;
 %%
 
