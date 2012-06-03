@@ -1,10 +1,9 @@
 program plo;
-
+const 123
+var x:= 3;
+procedure plo ()
 begin
-	begin
-	x = 3
-	end;
-	x := 4;
-	x(;
+end;
+begin
 end.
 
