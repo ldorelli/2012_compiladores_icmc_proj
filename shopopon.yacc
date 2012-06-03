@@ -110,6 +110,7 @@ dc_p:
 	|
 	;
 
+//simbolos seguros para erros na declaracao de constante
 err_c:
 		SB_PV
 	|	CONST less
@@ -118,13 +119,15 @@ err_c:
 	|	BEG less
 	;
 
+//simbolos seguros para erros na declaracao de variavel
 err_v:
 		SB_PV
 	|	VAR less
 	|	PROCEDURE less 
 	|	BEG less
 	;
-	
+
+//simbolos seguros para erros na declaracao de procedimento	
 err_p:
 		SB_PV
 	|	PROCEDURE less
@@ -155,10 +158,20 @@ mais_par:
 
 corpo_p:
 		//regra correta
-		dc_v BEG ok END SB_PV
+		dc_v BEG ok comandos END SB_PV
 		//erro vindo da declaracao do procedimento
-	|	dc_v BEG ok error
+	|	dc_v error
 	|	error corpo_p
+	;
+
+comandos:
+		cmd SB_PV comandos
+	|
+	;
+
+cmd:
+		READLN SB_PO variaveis SB_PC
+	|	WRITELN SB_PO variaveis SB_PC
 	;
 
 variaveis:
