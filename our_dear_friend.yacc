@@ -94,15 +94,15 @@ dc_p:
 	;
 
 corpo_p:
-		dc_loc BEG comandos END SB_PV
-	|	dc_loc BEG comandos END { sprintf(errv, "syntax error, unexpected %s, expecting SB_PV", yytext); yyerror(errv); yyerrok; }
+		dc_loc BEG comandos END SB_PV { yyerrok; }
+	|	dc_loc BEG comandos END { sprintf(errv, "syntax error, unexpected %s, expecting SB_PVhaha", yytext); yyerror(errv); yyerrok; }
 	|	error BEG { yyerrok; } comandos END { yyerrok; } SB_PV
 	| error SB_PV { yyerrok; }
-	|	{ sprintf(errv, "syntax error, unexpected %s, expecting BEG", yytext);  yyerror(errv); yyerrok; }
+	|	{ sprintf(errv, "syntax error, unexpected %s, expecting BEGhaha", yytext);  yyerror(errv); yyerrok; }
 	;
 
 parametros:
-		SB_PO lista_par	SB_PC
+		SB_PO lista_par	SB_PC { yyerrok; }
 	|	error SB_PC { yyerrok; }
 	;
 
@@ -149,23 +149,23 @@ variaveis:
 
 	//NAKAterminado
 mais_var:
-		SB_VG variaveis
+		SB_VG { yyerrok; } variaveis
 	|
 	;
 
 comandos:
-		cmd SB_PV comandos 
+		cmd SB_PV { yyerrok; } comandos 
 	|	error SB_PV { yyerrok; } comandos
 	|
 	;
 
 cmd:
-		READLN SB_PO variaveis SB_PC
-	|	WRITELN SB_PO variaveis SB_PC
+		READLN SB_PO variaveis SB_PC { yyerrok; }
+	|	WRITELN SB_PO variaveis SB_PC { yyerrok; }
 	|	IDENT lista_arg
 	|	IDENT OP_AT expressao 
-	|	BEG comandos END 
-	| 	IDENT error 
+	|	BEG comandos END { yyerrok; }
+	| IDENT error 
 	;
 
 expressao:
@@ -209,8 +209,7 @@ op_ad:
 	;
 
 lista_arg:
-		SB_PO argumentos SB_PC 
-	|	error SB_PC { yyerrok; }
+		SB_PO argumentos SB_PC
 	|
 	;
 
