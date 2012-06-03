@@ -61,7 +61,7 @@ program:
 		PROGRAM IDENT SB_PV corpo  { printf ("Fim da analise sintatica\n"); } SB_PF
 		//erro no inicio do programa
 	|	PROGRAM error corpo { printf ("Fim da analise sintatica\n"); } SB_PF
-	|	error SB_PV { yyerrok; } corpo SB_PF
+	|	error SB_PV ok corpo SB_PF
 		//falta de begin or so
 	|	error SB_PF
 	;
@@ -81,54 +81,54 @@ dc:
 
 dc_c:
 		//regra correta
-		CONST { yyerrok; } IDENT OP_AT numero SB_PV { printf ("%d: Reduziu constante\n", yylineno); } dc_c
+		CONST IDENT ok OP_AT numero SB_PV { printf ("%d: Reduziu constante\n", yylineno); } dc_c
 		//erros nao tratatados da declaracao anterior
-	|	error err_c dc_c
+	|	error err_c ok dc_c
 		//erros passados para a proxima declaracao
-	|	CONST { yyerrok; } error dc_c
+	|	CONST error dc_c
 	|
 	;
 	
 dc_v:
 		//regra correta
-		VAR { yyerrok; } variaveis SB_DP tipo_var SB_PV { printf ("%d: Reduziu variavel\n", yylineno); } dc_v
+		VAR variaveis ok SB_DP tipo_var SB_PV { printf ("%d: Reduziu variavel\n", yylineno); } ok dc_v
 		//erros nao tratatados da declaracao anterior
-	| error err_v dc_v
+	| error err_v ok dc_v
 		//erros passados para a proxima declaracao
-	|	VAR { yyerrok; } error dc_v
+	|	VAR error dc_v
 	|	
 	;
 
 dc_p:
 		//regra correta
-		PROCEDURE IDENT { yyerrok; } parametros SB_PV corpo_p { printf ("%d: Reduziu procedimento\n", yylineno); } dc_p
+		PROCEDURE IDENT ok parametros SB_PV corpo_p { printf ("%d: Reduziu procedimento\n", yylineno); } ok dc_p
 	/**/
 		//erros na declaracao de parametros
-	|	PROCEDURE error corpo_p { printf ("%d: Reduziu procedimento\n", yylineno); } dc_p/**/
+	|	PROCEDURE error corpo_p { printf ("%d: Reduziu procedimento\n", yylineno); } ok dc_p/**/
 		//erros nao tratados na declaracao anterior
-	|	error err_p dc_p
+	|	error err_p ok dc_p
 	|
 	;
 
 err_c:
-		SB_PV { yyerrok; }
-	|	CONST { yyerrok; yyless(0); printf ("foi aqui\n"); }
-	|	VAR { yyerrok; yyless(0); printf ("foi aqui\n");}
-	|	PROCEDURE { yyerrok; yyless(0); }
-	|	BEG { yyerrok; yyless(0); }
+		SB_PV
+	|	CONST less
+	|	VAR less
+	|	PROCEDURE less
+	|	BEG less
 	;
 
 err_v:
-		SB_PV { yyerrok; }
-	|	VAR { yyerrok; yyless(0); }
-	|	PROCEDURE { yyerrok; yyless(0); }
-	|	BEG { yyerrok; yyless(0); }
+		SB_PV
+	|	VAR less
+	|	PROCEDURE less 
+	|	BEG less
 	;
 	
 err_p:
-		SB_PV { yyerrok; }
-	|	PROCEDURE { yyerrok; yyless(0); }
-	|	BEG { yyerrok; yyless(0); } corpo_p { printf ("%d: Reduziu procedimento\n", yylineno); }
+		SB_PV
+	|	PROCEDURE less
+	|	BEG less corpo_p { printf ("%d: Reduziu procedimento\n", yylineno); }
 	;
 
 parametros:
@@ -140,28 +140,29 @@ parametros:
 lista_par:
 		//regra correta
 		variaveis SB_DP tipo_var mais_par
-	| error variaveis SB_DP tipo_var { yyerrok; } mais_par
-	|	error mais_par { yyerrok; }
+	| error variaveis SB_DP tipo_var ok mais_par
+	|	error mais_par ok
 	;
 
 mais_par:
 		//regra correta
 		SB_PV lista_par
 		//erro vindo de lista_par
-	|	error SB_PV { yyerrok; } lista_par
+	|	error SB_PV ok lista_par
 	| error lista_par
 	|
 	;
 
 corpo_p:
 		//regra correta
-		BEG { yyerrok; } END SB_PV
+		BEG ok END SB_PV
 		//erro vindo da declaracao do procedimento
+	|	BEG ok error
 	|	error corpo_p
 	;
 
 variaveis:
-		IDENT { yyerrok; } mais_var
+		IDENT ok mais_var
 	;
 
 mais_var:
@@ -178,7 +179,19 @@ tipo_var:
 		INTEGER
 	|	REAL
 	|	CHAR
-	| error { yyclearin; }
+	| error clear
+	;
+	
+ok:
+		{ yyerrok; }
+	;
+	
+clear:
+		{ yyclearin; }
+	;
+	
+less:
+		{ yyless(0); }
 	;
 %%
 
