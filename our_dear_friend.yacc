@@ -156,7 +156,6 @@ mais_var:
 comandos:
 		cmd SB_PV comandos 
 	|	error SB_PV { yyerrok; } comandos
-	|	error END { yyerrok; yyless(0); printf("ELUCITADO\n"); }
 	|
 	;
 
@@ -164,8 +163,9 @@ cmd:
 		READLN SB_PO variaveis SB_PC
 	|	WRITELN SB_PO variaveis SB_PC
 	|	IDENT lista_arg
-	|	IDENT OP_AT expressao
+	|	IDENT OP_AT expressao 
 	|	BEG comandos END 
+	| 	IDENT error 
 	;
 
 expressao:
@@ -233,13 +233,15 @@ void yyerror(const char *s) {
 	/* Parsing do erro (Modo verbose identifica os lugares, basta recuperar) */
 	/* Pega os tokens esperado e obtido */
 	char esperado[50], obtido[50];
-	int n;
+	int n = 0;
 	sscanf(s, "syntax error, unexpected %[^,], expecting%n", obtido, &n);
-
 	if(strcmp(obtido, "$end") == 0) {
 		printf("Final inesperado de arquivo.\n");
-	} else 
-		printf("Erro na linha %d: unexpected %s [ %s ], expecting %s \n", yylineno, obtido, yytext, s+n+1);
+	} else {
+		if(n) {
+			printf("Erro na linha %d: unexpected %s [ %s ], expecting %s \n", yylineno, obtido, yytext, s+n+1);
+		} else printf("Erro na linha %d: %s inesperado.\n", yylineno, obtido);
+	}
 }
 
 int main(int argc, char **argv )
