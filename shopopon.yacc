@@ -155,9 +155,9 @@ mais_par:
 
 corpo_p:
 		//regra correta
-		BEG ok END SB_PV
+		dc_v BEG ok END SB_PV
 		//erro vindo da declaracao do procedimento
-	|	BEG ok error
+	|	dc_v BEG ok error
 	|	error corpo_p
 	;
 
