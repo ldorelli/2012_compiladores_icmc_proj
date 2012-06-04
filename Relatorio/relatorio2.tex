@@ -1,7 +1,7 @@
 \documentclass {article}
+\usepackage[margin=1in]{geometry}
 \usepackage[brazil]{babel}
 \usepackage[utf8]{inputenc}
-\usepackage[margin=1in]{geometry}
 \usepackage{amsmath}
 \usepackage{indentfirst}
 \usepackage{cite}
@@ -9,8 +9,8 @@
 \usepackage{verbatim}
 \usepackage{listings}
 \usepackage{booktabs}
-\usepackage{float}
 \usepackage{subfig}
+\usepackage{graphics}
 \usepackage{graphicx}
 
 \title {Trabalho 2}
@@ -24,12 +24,143 @@
 \maketitle
 
 \section{Objetivo}
-	Neste relatório descreveremos a utilização do analisador sintático Yacc. Apresentaremos as pricipais decisões de projetos e as respectivas justificativas. A seguir uma breve explicação sobre o analisador utilizado e alguns exemplos que foram usados para fins de teste.
+	Neste relatório descreveremos a utilização do analisador sintático para a LALG. Apresentaremos as pricipais decisões de projetos e as respectivas justificativas. A seguir uma breve explicação sobre o analisador utilizado e alguns exemplos que foram usados para fins de teste.
 
-\section{Decisões de Projeto}
+	Esse relátório está organizado da seguinte forma. Na Seção \ref{section:lex} são discutidas as mudanças no analisador léxico implementadas para fornecer suporte ao analisador sintático. Na Seção \ref{section:decisoes} são apresentadas as decições de projeto e detalhes de implementação relacionadas ao analisador sintático produzido. Na Seção \ref{section:compilacao} encontram-se as instruções para compilação e execução do analisador sintático. Por fim, na Seção \ref{section:exemplos} são apresentados exemplos de entrada (programas LALG possivelmente incorretos) e suas respectivas saídas.
 
-\section{Compilação}
+\section{Mudanças Realizadas}\label{section:lex}
+
+	Para dar suporte ao analisador sintático, foi adicionado ao analisador léxico da etapa anterior um contador de linhas, de forma que, quando um erro sintático for encontrado, seja possível mostrar a linha exata onde o erro ocorreu. A contagem de linhas é independente da presença de comentários: as linhas de comentário também são computadas.
+
+	Também em relação a entrega anterior, foi adicionada a análise léxica a detecção de comentários não fechados. Nesse caso, a contagem de linhas é parada, para que, quando o erro for detectado, seja mostrada a primeira linha do comentário, e não a última. 
+
+\section{Decisões de Projeto}\label{section:decisoes}
+	\subsection{Implementação}
+		Para implementação de um analisador sintático para a linguagem LALG, optamos pela utilização do YACC (\emph{Yet Another Compiler Compiler}). Essa decisão foi influenciada pela simplicidade e elegância habilitadas pela ferramenta, especialmente no que diz respeito a descrição da gramática.  
+
+		A implementação do analisador supracitado é dividida em três seções: declarações, regras e programas, separadas por dois símbolos de porcentagem (\verb=%%=). A seguir são discutidos o conteúdo implementado em cada seção. 
+
+
+		\subsubsection{Declarações}
+			Nessa seção são declarados todos os tokes utilizados pelo analisador sintático. Todos os tokens declarados são importados da fase anterior do projeto e podem ser vistas nos Quadros \ref{table:op}, \ref{table:simb} e \ref{table:reserv}. 
+
+			Para declaração utilizamos o recurso do YACC \verb=%token=, seguido dos nomes dos tokes e um nome semântico para os mesmos. Esse nome semântico é substituído nas mensagens de erros para uma apresentação mais amigável ao usuário.
+
+			\begin{table}
+				\begin{minipage}[ht]{0.5\textwidth}
+					\centering
+					\begin{tabular}{rcc}
+						\toprule
+						Nome do operador & Token & Símbolo\\
+						\hline
+						\hline
+							Atribuição & op\_at & := \\
+							Igualdade & op\_eq & = \\ 
+							Diferença &  op\_df & $<>$ \\ 
+							Maior ou igual & op\_ge & $>=$ \\ 
+							Menor ou igual & op\_le & $<=$ \\ 
+							Maior & op\_gr & $>$ \\
+							Menor &op\_ls & $<$ \\ 
+							Soma & op\_pl & + \\ 
+							Subtração & op\_mi & - \\ 
+							Multiplicação & op\_ml & * \\
+							Divisão & op\_dv & / \\
+						\bottomrule
+					\end{tabular}
+					\caption{Quadro de operadores}
+					\label{table:op}
+				\end{minipage}
+				~
+				\begin{minipage}[ht]{0.5\textwidth}
+					\centering
+					\begin{tabular}{rcc}
+						\toprule
+						Nome do símbolo & Token & Símbolo\\
+						\hline
+						\hline
+							Ponto e vírgula & sb\_pv & ; \\
+							Ponto final &  sb\_pf & . \\ 
+							Dois pontos & sb\_dp & : \\ 
+							Vírgula & sb\_vg & , \\
+							Abre parênteses &sb\_po & ( \\ 
+							Fecha parênteses & sb\_pc & ) \\ 
+						\bottomrule
+					\end{tabular}
+					\caption{Quadro de símbolos}
+					\label{table:simb}
+
+					\vspace{5mm}
+					
+					\begin{tabular}{cccc}
+						\toprule
+						program & begin & end & const \\
+						var & real & integer& char\\
+						procedure & if & else & readln \\
+						writeln & repeat & then & until\\
+						while & function & & \\
+						\bottomrule
+					\end{tabular}
+					\caption{Quadro de palavras reservadas}
+					\label{table:reserv}
+				\end{minipage}
+		
+			\end{table}
+
+		\subsubsection{Regras}
+			As regras de produção utilizadas são as mesmas regras disponilizadas na LALG. Elas são declaradas utilizando a sintaxe do yacc da seguinte forma:
+			\begin{center}
+				\begin{minipage}[ht]{0.5\textwidth}
+					\begin{verbatim}
+						<Não terminal>  :    regra_de_derivação_1
+						                |    regra_de_derivação_2
+						                |    . . .
+						                |    regra_de_derivação_k
+						                ;
+					\end{verbatim}
+				\end{minipage}
+			\end{center}
+
+			Observe que dentro das regras de derivações são colocados os tratamentos de erros. Tais tratamentos serão explicados na seção \ref{section:error}
+			
+		\subsubsection{Programa}
+			Nessa seção são implementados o tratamento de erros, que será tratado mais adiante; e a função principal. Nessa ocorre a inicialização da Trie e inserção das palavras reservadas na estrutura gerada.
+
+	\subsection{Tratamento de erros} \label{section:error}
+		Em linhas gerais, os erros que sãp tratados pelo analisador sintático são os seguintes:
+		
+		\begin{itemize}
+			\item Falta de ponto-vírgula
+			\item Falta de identificador
+			\item Símbolos não esperados
+			\item Comentaŕio não fechado
+			\item Fim de programa inexperado
+		\end{itemize}
+
+		Os erros são recuperados no modo pânico, ou seja, tokens são descartados até que se encontre uma regra segura o suficiente para recomeçar a análise sintática.
+
+\section{Compilação}\label{section:compilacao}
+	Para compilação do projeto basta executar o arquivo \verb=Makefile= disponibilizado. Dentro do arquivo estão presentes os seguintes comandos:
+
+	\begin{center}
+		\begin{minipage}[ht]{0.5\textwidth}
+			\begin{verbatim}
+				yacc -d -v yacc.yacc --verbose 
+				flex lalg.l
+				gcc lex.yy.c trie.c -lfl -o t2
+			\end{verbatim}
+		\end{minipage}
+	\end{center}
+
+	Para execução do compilador basta utilizar os comandos:
+
+	\begin{center}
+		\begin{minipage}[ht]{0.5\textwidth}
+			\begin{verbatim}
+				t2 <nome_do_arquivo>
+			\end{verbatim}
+		\end{minipage}
+	\end{center}
 	
-\section{Exemplos}
+\section{Exemplos}\label{section:exemplos}
 
 \end{document}
