@@ -13,7 +13,7 @@
 %token SB_PV ";"
 %token SB_PF "."
 %token SB_DP ":"
-%token SB_VG ","
+%token SB_VG
 %token SB_PO "("
 %token SB_PC ")"
 %token ER_IDG "Identificador_muito_grande"
@@ -307,6 +307,7 @@ void yyerror(const char *s) {
 		printf("Final inesperado de arquivo.\n");
 	} else {
 		if(n) {
+			if (!strcmp (obtido, "SB_VG"))	strcpy (obtido, ",");
 			printf("Erro na linha %d: '%s' inesperado", yylineno, obtido);
 			if (!strcmp (obtido, "identificador"))	printf (" [%s]", yytext);
 			printf (", esperava '%s'",esperado);
@@ -318,7 +319,9 @@ void yyerror(const char *s) {
 			}
 			printf ("\n");
 
-		} else printf("Erro na linha %d: '%s' inesperado.\n", yylineno, obtido);
+		} else
+			printf("Erro na linha %d: '%s' inesperado.\n", yylineno, obtido);
+		
 	}
 }
 
