@@ -1,0 +1,26 @@
+program teste4;
+
+var facil: char;
+
+procedure namespace::procedure(a,b,c,,eer,,,, : var){
+	begin
+	end;
+}
+{eu sei que procedimento nao se delcara assim}
+{Mas o compilador nao....}
+
+var podia: real;
+var ser: integer;
+
+begin
+
+readln(facil);
+
+if facil <> 0 the
+	repeat facil := facil + fail until
+	podia + ser = facil...
+
+{Que? Nada na vida eh facil..
+
+end;
+end.

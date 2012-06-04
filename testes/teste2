@@ -1,0 +1,30 @@
+program teste2;
+{Agora eu posso avacalhar}
+
+var x = integer;
+var y = realeza;
+
+begin
+begin
+begin
+begin
+begin
+begin
+begin
+
+{Acho que faltou um end ai...
+
+Falta muita coisa
+
+ x := 9 ;{Nao fechei comentario aqui}
+
+procedimento(x, y, z)
+
+if(x = y) repeat writeln(y) until x<y;
+
+end;
+end;
+end;
+end;
+end;
+end.

@@ -1,0 +1,28 @@
+program teste1;
+var x, y:integer;
+
+procedure procedimento(a, b: real);
+begin
+	a := 0;
+	b := 0;
+	repeat 
+		a := a+1;
+		repeat b := b+2
+		until b <=0 ;
+	until a+b>=100;
+	{Wuhuulll
+		Loop infinito!!! @ - @
+	}
+end;
+begin
+{agora comecamos o caos! Mwahaha}
+
+x := -98;
+readln(x, y);
+
+{ procedimento(x, y); }
+{Nao vou chamar o procedimento... Acho que nao vai ser bom...}
+
+x: = 1;
+
+end.
