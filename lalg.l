@@ -11,11 +11,22 @@ char ctext[100001];
 double num_real;
 int num_int;
 int tok_idx; /* Será retornado pelo yylex() */
+	/*int yylineno = 1;*/
 
 %}
 DIGITO	[[:digit:]]
 LETRA	[[:alpha:]]
+
 %%
+	/* erro de comentario nao fechado */
+"{"[^}]*  {
+		int ss = strlen(yytext);
+		int i;
+		for(i = 0; i < ss; i++) if(yytext[i] == '\n') yylineno++;
+		
+		return ER_CNF; /* Comentario nao fechado */
+	}
+
 	/*numeros e identificador*/
 {DIGITO}+	{	/* numero inteiro */
 	
@@ -172,13 +183,17 @@ LETRA	[[:alpha:]]
 	}
 	
 
-"{"[^}]*"}"	/* apaga comentario (pode ter mais de uma linha) */
-[\n\t\r ]	/* apaga caracteres inuteis */
-
-	/* erro de comentario nao fechado */
-"{". {
-	return ER_CNF; /* Comentario nao fechado */
+"{"[^}]*"}"	{
+	/* apaga comentario (pode ter mais de uma linha) */
+		int skip = 0;
+		int ss = strlen(yytext);
+		int i;
+		for(i = 0; i < ss; i++) if(yytext[i] == '\n') yylineno++;
 	}
+[\t\r ]	/* apaga caracteres inuteis */
+
+
+"\n"	yylineno++;	
 	/* outros erros */
 -{0,1}{DIGITO}+{LETRA}({LETRA}|{DIGITO})*"."({LETRA}|{DIGITO})*	{
 	
@@ -200,7 +215,7 @@ LETRA	[[:alpha:]]
 
 	}	
 
-<<EOF>>    yyterminate();
+<<EOF>>   {  yyterminate(); }
 
 .	{
 	
