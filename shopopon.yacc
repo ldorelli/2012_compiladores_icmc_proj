@@ -1,46 +1,52 @@
 %token IDENT "identificador"
-%token OP_AT 
-%token OP_DF 
-%token OP_GE 
-%token OP_LE 
-%token OP_GR 
-%token OP_LS 
-%token OP_PL 
-%token OP_MI 
-%token OP_ML 
-%token OP_DV 
-%token OP_EQ 
-%token SB_PV 
-%token SB_PF 
-%token SB_DP 
-%token SB_VG 
-%token SB_PO 
-%token SB_PC 
-%token ER_IDG 
-%token ER_IFL 
-%token ER_NMF 
-%token ER_CIN 
-%token ER_CNF
-%token NRO_INTEIRO 
-%token NRO_REAL
-%token PROGRAM
-%token BEG
-%token END
-%token CONST
-%token VAR
-%token REAL
-%token INTEGER
-%token CHAR
-%token PROCEDURE
-%token IF
-%token ELSE	
-%token READLN
-%token WRITELN	
-%token REPEAT
-%token THEN
-%token UNTIL
-%token WHILE
-%token FUNCTION	
+%token OP_AT ":="
+%token OP_DF "<>"
+%token OP_GE ">="
+%token OP_LE "<="
+%token OP_GR ">"
+%token OP_LS "<"
+%token OP_PL "+"
+%token OP_MI "-"
+%token OP_ML "*"
+%token OP_DV "/"
+%token OP_EQ "="
+%token SB_PV ";"
+%token SB_PF "."
+%token SB_DP ":"
+%token SB_VG ","
+%token SB_PO "("
+%token SB_PC ")"
+%token ER_IDG "Identificador muito grande"
+%token ER_IFL "Inteiro fora dos limites"
+%token ER_NMF "Numero mal formado"
+%token ER_CIN "Caracter nao identificado"
+%token ER_CNF "Comentario nao fechado"
+%token NRO_INTEIRO "Numero inteiro"
+%token NRO_REAL "Numero real"
+%token PROGRAM "program"
+%token BEG "begin"
+%token END "end"
+%token CONST "const"
+%token VAR "var"
+%token REAL "real"
+%token INTEGER "integer"
+%token CHAR "char"
+%token PROCEDURE "procedure"
+%token IF "if"
+%token ELSE	"else"
+%token READLN "readln"
+%token WRITELN	"writeln"
+%token REPEAT "repeat"
+%token THEN "then"
+%token UNTIL "until"
+%token WHILE "while"
+%token DO "do"
+%token FUNCTION "function"	
+
+%nonassoc IF
+%nonassoc ELSE
+%left OP_PL OP_MI
+%left OP_ML OP_DV
 
 %{ 
 	#include  "lex.yy.c"
@@ -62,13 +68,11 @@ program:
 		//erro no inicio do programa
 	|	PROGRAM error corpo { printf ("Fim da analise sintatica\n"); } SB_PF
 	|	error SB_PV ok corpo SB_PF
-		//falta de begin or so
-	|	error SB_PF
 	;
 
 corpo:
 		//regra correta
-		dc BEG  { printf("Reduzindo programa\n"); } { printf("Reduziu corpo do programa\n"); } END
+		dc BEG  { printf("Reduzindo programa\n"); } comandos { printf("Reduziu corpo do programa\n"); } END ok
 	;
 
 dc:
@@ -131,7 +135,8 @@ err_v:
 err_p:
 		SB_PV
 	|	PROCEDURE less
-	|	BEG less corpo_p { printf ("%d: Reduziu procedimento\n", yylineno); }
+	|	BEG less corpo_p { printf ("%d: Reduziu procedimento via erro\n", yylineno); }
+	|	END
 	;
 
 parametros:
@@ -159,19 +164,90 @@ mais_par:
 corpo_p:
 		//regra correta
 		dc_v BEG ok comandos END SB_PV
-		//erro vindo da declaracao do procedimento
+		//regra sem ponto e virgula
+	|	dc_v BEG ok comandos END { sprintf(errv, "syntax error, unexpected %s, expecting SB_PV", yytext); yyerror (errv); yyerrok; }
+		//passa erro no corpo para o err_cp
 	|	dc_v error
+		//erro vindo da declaracao do procedimento
 	|	error corpo_p
 	;
-
+	
 comandos:
-		cmd SB_PV comandos
+		cmd SB_PV { printf ("%d: Reduziu comando\n", yylineno); } ok comandos
+	|	error comandos
 	|
 	;
 
 cmd:
-		READLN SB_PO variaveis SB_PC
-	|	WRITELN SB_PO variaveis SB_PC
+		READLN ok SB_PO variaveis SB_PC ok 
+	|	WRITELN ok SB_PO variaveis SB_PC ok
+	|	BEG ok comandos END ok
+	|	IDENT ok OP_AT expressao
+	|	REPEAT ok comandos UNTIL ok condicao
+	|	IDENT ok lista_arg ok
+	|	IF ok condicao THEN ok cmd pfalsa
+	|	WHILE ok condicao DO ok cmd
+	;
+
+pfalsa:
+		ELSE ok cmd
+	|
+	;
+
+lista_arg:
+		SB_PO argumentos SB_PC
+	|
+	;
+	
+argumentos:
+		IDENT ok mais_ident ok
+	;
+
+mais_ident:
+		SB_PV ok argumentos ok
+	|	error argumentos ok
+	|
+	;
+
+condicao:
+		expressao relacao expressao
+	|	expressao error
+	;
+	
+relacao:
+		OP_EQ
+	|	OP_DF
+	|	OP_GE
+	|	OP_LE
+	|	OP_GR
+	|	OP_LS
+	;
+
+expressao:
+		termo outros_termos
+	;
+
+termo:
+		op_un fator mais_fatores
+	;
+
+
+
+fator:
+		numero
+	| SB_PO expressao SB_PC
+		//Note que lista_arg pode ser vazia
+	|	IDENT lista_arg
+	;
+
+mais_fatores:
+		op_mul fator mais_fatores
+	|
+	;
+	
+outros_termos:
+		op_ad termo outros_termos
+	|
 	;
 
 variaveis:
@@ -181,6 +257,22 @@ variaveis:
 mais_var:
 		SB_VG variaveis
 	|
+	;
+
+op_un:
+		OP_PL
+	|	OP_MI
+	|
+	;
+
+op_ad:
+		OP_PL
+	|	OP_MI
+	;
+
+op_mul:
+		OP_ML
+	|	OP_DV
 	;
 
 numero:
@@ -211,15 +303,24 @@ less:
 void yyerror(const char *s) {
 	/* Parsing do erro (Modo verbose identifica os lugares, basta recuperar) */
 	/* Pega os tokens esperado e obtido */
-	char esperado[50], obtido[50];
+	char esperado[50], obtido[50], *pos;
 	int n = 0;
-	sscanf(s, "syntax error, unexpected %[^,], expecting%n", obtido, &n);
+	sscanf(s, "syntax error, unexpected %[^,], expecting%s%n", obtido, esperado, &n);
 	if(strcmp(obtido, "$end") == 0) {
 		printf("Final inesperado de arquivo.\n");
 	} else {
 		if(n) {
-			printf("Erro na linha %d: unexpected %s [ %s ], expecting %s \n", yylineno, obtido, yytext, s+n+1);
-		} else printf("Erro na linha %d: %s inesperado.\n", yylineno, obtido);
+			printf("Erro na linha %d: '%s' inesperado [ %s ], esperava '%s'", yylineno, obtido, yytext, esperado);
+			pos = (char*)s+n;
+			while (*pos != '\0') {
+				sscanf (pos, "or %s%n", esperado, &n);
+				pos += n;
+				printf (" ou '%s'", esperado);
+			}
+			printf ("\n");
+			printf ("%s\n", s);
+
+		} else printf("Erro na linha %d: '%s' inesperado.\n", yylineno, obtido);
 	}
 }
 
@@ -244,6 +345,7 @@ int main(int argc, char **argv )
 	insert(&pr, "then", "then", THEN);
 	insert(&pr, "until", "until", UNTIL);
 	insert(&pr, "while", "while", WHILE);
+	insert(&pr, "do", "do", DO);
 	insert(&pr, "function", "function", FUNCTION);
 	
 	++argv, --argc;  /* skip over program name */
