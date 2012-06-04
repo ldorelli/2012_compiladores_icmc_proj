@@ -21,8 +21,8 @@
 %token ER_NMF "Numero_mal_formado"
 %token ER_CIN "Caracter_nao_identificado"
 %token ER_CNF "Comentario_nao_fechado"
-%token NRO_INTEIRO "Numero_inteiro"
-%token NRO_REAL "Numero_real"
+%token NRO_INTEIRO "numero_inteiro"
+%token NRO_REAL "numero_real"
 %token PROGRAM "program"
 %token BEG "begin"
 %token END "end"
@@ -309,7 +309,9 @@ void yyerror(const char *s) {
 		if(n) {
 			if (!strcmp (obtido, "SB_VG"))	strcpy (obtido, ",");
 			printf("Erro na linha %d: '%s' inesperado", yylineno, obtido);
-			if (!strcmp (obtido, "identificador"))	printf (" [%s]", yytext);
+			if (!strcmp (obtido, "identificador")
+				|| obtido[0] >= 'A' && obtido[0] <= 'Z')	printf (" [%s]", yytext);
+			if (!strcmp (esperado, "$end"))	strcpy (esperado, "Fim_de_arquivo");
 			printf (", esperava '%s'",esperado);
 			pos = (char*)s+n;
 			while (*pos != '\0') {
@@ -321,7 +323,6 @@ void yyerror(const char *s) {
 
 		} else
 			printf("Erro na linha %d: '%s' inesperado.\n", yylineno, obtido);
-		
 	}
 }
 
@@ -355,14 +356,6 @@ int main(int argc, char **argv )
 	else
 		yyin = stdin;
 
-	char next_text[1000];
-	char next_token[1000];
-
-	 /*yylex();*/
-//	while(get_token(next_token, next_text)) {
-//			/* Pega um indice que aponta para o vetor de tokens */
-//	 		printf("%s %s \n", next_text, next_token);
-//	}
 	return yyparse();
 
 	return 0;
