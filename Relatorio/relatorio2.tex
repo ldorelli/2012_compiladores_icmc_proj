@@ -26,7 +26,7 @@
 \section{Objetivo}
 	Neste relatório descreveremos a utilização do analisador sintático para a LALG. Apresentaremos as pricipais decisões de projetos e as respectivas justificativas. A seguir uma breve explicação sobre o analisador utilizado e alguns exemplos que foram usados para fins de teste.
 
-	Esse relátório está organizado da seguinte forma. Na Seção \ref{section:lex} são discutidas as mudanças no analisador léxico implementadas para fornecer suporte ao analisador sintático. Na Seção \ref{section:decisoes} são apresentadas as decições de projeto e detalhes de implementação relacionadas ao analisador sintático produzido. Na Seção \ref{section:compilacao} encontram-se as instruções para compilação e execução do analisador sintático. Por fim, na Seção \ref{section:exemplos} são apresentados exemplos de entrada (programas LALG possivelmente incorretos) e suas respectivas saídas.
+	Esse relátório está organizado da seguinte forma. Na Seção \ref{section:lex}, são discutidas as mudanças no analisador léxico implementadas para fornecer suporte ao analisador sintático. Na Seção \ref{section:decisoes}, são apresentadas as decisões de projeto e detalhes de implementação relacionadas ao analisador sintático produzido. Na Seção \ref{section:compilacao}, encontram-se as instruções para compilação e execução do analisador sintático. Por fim, na Seção \ref{section:exemplos}, são apresentados exemplos de entrada (programas LALG possivelmente incorretos) e suas respectivas saídas.
 
 \section{Mudanças Realizadas}\label{section:lex}
 
@@ -97,7 +97,7 @@
 						var & real & integer& char\\
 						procedure & if & else & readln \\
 						writeln & repeat & then & until\\
-						while & function & & \\
+						while & function & do & \\
 						\bottomrule
 					\end{tabular}
 					\caption{Quadro de palavras reservadas}
@@ -126,41 +126,176 @@
 			Nessa seção são implementados o tratamento de erros, que será tratado mais adiante; e a função principal. Nessa ocorre a inicialização da Trie e inserção das palavras reservadas na estrutura gerada.
 
 	\subsection{Tratamento de erros} \label{section:error}
-		Em linhas gerais, os erros que sãp tratados pelo analisador sintático são os seguintes:
+		O analisador sintático identifica corretamente qualquer erro sintático. 
+		A partir da identificação de um erro, regras de erro são aplicadas para prosseguir a compilação.
+
+		Os erros são recuperados pela ação default do \emph{YACC}, que é assumir que um erro foi recuperado ao casar três tokens e por meio da chamada a \emph{yyerrok}, contida na regra artificial \verb=ok=. Foi utilizada, também, a função \verb=yyless(0)=, contida na regra artificial \verb=less=, que retorna a última cadeia lida, para sincronização.
+		As mensagens de erro são obtidas com maior precisão no \emph{YACC} ao utilizar o modo \emph{verbose}. O modo \emph{verbose}, ao realizar a chamada à função \verb=yyerror=, default ao ocorrer um erro, passa como parâmetro uma cadeia de caracteres contendo o token obtido e a lista de tokens esperados.
+
+		Em linhas gerais, os erros que são recuperados pelo analisador sintático são os seguintes:
 		
 		\begin{itemize}
-			\item Falta de ponto-vírgula
+			\item Erro na declaração de constantes
+			\item Erro na declaração de variáveis
+			\item Erro na declaração de procedimentos
+			\item Declaração desordenada 
+			\item Falta de ponto-vírgula\footnote{Em grande parte dos casos}
 			\item Falta de identificador
 			\item Símbolos não esperados
-			\item Comentaŕio não fechado
+			\item Comentário não fechado
 			\item Fim de programa inexperado
 		\end{itemize}
 
-		Os erros são recuperados no modo pânico, ou seja, tokens são descartados até que se encontre uma regra segura o suficiente para recomeçar a análise sintática.
+		Os erros são recuperados no modo pânico, ou seja, tokens são descartados até que se encontre uma regra segura o suficiente para recomeçar a análise sintática.	
+
+		Todos as regras de erros estão comentados nos códigos fonte.
+
 
 \section{Compilação}\label{section:compilacao}
-	Para compilação do projeto basta executar o arquivo \verb=Makefile= disponibilizado. Dentro do arquivo estão presentes os seguintes comandos:
+	Para compilação do projeto em sistemas \emph{UNIX}, execute o arquivo \verb=Makefile= disponibilizado por meio do comando \verb=make=. Para o sistema operacional \emph{Windows}, execute a seguinte sequência de comandos:
 
 	\begin{center}
 		\begin{minipage}[ht]{0.5\textwidth}
 			\begin{verbatim}
 				yacc -d -v yacc.yacc --verbose 
 				flex lalg.l
-				gcc lex.yy.c trie.c -lfl -o t2
+				gcc lex.yy.c trie.c -lfl -o t2.exe
 			\end{verbatim}
 		\end{minipage}
 	\end{center}
 
-	Para execução do compilador basta utilizar os comandos:
+	Para execução do analisador sintático utilize os comandos:
 
 	\begin{center}
 		\begin{minipage}[ht]{0.5\textwidth}
 			\begin{verbatim}
-				t2 <nome_do_arquivo>
+				t2.exe <nome_do_arquivo>
 			\end{verbatim}
 		\end{minipage}
 	\end{center}
+
+	Observe que o analisador só termina quando encontra um \emph{end-of-file}.
+
 	
 \section{Exemplos}\label{section:exemplos}
+	
+	\subsection{Teste 1}
+	\subsubsection*{Entrada}
+
+	\begin{lstlisting}[language=Pascal,numbers=left,frame=top,frame=bottom]
+program testecerto;
+{ declaracao de constantes }
+const constante := 3;
+const constante2 := 3.57;
+{ declaracao de variaveis }
+var variavel : integer;
+var variavel2, variavel4 : real;
+{ declaracao de procedimentos }
+{ procedimento sem parametros }
+procedure procedimento;
+var variavel3 : char;
+begin
+	readln(variavel);
+	if variavel > 3 then
+		begin
+			variavel2 := constante2;
+			variavel := constante;
+		end
+	else
+		while variavel < 3 do
+			begin
+				variavel := variavel + (variavel + 2)/3;
+				variavel := constante2/3 +  variavel;
+			end;
+	writeln (variavel3);
+end;
+{ procedimento com parametros }
+procedure procedimento2 (a,b: integer; c:real);
+var variavel3: integer;
+begin
+	repeat
+		begin
+			variavel3 := a+b;
+			c := variavel3-1;
+		end;
+	until variavel3 > 10;
+end;
+{ inicio do programa }
+begin
+	procedimento;
+	procedimento2 (variavel; variavel; variavel2);
+	variavel := variavel * (variavel2 + 3*variavel) / 5;
+end.
+	\end{lstlisting}
+	\subsubsection*{Saída}
+		Não há saída por se tratar de um programa sintaticamente correto.
+
+	\subsection{Teste 2}
+	\subsubsection*{Entrada}
+
+	\begin{lstlisting}[language=Pascal,numbers=left,frame=top,frame=bottom]
+{ teste de erros basicos }
+program SemPontoEVirgula { falta ';' }
+{ declaracao de constantes }
+const constante := 3 { falta ';' }
+var variavel2:char{ falta ';' }
+var variavel:integer;
+{ declaracao de procedimento }
+procedure 1erro (param1:integer) { identificador invalido }
+var variavelLocal:char;
+begin
+	readln(variavelLocal) { falta ';' }
+	writeln (variavelLocal);
+end;
+procedure SPtEVgNoFim;
+begin
+	{ nao faz nada }
+end { falta ';' }
+{ inicio do programa }
+begin
+	SPtEVgNoFim { falta ';' }
+	variavel := 3*7+12;
+	variavel := 3*; { expressao errada }
+end.
+
+resto { arquivo nao acabou }
+	\end{lstlisting}
+
+	\subsubsection*{Saída}
+
+	\begin{lstlisting}[numbers=left,frame=top,frame=bottom]
+Erro na linha 4: 'const' inesperado, esperava ';'
+Erro na linha 5: 'var' inesperado, esperava ';'
+Erro na linha 6: 'var' inesperado, esperava ';'
+Erro na linha 8: 'Numero_mal_formado' inesperado [1erro], esperava 
+					'identificador'
+Erro na linha 12: 'writeln' inesperado, esperava ';'
+Erro na linha 19: 'begin' inesperado, esperava ';'
+Erro na linha 21: 'identificador' inesperado [variavel], esperava ';'
+Erro na linha 22: ';' inesperado, esperava 'identificador' ou '(' ou 
+					'numero_inteiro' ou 'numero_real'
+Erro na linha 25: 'identificador' inesperado [resto], esperava 
+					'Fim_de_arquivo'
+	\end{lstlisting}
+
+	\subsection{Teste 3}
+
+	\subsubsection*{Entrada}
+
+	\begin{lstlisting}[language=Pascal,frame=top,frame=bottom,numbers=left]
+program prog;
+{ teste de comentario nao fechado
+var x: integer;
+begin
+	readln(x);
+end;
+	\end{lstlisting}
+
+	\subsubsection*{Saída}
+
+	\begin{lstlisting}[frame=top,frame=bottom,numbers=left]
+Erro na linha 2: 'Comentario_nao_fechado'
+	\end{lstlisting}
+	
 
 \end{document}
