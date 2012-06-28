@@ -5,7 +5,7 @@
 #include<limits.h>
 #include"trie.h"
 #include"y.tab.h"
-#include "symbolTable.h"
+#include"symbolTable.h"
 
 Trie pr;
 char ctext[100001];
@@ -14,7 +14,7 @@ int num_int;
 int tok_idx; /* Será retornado pelo yylex() */
 	/*int yylineno = 1;*/
 
-typedef YYSTYPE  
+#define YYSTYPE  STable_Entry
 
 %}
 DIGITO	[[:digit:]]

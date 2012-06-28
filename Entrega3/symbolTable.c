@@ -8,7 +8,7 @@ void symbolTable_init(Node * root, Node * dad) {
 	root->dad = dad;
 }
 
-void symbolTable_add(Node * root, Attributes t) {
+void symbolTable_add(Node * root, STable_Entry t) {
 	Node * aux = root;
 
 	int i;
@@ -21,11 +21,11 @@ void symbolTable_add(Node * root, Attributes t) {
 			aux = aux->next[i];
 		}
 	}
-	aux->attr = (Attributes*) malloc(sizeof (Attributes));
+	aux->attr = (STable_Entry*) malloc(sizeof (STable_Entry));
 	*aux->attr = t;
 }
 
-Attributes * symbolTable_find(Node *root, char * name) {
+STable_Entry * symbolTable_find(Node *root, char * name) {
 	Node * aux = root;
 	int i;
 	for(i = 0; aux && name[i] != '\0'; i++, aux = aux->next[name[i]]) ;
@@ -40,4 +40,4 @@ void symbolTable_erase(Node * root) {
 		if(root->next[i]) symbolTable_erase(root->next[i]);
 	if(root->attr) free(root->attr);
 	free(root);
-}
+} 

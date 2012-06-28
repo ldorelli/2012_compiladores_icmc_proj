@@ -2,7 +2,6 @@
 #define SYMBOL_TABLE_H
 
 // Tipo da variavel
-
 typedef struct 
 {
 	/* data */
@@ -13,22 +12,22 @@ typedef struct
 	/* Ident pode ir ate 20 */
 	char name[21];
 
-} Attributes ;
+} STable_Entry ;
 
 typedef struct Node_
 {
 	/* data */
 	struct  Node_	* next[256];
 	struct  Node_	* dad;
-	Attributes 		* attr;
+	STable_Entry 	* attr;
 
 } Node;
 
 void symbolTable_init(Node * root, Node * dad) ;
 
-void symbolTable_add(Node * root, Attributes t) ;
+void symbolTable_add(Node * root, STable_Entry t) ;
 
-Attributes * symbolTable_find(Node *root, char * name) ;
+STable_Entry * symbolTable_find(Node *root, char * name) ;
 
 void symbolTable_erase(Node * root) ;
 
