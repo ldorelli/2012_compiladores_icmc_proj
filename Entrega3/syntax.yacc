@@ -13,14 +13,14 @@
 %token SB_PV ";"
 %token SB_PF "."
 %token SB_DP ":"
-%token SB_VG
+%token SB_VG ","
 %token SB_PO "("
 %token SB_PC ")"
+%token ER_CIN "Caracter_nao_identificado"
+%token ER_CNF "Comentario_nao_fechado"
 %token ER_IDG "Identificador_muito_grande"
 %token ER_IFL "Inteiro_fora_dos_limites"
 %token ER_NMF "Numero_mal_formado"
-%token ER_CIN "Caracter_nao_identificado"
-%token ER_CNF "Comentario_nao_fechado"
 %token NRO_INTEIRO "numero_inteiro"
 %token NRO_REAL "numero_real"
 %token PROGRAM "program"
@@ -55,6 +55,9 @@
 	char errv[100]; 
 	int yydebug = 1;
 	extern int yylineno;
+
+	int codeGeneration = 1;
+	FILE* file;
 %}
 %{ void yyerror(const char*); %}
 
@@ -93,7 +96,9 @@ dc_c:
 	
 dc_v:
 		/*regra correta*/
-		VAR variaveis ok SB_DP tipo_var SB_PV ok dc_v
+		VAR variaveis ok SB_DP tipo_var SB_PV ok dc_v {
+			$2.type = $5.type;
+		}
 		/*erros nao tratatados da declaracao anterio: ex.: falta de ';'r*/
 	| error err_v ok dc_v
 		/*erros passados para a proxima declaracao*/
@@ -279,45 +284,50 @@ outros_termos:
 
 /*regras corretas e sincronizacao apos identificador*/
 variaveis:
-		IDENT ok mais_var
+		IDENT ok mais_var { 
+			$1.type = $$.type; 
+			$3.type = $$.type;
+		}
 	;
 
 /*regras corretas*/
 mais_var:
-		SB_VG variaveis
+		SB_VG variaveis {
+			$2.type = $$.type;
+		}
 	|
 	;
 
 /*regras corretas*/
 op_un:
-		OP_PL
-	|	OP_MI
+		OP_PL { $$ = OP_PL; }
+	|	OP_MI { $$ = OP_MI; }
 	|
 	;
 
 /*regras corretas*/
 op_ad:
-		OP_PL
-	|	OP_MI
+		OP_PL { $$ = OP_PL; }
+	|	OP_MI { $$ = OP_MI; }
 	;
 
 /*regras corretas*/
 op_mul:
-		OP_ML
-	|	OP_DV
+		OP_ML { $$ = OP_ML; }
+	|	OP_DV { $$ = OP_DV; }
 	;
 
 /*regras corretas*/
 numero:
-		NRO_REAL
-	|	NRO_INTEIRO
+		NRO_REAL { $$.type = REAL; }
+	|	NRO_INTEIRO { $$.type =  INTEGER; }
 	;
 
 /*regras corretas*/
 tipo_var:
-		INTEGER
-	|	REAL
-	|	CHAR
+		INTEGER { $$.type = INTEGER; }
+	|	REAL { $$.type = REAL; }
+	|	CHAR { $$.type = CHAR; }
 	;
 
 /*regra para abreviar o comando*/
@@ -395,15 +405,29 @@ int main(int argc, char **argv )
 	insert(&pr, "do", "do", DO);
 	insert(&pr, "function", "function", FUNCTION);
 	
-	++argv, --argc;  /*Ignora o nome do programa*/
+	/*Inicializando tabela de símbolos*/
+	symbolTable_init(&stRoot, null);
+
+	++argv, --argc;  /*Ignora o nome do programa*/	
 	/*Se for dado um arquivo como entrada, le do arquivo*/
 	if ( argc > 0 )
 		yyin = fopen( argv[0], "r" );
 	/*Caso contrario, le da entrada padrao*/
 	else
 		yyin = stdin;
+
+	/*Abertura d arquivo e inicializacao do programa*/
+	file = fopen("code.code","w");
+	fpritnf(file, "INPP\n");
+
 	/*Processa*/
 	yyparse();
+
+	fclose(file);
+
+	/*Falha na geracao de codigo*/
+	if( !codeGeneration ) remove("code.code");
+
 	return 0;
 }
 
