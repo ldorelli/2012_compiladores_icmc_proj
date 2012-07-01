@@ -482,7 +482,6 @@ char *yytext;
 #include"symbolTable.h"
 
 Trie pr;
-Node stRoot;
 char ctext[100001];
 double num_real;
 int num_int;
@@ -824,7 +823,7 @@ YY_RULE_SETUP
 
 		if (yyleng <= 20) {
 			tok_idx = IDENT; /* Identificador */
-			yylval.category=IDENT;
+			yylval.category = IDENT;
 			strcpy(yylval.name, yytext);
 		} else 
 			tok_idx = ER_IDG; /* Erro de identificador grande */

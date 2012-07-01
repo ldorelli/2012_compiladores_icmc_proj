@@ -1,0 +1,7 @@
+program plo;
+
+var y : real;
+var i: integer;
+
+begin
+end.

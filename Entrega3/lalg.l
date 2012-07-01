@@ -74,7 +74,7 @@ LETRA	[[:alpha:]]
 
 		if (yyleng <= 20) {
 			tok_idx = IDENT; /* Identificador */
-			yylval.category=IDENT;
+			yylval.category = IDENT;
 			strcpy(yylval.name, yytext);
 		} else 
 			tok_idx = ER_IDG; /* Erro de identificador grande */

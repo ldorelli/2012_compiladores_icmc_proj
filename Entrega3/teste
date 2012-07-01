@@ -1,15 +1,34 @@
 program plo;
 const t := 3;
 const x := 3;
-var y : integer;
+var k : integer;
 var x, x : real;
 var y : real;
-procedure plo(x, y: real, x: integer);
-
+var i: integer;
+procedure plo(x, y: real; x: integer);
 begin
 
 end;
 
+procedure plaft(x, y: real; x: integer);
+var x: integer;
+var w: real;
 begin
+	x := 4/(1 * 2.5);
+	y := 2;
+end;
 
+procedure ploft(t, y: real; t: integer);
+var z: integer;
+begin
+	x := 4/(1 * 2.5);
+	w := 2;
+end;
+
+begin
+	readln(k , y);
+	readln(i, t);
+	i := 5 + 3.43;
+	x := y + 1;
+	x := a + b;
 end.

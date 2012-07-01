@@ -12,9 +12,14 @@ typedef struct STEntry
 	int type;
 	int category;
 	int scope;
-	int ival;
+	
 	int paramQty;
+	
+	/* Valor caso seja inteiro */
+	int ival;
+	/* Valor caso seja real */
 	double rval;
+	
 	int line; /* Linha original da definicao */
 
 	// Se eh um procedimento, parametros

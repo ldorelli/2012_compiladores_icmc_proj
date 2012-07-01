@@ -146,11 +146,11 @@ dc_v:
 							parameterList[i].name, entry->line);
 					} else if(entry->category == PROCEDURE) {
 						fprintf(stderr, "Erro na linha %d: %s previamente definido como procedimento.\n"
-							"Definicao previa na linha %d.\n",
+							"\tDefinicao previa na linha %d.\n",
 							yylineno, parameterList[i].name, entry->line );
 					} else if(entry->category == CONST) {
 						fprintf(stderr, "Erro na linha %d: %s previamente definido como constante.\n"
-							"Definicao previa na linha %d.\n",
+							"\tDefinicao previa na linha %d.\n",
 							yylineno, parameterList[i].name, entry->line );
 					}
 				} else {
@@ -191,12 +191,12 @@ dc_p:
 				validProcedure = 0;
 				if(entry->category == PROCEDURE) {
 					fprintf(stderr, "Erro na linha %d: Redefinicao do procedimento %s.\n"
-							"\tPreviamente definido na linha %d\n", 
+							"\tDefinicao previa na linha %d\n", 
 							yylineno, entry->name, entry->line
 						);
 				} else if(entry->category == VAR) {
 					fprintf(stderr, "Erro na linha %d: %s previamente definido como variavel.\n"
-							"\tPreviamente definido na linha %d.\n", 
+							"\tDefinicao previa na linha %d.\n", 
 							yylineno, entry->name, entry->line
 						);
 				} else if(entry->category == PROGRAM) {
@@ -217,7 +217,7 @@ dc_p:
 					int x = symbolTable_addParameter(&tables[0], $2.name, parameterList[i]);
 					if(x < 0) {
 						fprintf(stderr,
-							"Erro na linha %d: parametro %s redefinido. \n" 
+							"Erro na linha %d: Parametro %s redefinido. \n" 
 								"\tPreviamente definido como parametro %d.\n", 
 							yylineno, parameterList[i].name, 
 							- x - 1);
@@ -535,10 +535,38 @@ termo:
 
 /*regras corretas*/
 fator:
-		numero { $$.type = $1.type; }
+		numero 
+		{ 
+			$$.type = $1.type; 
+		}
 	| SB_PO expressao SB_PC
 		/*Note que lista_arg pode ser vazia, gerando IDENT*/
-	|	IDENT lista_arg
+	|	IDENT 
+		{
+			/* Busca o identificador na tabela de simbolos */
+			STable_Entry * entry = 0;
+			int cscope;
+			for(cscope = 0; !entry && cscope <= scope; cscope++)
+				entry = symbolTable_find(&tables[cscope], $1.name);
+			
+			if(!entry) {
+				/* Se o identificador nao existe */
+				fprintf(stderr, "Erro na linha %d: Identificador %s nao declarado.\n", 
+					yylineno, $1.name);
+				$$.type = ERROR;
+			} else {
+				if(entry->type == VAR || entry->type == CONST)
+				{
+					strcpy($$.name, entry->name);
+					$$.type = entry->type;
+				} else if(entry->type == PROCEDURE) {
+					fprintf(stderr, "Erro na linha %d: Nome de procedimento usado em artimetica.\n", 
+						yylineno);
+				}
+			}
+		}
+
+		lista_arg
 	;
 
 /*regras corretas*/
