@@ -1,0 +1,15 @@
+program plo;
+const t := 3;
+const x := 3;
+var y : integer;
+var x, x : real;
+var y : real;
+procedure plo(x, y: real, x: integer);
+
+begin
+
+end;
+
+begin
+
+end.

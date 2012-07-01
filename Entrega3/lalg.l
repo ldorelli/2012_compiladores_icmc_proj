@@ -14,7 +14,7 @@ int num_int;
 int tok_idx; /* Será retornado pelo yylex() */
 	/*int yylineno = 1;*/
 
-#define YYSTYPE  STable_Entry
+extern YYSTYPE yylval;
 
 %}
 DIGITO	[[:digit:]]
@@ -34,12 +34,18 @@ LETRA	[[:alpha:]]
 	
 	long long x;
 	sscanf (yytext, "%lld", &x);
+
 	
 	if (x < INT_MAX && x > -INT_MAX) {
 		tok_idx = NRO_INTEIRO; /* Número inteiro */
 	} else {
+		yylval.type = ERROR;
 		tok_idx = ER_IFL; /* Inteiro fora dos limites */
 	}
+
+	yylval.type = INTEGER;
+	yylval.category = NRO_INTEIRO;
+	sscanf (yytext, "%d", &yylval.ival);
 
 	strcpy(ctext, yytext);
 	return (tok_idx);
@@ -49,6 +55,10 @@ LETRA	[[:alpha:]]
 {DIGITO}+"."{DIGITO}+	{	/* numero real */
 	
 	strcpy(ctext, yytext);
+
+	yylval.type = REAL;
+	yylval.category = NRO_REAL;
+	sscanf (yytext, "%lf", &yylval.rval);
 
 	return NRO_REAL;
 
@@ -62,14 +72,16 @@ LETRA	[[:alpha:]]
 
 	if(identifier == NULL) {
 
-		if (yyleng <= 20) 
+		if (yyleng <= 20) {
 			tok_idx = IDENT; /* Identificador */
-		else 
+			yylval.category=IDENT;
+			strcpy(yylval.name, yytext);
+		} else 
 			tok_idx = ER_IDG; /* Erro de identificador grande */
 	} 
 
 	/* Se não entrou no if anterior eh palavra reservada */
-
+	yylval.type = tok_idx;
 	strcpy(ctext, yytext); /* Copia o texto */
 
 	return (tok_idx);
@@ -81,67 +93,67 @@ LETRA	[[:alpha:]]
 
 
 ":="	{ 
-	strcpy(ctext, yytext); 
+	yylval.category=OP_AT;
 	return OP_AT; /* ATtribution */
 	
 	}
 
 "<>"	{
-	strcpy(ctext, yytext); 
+	yylval.category=OP_DF; 
 	return OP_DF; /* DiFference */
 
 	}
 
 ">="	{
-	strcpy(ctext, yytext); 
+	yylval.category=OP_GE; 
 	return OP_GE; /* Greater Equal */
 
 	}
 
 "<="	{
-	strcpy(ctext, yytext); 
+	yylval.category=OP_LE; 
 	return OP_LE; /* Less Equal */
 
 	}
 
 ">"		{
-	strcpy(ctext, yytext); 
+	yylval.category=OP_GR; 
 	return OP_GR; /* GReater */
 	
 	}
 
 "<"		{
-	strcpy(ctext, yytext); 
+	yylval.category=OP_LS; 
 	return OP_LS; /* LesS */
 	
 	}
 
 "+"		{
-	strcpy(ctext, yytext); 
+	yylval.category=OP_PL;
 	return OP_PL; /* PLus */
 	
 	}
 
 "-"		{
-	strcpy(ctext, yytext); 
+	yylval.category=OP_MI; 
 	return OP_MI; /* MInus */
 	
 	}
 
 "*"		{
-	strcpy(ctext, yytext); 
+	yylval.category=OP_ML; 
 	return OP_ML; /* MultipLation */
 
 	}
 
 "/"		{
-	strcpy(ctext, yytext); 
+	yylval.category=OP_DV; 
 	return OP_DV; /* DiVision */
 	
 	}
 
 "="		{
-	strcpy(ctext, yytext); 
+	yylval.category=OP_EQ; 
 	return OP_EQ; /* EQual */
 	
 	}
@@ -149,37 +161,37 @@ LETRA	[[:alpha:]]
 
 	/* simbolos */
 ";"		{
-	strcpy(ctext, yytext); 
+	yylval.category=SB_PV; 
 	return SB_PV; /* Ponto e Virgula */
 
 	}
 
 "."		{
-	strcpy(ctext, yytext); 
+	yylval.category=SB_PF; 
 	return SB_PF; /* Ponto Final */
 	
 	}
 	
 ":"		{
-	strcpy(ctext, yytext); 
+	yylval.category=SB_DP; 
 	return SB_DP; /* Dois Pontos */
 
 	}
 
 ","		{
-	strcpy(ctext, yytext); 
+	yylval.category=SB_VG; 
 	return SB_VG; /* VirGula */
 
 	}
 	
 "("		{
-	strcpy(ctext, yytext); 
+	yylval.category=SB_PO;  
 	return SB_PO; /* Parenthesis Opening */
 
 	}
 
 ")"		{
-	strcpy(ctext, yytext); 
+	yylval.category=SB_PC;  
 	return SB_PC; /* Parenthesis Closing */
 
 	}

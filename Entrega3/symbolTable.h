@@ -1,18 +1,36 @@
 #ifndef SYMBOL_TABLE_H
 #define SYMBOL_TABLE_H
 
+#define ERROR -1
+
+struct ParamNode;
+
 // Tipo da variavel
-typedef struct 
+typedef struct STEntry
 {
 	/* data */
-	char type;
-	char category;
-	char scope;
+	int type;
+	int category;
+	int scope;
+	int ival;
+	int paramQty;
+	double rval;
+	int line; /* Linha original da definicao */
 
+	// Se eh um procedimento, parametros
+	// Valor dificilmente ultrapassavel
+	struct ParamNode * parameters;
 	/* Ident pode ir ate 20 */
 	char name[21];
 
-} STable_Entry ;
+} STable_Entry; 
+
+typedef struct ParamNode 
+{
+	STable_Entry		value;
+	struct ParamNode * 	next;	
+} ParameterNode ;
+
 
 typedef struct Node_
 {
@@ -23,12 +41,24 @@ typedef struct Node_
 
 } Node;
 
-void symbolTable_init(Node * root, Node * dad) ;
+typedef Node	 SymbolTable;
 
+/* Insere um item na tabela de simbolos */
+void symbolTable_init(Node * root, Node * dad) ;
+/* Adiciona um item na tabela de simbolos especificada */
 void symbolTable_add(Node * root, STable_Entry t) ;
 
-STable_Entry * symbolTable_find(Node *root, char * name) ;
+/* 
+	Adiciona um parametro de funcao  ao procedimento procedure na tabela root 
+	Se ja existe um parametro com o mesmo nome, a funcao retorna o - indice
+	do parametro original na lista de parametros  - 1  
+	( se o parametro era o parametro 0, retorna -1) 
+*/
+int symbolTable_addParameter(Node * root, char * procedure, STable_Entry parameter);
 
+/* Busca por uma entrada na tabela de simbolos */
+STable_Entry * symbolTable_find(Node *root, char * name) ;
+/* Deleta uma tabela de simbolos */
 void symbolTable_erase(Node * root) ;
 
 #endif

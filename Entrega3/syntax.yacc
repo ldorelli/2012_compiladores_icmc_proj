@@ -49,12 +49,23 @@
 %left OP_ML OP_DV
 
 %{ 
+	#include "symbolTable.h"
+	#define YYSTYPE  STable_Entry
 	#include  "lex.yy.c"
 	#include <string.h>
 
 	char errv[100]; 
 	int yydebug = 1;
 	extern int yylineno;
+	SymbolTable tables[10]; // ate 10 escopo
+	int scope;
+
+	/* Tamanho realista */
+	/* Vai guardar coisas como lista de parametros ou variaveis */
+	STable_Entry parameterList[400];
+	int paramQty;
+	/* Numero de parametros da lista de parametros que ja tem tipo definido */
+	int definedParams;
 %}
 %{ void yyerror(const char*); %}
 
@@ -64,7 +75,15 @@
 
 program: 
 		/*regra correta*/
-		PROGRAM IDENT SB_PV corpo SB_PF
+		PROGRAM IDENT SB_PV 
+		{
+			/* Adiciona o programa na tabela de simbolos */
+			STable_Entry programEntry;
+			programEntry.category = PROGRAM;
+			strcpy(programEntry.name, $2.name);
+			symbolTable_add(&tables[scope], programEntry);
+		}
+		corpo SB_PF
 		/*erro no inicio do programa: identificador ou falta de ';'*/
 	|	PROGRAM error corpo SB_PF
 		/*erro ao escrever 'program'*/
@@ -83,7 +102,19 @@ dc:
 
 dc_c:
 		/*regra correta*/
-		CONST IDENT ok OP_AT numero SB_PV dc_c
+		CONST IDENT ok OP_AT numero SB_PV 
+		{
+			/* Adiciona constante na tabela de simbolos */
+			STable_Entry constEntry;
+			constEntry.category = CONST;
+			constEntry.type = $5.type;
+			constEntry.ival = $5.ival;
+			constEntry.rval = $5.rval;
+			constEntry.line = yylineno;
+			symbolTable_add(&tables[scope], constEntry);
+		}
+		dc_c
+		
 		/*erros nao tratatados da declaracao anterior: ex.:falta de ';'*/
 	|	error err_c ok dc_c
 		/*erros passados para a proxima declaracao*/
@@ -93,7 +124,33 @@ dc_c:
 	
 dc_v:
 		/*regra correta*/
-		VAR variaveis ok SB_DP tipo_var SB_PV ok dc_v
+		VAR 
+		/* Zera a lista de parametros */
+		{ paramQty = 0; } 
+		variaveis ok SB_DP tipo_var SB_PV ok
+		{
+			int i;
+			/* Navega pelas variaveis declaradas */
+			for(i = 0; i < paramQty; i++)			
+			{
+				STable_Entry * entry = 
+					symbolTable_find(&tables[scope], parameterList[i].name);
+				if(entry) {
+					/* Se ja existe a variavel */
+					fprintf(stderr, "Erro na linha %d: redeclaracao da variavel %s.\n"
+						"Definicao previa na linha %d.\n", 
+						yylineno,
+						parameterList[i].name, entry->line);
+				} else {
+					/* Se nao existe ainda */
+					parameterList[i].type = $5.type;
+					parameterList[i].category = VAR;
+					parameterList[i].line = yylineno;
+					symbolTable_add(&tables[scope], parameterList[i]);
+				}
+			}
+
+		} dc_v
 		/*erros nao tratatados da declaracao anterio: ex.: falta de ';'r*/
 	| error err_v ok dc_v
 		/*erros passados para a proxima declaracao*/
@@ -103,7 +160,47 @@ dc_v:
 
 dc_p:
 		/*regra correta*/
-		PROCEDURE IDENT ok parametros SB_PV corpo_p ok dc_p
+		PROCEDURE 
+		/* Entrou em procedimento */
+		IDENT  
+		{ 
+			/* Zera a quantidade de parametros - sera calculada pela regra parametros */
+			paramQty = 0;
+			definedParams = 0;
+			STable_Entry procEntry;
+			procEntry.category = PROCEDURE;
+			/* Copia o identificador para o nome da entrada da tabela */
+			strcpy(procEntry.name, $2.name);
+			symbolTable_add(&tables[scope], procEntry);
+		}
+		ok 
+		parametros 
+		{
+			printf("Done\n");
+			int i;
+			/* Adiciona os parametros na tabela de simbolos do escopo global -
+				que contem todos os procedimentos */
+			for(i = 0; i < paramQty; i++) { 
+				int x = symbolTable_addParameter(&tables[0], $2.name, parameterList[i]);
+				if(x < 0) {
+					printf("Erro na linha %d: parametro %s redefinido. \n" 
+							"Previamente definido como parametro %d.", 
+						yylineno, parameterList[i].name, 
+						- x - 1);
+				}
+			}
+			/* Aumenta um escopo - para as variaveis locais */
+			scope++;
+		}
+		SB_PV
+
+		corpo_p ok 
+		{
+
+			/* Saiu do procedimento */
+			scope--;
+		} dc_p
+
 		/*erros na declaracao de parametros*/
 	|	PROCEDURE error corpo_p ok dc_p
 		/*erros nao tratados na declaracao anterior*/
@@ -146,7 +243,17 @@ parametros:
 
 lista_par:
 		/*regra correta*/
-		variaveis SB_DP tipo_var mais_par
+		variaveis
+		SB_DP 
+		tipo_var
+		{
+			int i;
+			/* Altera o tipo dos parametros até agora */
+			for(i = definedParams; i < paramQty; i++) 
+				parameterList[i].type = $3.type;
+			definedParams = paramQty;
+		} 
+		mais_par
 		/*erro vindo de "mais_par"*/
 	| error variaveis SB_DP tipo_var ok mais_par
 		/*erro em um dos parametros*/
@@ -253,7 +360,7 @@ expressao:
 
 /*regra correta*/
 termo:
-		op_un fator mais_fatores
+		op_un fator mais_fatores 
 	;
 
 
@@ -279,7 +386,12 @@ outros_termos:
 
 /*regras corretas e sincronizacao apos identificador*/
 variaveis:
-		IDENT ok mais_var
+		IDENT { 
+			/* Adiciona a lista de parametros */
+			$1.category = VAR;
+			parameterList[paramQty++] = $1; 
+		} 
+		ok mais_var
 	;
 
 /*regras corretas*/
@@ -331,6 +443,7 @@ less:
 	;
 %%
 
+
 void yyerror(const char *s) {
 	/* Parsing do erro (Modo verbose identifica os lugares, basta recuperar) */
 	char esperado[50], obtido[50], *pos;
@@ -372,6 +485,14 @@ void yyerror(const char *s) {
 
 int main(int argc, char **argv )
 {
+	scope = 0;
+
+	int i;
+
+	for(i = 0; i < 10; i++) {
+	 	symbolTable_init(&tables[i], NULL);
+	}
+
 	/*Inicializa a trie*/
 	initializeTrie(&pr);
 	/*Insere as palavras reservadas na trie*/
