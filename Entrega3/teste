@@ -18,17 +18,19 @@ begin
 	y := 2;
 end;
 
-procedure ploft(t, y: real; t: integer);
+procedure ploft(t, y: real; t: integer; h : real);
 var z: integer;
 begin
 	x := 4/(1 * 2.5);
 	w := 2;
+	h := 3;
 end;
 
 begin
+	h := 2;
 	readln(k , y);
 	readln(i, t);
 	i := 5 + 3.43;
 	x := y + 1;
-	x := a + b;
+	x := a  * plo + b;
 end.

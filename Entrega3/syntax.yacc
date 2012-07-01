@@ -209,6 +209,8 @@ dc_p:
 		ok 
 		parametros 
 		{
+			/* Inicia a tabela para o novo escopo */
+			symbolTable_init(&tables[scope+1], 0);
 			int i;
 			/* Adiciona os parametros na tabela de simbolos do escopo global -
 				que contem todos os procedimentos */
@@ -221,12 +223,13 @@ dc_p:
 								"\tPreviamente definido como parametro %d.\n", 
 							yylineno, parameterList[i].name, 
 							- x - 1);
-					}
+					} 
+					/* Adiciona a variavel no escopo novo */
+					symbolTable_add(&tables[scope+1], parameterList[i]);
 				}
 			}
 			/* Aumenta um escopo - para as variaveis locais */
 			scope++;
-			symbolTable_init(&tables[scope], 0);
 		}
 		SB_PV
 
@@ -447,15 +450,38 @@ cmd:
 			 		yylineno, $1.name);
 			 } else {
 			 	/* Erro de atribuicao */
-			 	if(entry->type == INTEGER && $4.type == REAL) {
+			 	if(entry->category == CONST) {
+			 		fprintf(stderr, "Erro na linha %d: Atribuindo uma expressao a constante.\n", 
+			 			yylineno);
+			 	} else if(entry->category == PROCEDURE) {
+			 		fprintf(stderr, "Erro na linha %d: Atribuindo uma expressao a procedimento.\n", 
+			 			yylineno);
+			 	} else if(entry->category == PROGRAM) {
+			 		fprintf(stderr, "Erro na linha %d: Nome do programa utilizado em expressao.\n", 
+			 			yylineno);
+			 	} else if (entry->type == INTEGER && $4.type == REAL) {
 			 		fprintf(stderr, "Erro na linha %d: Atribuicao de real a inteiro.\n", 
 			 			yylineno, $1.name);
-			 	}
+			 	} 
 			 }
 		}
 
 	|	REPEAT ok comandos UNTIL ok condicao
-	|	IDENT ok lista_arg ok
+	
+	|
+		/* Chamada de procedimento */
+		IDENT 
+		{ 
+			/* Busca o procedimento */
+			STable_Entry * entry = symbolTable_find(&tables[0], $1.name);
+			if(!entry) {
+				fprintf(stderr, "Erro na linha %d: Procedimento %s nao declarado.\n", 
+					yylineno, $1.name);
+			} 
+			paramQty = 0; 
+			definedParams = 0;
+		}
+		ok lista_arg ok
 	|	IF ok condicao THEN ok cmd pfalsa
 	|	WHILE ok condicao DO ok cmd
 	;
@@ -555,13 +581,18 @@ fator:
 					yylineno, $1.name);
 				$$.type = ERROR;
 			} else {
-				if(entry->type == VAR || entry->type == CONST)
+				if(entry->category == VAR || entry->category == CONST)
 				{
 					strcpy($$.name, entry->name);
 					$$.type = entry->type;
-				} else if(entry->type == PROCEDURE) {
+				} else if(entry->category == PROCEDURE) {
 					fprintf(stderr, "Erro na linha %d: Nome de procedimento usado em artimetica.\n", 
 						yylineno);
+					$$.type = ERROR;
+				} else if(entry->category == PROGRAM) {
+					fprintf(stderr, "Erro na linha %d: Nome do programa usado em artimetica.\n", 
+						yylineno);
+					$$.type = ERROR;
 				}
 			}
 		}
