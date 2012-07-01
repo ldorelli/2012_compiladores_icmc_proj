@@ -53,12 +53,25 @@
 	#define YYSTYPE  STable_Entry
 	#include  "lex.yy.c"
 	#include <string.h>
+	#include "commands.h"
+
+	/* Código */
+	int code[50000][2];
+	int codeLine;
+	int usedAddress;
+	int procedureCount ;
+	int generateCode;
+	int mainLine;
 
 	char errv[100]; 
 	int yydebug = 1;
 	extern int yylineno;
+	
 	SymbolTable tables[10]; // ate 10 escopo
+	int variablesPerScope[10];
 	int scope;
+	
+	FILE * file;	
 
 	/* Tamanho realista */
 	/* Vai guardar coisas como lista de parametros ou variaveis */
@@ -86,14 +99,19 @@ program:
 		}
 		corpo SB_PF
 		/*erro no inicio do programa: identificador ou falta de ';'*/
-	|	PROGRAM error corpo SB_PF
+	|	PROGRAM error corpo SB_PF { generateCode = 0; }
 		/*erro ao escrever 'program'*/
-	|	error SB_PV ok corpo SB_PF
+	|	error SB_PV ok corpo SB_PF { generateCode = 0; }
 	;
 
 corpo:
 		/*regra correta*/
-		dc BEG comandos END ok
+		dc BEG 
+		{
+			/* Altera a linha do inicio do programa */
+			mainLine = codeLine;
+		} 
+		comandos END ok
 	;
 
 dc:
@@ -118,9 +136,9 @@ dc_c:
 		dc_c
 		
 		/*erros nao tratatados da declaracao anterior: ex.:falta de ';'*/
-	|	error err_c ok dc_c
+	|	error err_c ok dc_c { generateCode = 0; }
 		/*erros passados para a proxima declaracao*/
-	|	CONST error dc_c
+	|	CONST error dc_c { generateCode = 0; }
 	|
 	;
 	
@@ -140,15 +158,18 @@ dc_v:
 				if(entry) {
 					if(entry->category == VAR) {
 						/* Se ja existe a variavel */
+						generateCode = 0;
 						fprintf(stderr, "Erro na linha %d: redeclaracao da variavel %s.\n"
 							"\tDefinicao previa na linha %d.\n", 
 							yylineno,
 							parameterList[i].name, entry->line);
 					} else if(entry->category == PROCEDURE) {
+						generateCode = 0; 
 						fprintf(stderr, "Erro na linha %d: %s previamente definido como procedimento.\n"
 							"\tDefinicao previa na linha %d.\n",
 							yylineno, parameterList[i].name, entry->line );
 					} else if(entry->category == CONST) {
+						generateCode = 0; 
 						fprintf(stderr, "Erro na linha %d: %s previamente definido como constante.\n"
 							"\tDefinicao previa na linha %d.\n",
 							yylineno, parameterList[i].name, entry->line );
@@ -158,15 +179,23 @@ dc_v:
 					parameterList[i].type = $6.type;
 					parameterList[i].category = VAR;
 					parameterList[i].line = yylineno;
+					/* 
+					 	Aumenta 1 no espaco para variaveis globais 
+						Codigo de alocacao 
+					 */
+					code[codeLine][0] = ALME;
+					code[codeLine++][1] = 1;
+					parameterList[i].address = usedAddress++;
+					variablesPerScope[scope]++;
 					symbolTable_add(&tables[scope], parameterList[i]);
 				}
 			}
 
 		} dc_v
-		/*erros nao tratatados da declaracao anterio: ex.: falta de ';'r*/
-	| error err_v ok dc_v
+		/*erros nao tratatados da declaracao anterio: ex.: falta de ';' */
+	| error err_v ok dc_v { generateCode = 0; }
 		/*erros passados para a proxima declaracao*/
-	|	VAR error dc_v
+	|	VAR error dc_v { generateCode = 0; }
 	|	
 	;
 
@@ -190,21 +219,27 @@ dc_p:
 			if(entry) {
 				validProcedure = 0;
 				if(entry->category == PROCEDURE) {
+					generateCode = 0; 
 					fprintf(stderr, "Erro na linha %d: Redefinicao do procedimento %s.\n"
 							"\tDefinicao previa na linha %d\n", 
 							yylineno, entry->name, entry->line
 						);
 				} else if(entry->category == VAR) {
+					generateCode = 0; 
 					fprintf(stderr, "Erro na linha %d: %s previamente definido como variavel.\n"
 							"\tDefinicao previa na linha %d.\n", 
 							yylineno, entry->name, entry->line
 						);
 				} else if(entry->category == PROGRAM) {
+					generateCode = 0; 
 					fprintf(stderr, "Erro na linha %d: %s previamente definido como nome do programa.\n"
 							"\tDefinicao previa na linha %d.\n",
 							yylineno, entry->name, entry->line );
 				}
-			} else symbolTable_add(&tables[scope], procEntry);
+			} else {
+				procedureCount++;
+				symbolTable_add(&tables[scope], procEntry);
+			}
 		}
 		ok 
 		parametros 
@@ -218,6 +253,7 @@ dc_p:
 				for(i = 0; i < paramQty; i++) { 
 					int x = symbolTable_addParameter(&tables[0], $2.name, parameterList[i]);
 					if(x < 0) {
+						generateCode = 0; 
 						fprintf(stderr,
 							"Erro na linha %d: Parametro %s redefinido. \n" 
 								"\tPreviamente definido como parametro %d.\n", 
@@ -225,9 +261,13 @@ dc_p:
 							- x - 1);
 					} 
 					/* Adiciona a variavel no escopo novo */
+					parameterList[i].address = usedAddress++;
+					
+					code[codeLine++][0] = COPVL; 
 					symbolTable_add(&tables[scope+1], parameterList[i]);
 				}
 			}
+			usedAddress -= paramQty;
 			/* Aumenta um escopo - para as variaveis locais */
 			scope++;
 		}
@@ -235,16 +275,25 @@ dc_p:
 
 		corpo_p ok 
 		{
+			STable_Entry * entry = symbolTable_find(&tables[0], $2.name);
 			/* Saiu do procedimento */
+			if(entry) {
+
+				/* Desaloca memoria */
+				code[codeLine][0] = DESM;
+				code[codeLine++][1] = variablesPerScope[scope] + entry->paramQty;	
+			}
+			code[codeLine++][0] = RTPR;
 			symbolTable_erase(&tables[scope], &tables[scope]);
+			variablesPerScope[scope] = 0;
 			scope--;
 
 		} dc_p
 
 		/*erros na declaracao de parametros*/
-	|	PROCEDURE error corpo_p ok dc_p
+	|	PROCEDURE error corpo_p ok dc_p { generateCode = 0; }
 		/*erros nao tratados na declaracao anterior*/
-	|	error err_p ok dc_p
+	|	error err_p ok dc_p { generateCode = 0; }
 	|
 	;
 
@@ -277,7 +326,7 @@ parametros:
 		/*regra correta*/
 		SB_PO lista_par	SB_PC
 		/*erro na lista de parametros*/
-	|	SB_PO error SB_PC
+	|	SB_PO error SB_PC { generateCode = 0; }
 	|
 	;
 
@@ -295,22 +344,22 @@ lista_par:
 		} 
 		mais_par
 		/*erro vindo de "mais_par"*/
-	| error variaveis SB_DP tipo_var ok mais_par
+	| error variaveis SB_DP tipo_var ok mais_par { generateCode = 0; }
 		/*erro em um dos parametros*/
-	|	error mais_par ok
+	|	error mais_par ok { generateCode = 0; }
 		/*passa o erro para a regra "parametros"*/
-	|	error
+	|	error { generateCode = 0; }
 	;
 
 mais_par:
 		/*regra correta*/
 		SB_PV lista_par
 		/*erro vindo de "lista_par", sinconiza no ';'*/
-	|	error SB_PV ok lista_par
+	|	error SB_PV ok lista_par { generateCode = 0; }
 		/*erro vindo de "lista_par" sem ';'*/
-	| error lista_par
+	| error lista_par { generateCode = 0; }
 		/*passa o erro para a regra "lista_par"*/
-	|	error
+	|	error { generateCode = 0; }
 	|
 	;
 
@@ -319,18 +368,19 @@ corpo_p:
 		dc_v BEG ok comandos END SB_PV
 		/*tratamento especial para 'end' sem ';'*/
 	|	dc_v BEG ok comandos END { 
+			generateCode = 0; 
 			sprintf(errv, "syntax error, unexpected %s, expecting ;", yytext); yyerror (errv); yyerrok; }
 		/*passa erro no corpo para o err_cp*/
-	|	dc_v error
+	|	dc_v error { generateCode = 0; }
 		/*erro vindo da declaracao do procedimento*/
-	|	error corpo_p
+	|	error corpo_p { generateCode = 0; }
 	;
 	
 comandos:
 		/*regra correta*/
 		cmd SB_PV ok comandos
 		/*erro em um comando anterior*/
-	|	error comandos
+	|	error comandos { generateCode = 0; }
 	|
 	;
 
@@ -357,29 +407,39 @@ cmd:
 				}
 				/* Variavel usada no readln nao existe */
 				if(!entry) {
+					generateCode = 0; 
 					printf("Erro na linha %d: Variavel %s usada e nao declarada.\n", yylineno, entry->name);
 				} else {
 					/* Se as variaveis sao identificadores de programa ou procedure */
 					if(entry->category == CONST) {
+						generateCode = 0; 
 						fprintf(stderr,
 							"Erro na linha %d: Constante %s usada em leitura.\n", yylineno, entry->name);
 					} else if(entry->category == PROCEDURE) {
+						generateCode = 0; 
 						fprintf(stderr,
 							"Erro na linha %d: Procedimento %s usada em leitura.\n", yylineno, entry->name);
 					} else if(entry->category == PROGRAM) {
+						generateCode = 0; 
 						fprintf(stderr,
 							"Erro na linha %d: Nome do programa usada em leitura.\n", yylineno);
 					} else if(type == -1) type = entry->type;
-					else if(entry->type != type) badTypes = 1;
+					else if(entry->type != type) badTypes = 1, generateCode = 0; ;
+					
+					/* Geração de código */
+					code[codeLine++][0] = LEIT;
+					code[codeLine][0] = ARMZ;
+					code[codeLine++][1] = entry->address;
 				}
 			}
 			if(badTypes) 
 			{
+				generateCode = 0; 
 				/* Tipos diferentes (se nao houve algum erro anterior) */
 				fprintf(stderr,
 					"Erro na linha %d: tipos diferentes no comando readln.\n", 
 					yylineno);
-			}
+			} 
 		}
 		SB_PC ok 
 
@@ -407,22 +467,31 @@ cmd:
 				}
 				/* Variavel usada no readln nao existe */
 				if(!entry) {
+					generateCode = 0; 
 					fprintf(stderr,
 						"Erro na linha %d: Variavel %s usada e nao declarada.\n", yylineno, entry->name);
 				} else {
 					/* Se as variaveis sao identificadores de programa ou procedure */
 					if(entry->category == PROCEDURE) {
+						generateCode = 0; 
 						fprintf(stderr, 
 							"Erro na linha %d: Procedimento %s usada em escrita.\n", yylineno, entry->name);
 					} else if(entry->category == PROGRAM) {
+						generateCode = 0; 
 						fprintf(stderr,
 							"Erro na linha %d: Nome do programa usada em escrita.\n", yylineno);
 					} else if(type == -1) type = entry->type;
-					else if(entry->type != type) badTypes = 1;
-				}
+					else if(entry->type != type) badTypes = 1, generateCode = 0; 
+					
+					/* Geração de código */
+					code[codeLine][0] = CRVL;
+					code[codeLine++][1] = entry->address;
+					code[codeLine++][0] = IMPR;
+				} 
 			}
 			if(badTypes) 
 			{
+				generateCode = 0; 
 				/* Tipos diferentes (se nao houve algum erro anterior) */
 				printf("Erro na linha %d: tipos diferentes no comando writeln.\n", 
 					yylineno);
@@ -445,24 +514,33 @@ cmd:
 
 			 if(!entry) 
 			 {
+			 	generateCode = 0; 
 			 	/* Variavel nao declarada */
 			 	fprintf(stderr, "Erro na linha %d: Variavel %s nao declarada.\n", 
 			 		yylineno, $1.name);
 			 } else {
 			 	/* Erro de atribuicao */
 			 	if(entry->category == CONST) {
+			 		generateCode = 0; 
 			 		fprintf(stderr, "Erro na linha %d: Atribuindo uma expressao a constante.\n", 
 			 			yylineno);
 			 	} else if(entry->category == PROCEDURE) {
+			 		generateCode = 0; 
 			 		fprintf(stderr, "Erro na linha %d: Atribuindo uma expressao a procedimento.\n", 
 			 			yylineno);
 			 	} else if(entry->category == PROGRAM) {
+			 		generateCode = 0; 
 			 		fprintf(stderr, "Erro na linha %d: Nome do programa utilizado em expressao.\n", 
 			 			yylineno);
 			 	} else if (entry->type == INTEGER && $4.type == REAL) {
+			 		generateCode = 0; 
 			 		fprintf(stderr, "Erro na linha %d: Atribuicao de real a inteiro.\n", 
 			 			yylineno, $1.name);
 			 	} 
+
+			 	/* Geração de código */
+			 	code[codeLine][0] = ARMZ;
+			 	code[codeLine++][1] = entry->address;
 			 }
 		}
 
@@ -475,13 +553,57 @@ cmd:
 			/* Busca o procedimento */
 			STable_Entry * entry = symbolTable_find(&tables[0], $1.name);
 			if(!entry) {
+				generateCode = 0; 
 				fprintf(stderr, "Erro na linha %d: Procedimento %s nao declarado.\n", 
 					yylineno, $1.name);
 			} 
 			paramQty = 0; 
 			definedParams = 0;
 		}
-		ok lista_arg ok
+		ok 
+		lista_arg 
+		{
+			/* Busca o procedimento */
+			STable_Entry * entry = symbolTable_find(&tables[0], $1.name);
+
+			if(entry) {
+				/* Se o procedimento existe, confira os parametros */
+				ParameterNode * node; 
+				/* Numero de parametros do procedimento */
+				int qty = entry->paramQty;
+				node = entry->parameters;
+
+				if(qty < paramQty) {
+					generateCode = 0; 
+					fprintf(stderr, "Erro na linha %d: Excesso de parametros na chamada"
+						" do procedimento %s. %d parametro%c esperado%c, %d parametro%c obtido%c. \n",
+						yylineno, entry->name, qty, (qty==1)?'\0':'s', (qty==1)?'\0':'s',
+						paramQty, (paramQty==1)?'\0':'s', (paramQty==1)?'\0':'s');
+				} else if(qty > paramQty) {
+					generateCode = 0; 
+					fprintf(stderr, "Erro na linha %d: Falta de parametros na chamada"
+						" do procedimento %s. %d parametro%c esperado%c, %d parametro%c obtido%c. \n",
+						yylineno, entry->name, qty, (qty==1)?'\0':'s', (qty==1)?'\0':'s',
+						paramQty, (paramQty==1)?'\0':'s', (paramQty==1)?'\0':'s');
+				} 
+				
+				int i;
+				int checkCount = (paramQty<qty)?paramQty:qty;
+				for(i = 0; i < checkCount ; i++) {
+					if(parameterList[i].type != node->value.type) {
+						generateCode = 0; 
+						fprintf(stderr, "Erro na linha %d: Parametro %d do procedimento %s:\n\t"
+							"%s obtido, %s esperado. \n",
+							yylineno, i+1, entry->name,
+							(parameterList[i].type==REAL)?"Real":"Inteiro",
+							(node->value.type==REAL)?"Real":"Inteiro" );
+						node = node->next;
+					}				
+				}
+			} 
+		}
+		ok
+
 	|	IF ok condicao THEN ok cmd pfalsa
 	|	WHILE ok condicao DO ok cmd
 	;
@@ -496,32 +618,62 @@ lista_arg:
 		/*regra correta*/
 		SB_PO argumentos SB_PC
 		/*erro em argumentos*/
-	| SB_PO error SB_PC
+	| SB_PO error SB_PC { generateCode = 0; }
 	|
 	;
 	
 argumentos:
 		/*regra correta*/
-		IDENT ok mais_ident ok
+		IDENT 
+		{
+			STable_Entry * entry = 0;
+			int cscope = 0;
+			for(cscope = 0; !entry && cscope <= scope; cscope++) {
+				entry = symbolTable_find(&tables[cscope], $1.name);
+			}
+			if(!entry) {
+				generateCode = 0; 
+				fprintf(stderr, "Erro na linha %d: Parametro %s nao declarada.\n",
+					yylineno, $1.name);
+			} 
+			/* Adiciona na lista de parametros, mesmo que seja nao declarada */
+			parameterList[paramQty++] = $1;
+		}
+		ok mais_ident ok
 		/*passa o erro para a regra "lista_arg"*/
-	|	error
+	|	error { generateCode = 0; }
 	;
 
 mais_ident:
 		/*regra correta*/
 		SB_PV ok argumentos ok
 		/*erro em argumentos anteriores*/
-	|	error argumentos ok
+	|	error argumentos ok { generateCode = 0; }
 		/*passa o erro para a regra argumentos*/
-	|	error
+	|	error { generateCode = 0; }
 	|
 	;
 
 condicao:
 		/*regra correta*/
 		expressao relacao expressao
+		{
+			if($2.category == OP_EQ) {
+				code[codeLine++][0] = CPIG;
+			} else if($2.category == OP_DF) {
+				code[codeLine++][0] = CDES;
+			} else if($2.category == OP_GR) {
+				code[codeLine++][0] = CPMA;
+			} else if($2.category == OP_LS) {
+				code[codeLine++][0] = CPME;
+			} else if($2.category == OP_GE) {
+				code[codeLine++][0] = CPMI;
+			} else if($2.category == OP_LE) {
+				code[codeLine++][0] = CPMI;
+			}
+		}
 		/*erro no lado direito da condicao*/
-	|	expressao error
+	|	expressao error { generateCode = 0; }
 	;
 
 /*regras corretas*/
@@ -546,8 +698,14 @@ expressao:
 
 /*regra correta*/
 termo:
-		op_un fator mais_fatores  
+		op_un fator 
+		{ 
+			if($1.category == OP_MI) 
+				code[codeLine++][0] = INVE;
+		}
+		mais_fatores  
 		{
+
 			/* 	
 				Se algum fator for real, real. Se algum for erro, erro.
 				Se nao, integer 
@@ -563,6 +721,13 @@ termo:
 fator:
 		numero 
 		{ 
+			/* Geração de código */
+			code[codeLine][0] = CRCT;
+			/* Checa o tipo do numero, para usar o campo correto */
+			if($1.category == NRO_REAL)
+				code[codeLine++][1] = $1.rval;
+			else code[codeLine++][1] = $1.ival;
+
 			$$.type = $1.type; 
 		}
 	| SB_PO expressao SB_PC
@@ -576,6 +741,7 @@ fator:
 				entry = symbolTable_find(&tables[cscope], $1.name);
 			
 			if(!entry) {
+				generateCode = 0; 
 				/* Se o identificador nao existe */
 				fprintf(stderr, "Erro na linha %d: Identificador %s nao declarado.\n", 
 					yylineno, $1.name);
@@ -586,14 +752,20 @@ fator:
 					strcpy($$.name, entry->name);
 					$$.type = entry->type;
 				} else if(entry->category == PROCEDURE) {
+					generateCode = 0; 
 					fprintf(stderr, "Erro na linha %d: Nome de procedimento usado em artimetica.\n", 
 						yylineno);
 					$$.type = ERROR;
 				} else if(entry->category == PROGRAM) {
+					generateCode = 0; 
 					fprintf(stderr, "Erro na linha %d: Nome do programa usado em artimetica.\n", 
 						yylineno);
 					$$.type = ERROR;
 				}
+
+				/* Geração de código */
+				code[codeLine][0] = CRVL;
+				code[codeLine++][1] = entry->address;
 			}
 		}
 
@@ -602,7 +774,14 @@ fator:
 
 /*regras corretas*/
 mais_fatores:
-		op_mul fator mais_fatores
+		op_mul fator 
+		{
+			if($1.category == OP_ML)
+				code[codeLine++][0] = MULT;
+			else code[codeLine++][1] = DIVI;
+
+		}
+		mais_fatores
 		{
 			/* 	
 				Se algum fator for real, real. Se algum for erro, erro.
@@ -611,6 +790,7 @@ mais_fatores:
 			if($1.category == OP_DV) {
 				if($2.type != INTEGER || $3.type != INTEGER) 
 				{
+					generateCode = 0; 
 					fprintf(stderr, "Erro na linha %d: Divisao de numeros nao inteiros.\n", 
 						yylineno);
 				}
@@ -625,7 +805,13 @@ mais_fatores:
 	
 /*regras corretas*/
 outros_termos:
-		op_ad termo outros_termos
+		op_ad termo 
+		{
+			if($1.category == OP_PL)
+				code[codeLine++][0] = SOMA;
+			else code[codeLine++][0] = SUBT;
+		} 
+		outros_termos
 		{
 			/* 	
 				Se algum fator for real, real. Se algum for erro, erro.
@@ -656,7 +842,7 @@ mais_var:
 
 /*regras corretas*/
 op_un:
-		OP_PL
+		OP_PL 
 	|	OP_MI
 	|
 	;
@@ -699,6 +885,8 @@ less:
 
 
 void yyerror(const char *s) {
+
+	generateCode = 0; 
 	/* Parsing do erro (Modo verbose identifica os lugares, basta recuperar) */
 	char esperado[50], obtido[50], *pos;
 	int n = 0, len;
@@ -709,6 +897,7 @@ void yyerror(const char *s) {
 	} else {
 		if(n) {
 			if (!strcmp (obtido, "Comentario_nao_fechado")) {
+				
 				printf ("Erro na linha %d: '%s'\n", yylineno, obtido);
 			} else {
 				if (!strcmp (obtido, "SB_VG"))	strcpy (obtido, ",");
@@ -740,10 +929,14 @@ void yyerror(const char *s) {
 int main(int argc, char **argv )
 {
 	scope = 0;
+	codeLine = 0;
+	usedAddress = 0;
+	generateCode = 1;
 
 	int i;
 
 	for(i = 0; i < 10; i++) {
+		variablesPerScope[i] = 0;
 	 	symbolTable_init(&tables[i], NULL);
 	}
 
@@ -777,8 +970,25 @@ int main(int argc, char **argv )
 	/*Caso contrario, le da entrada padrao*/
 	else
 		yyin = stdin;
+
+	file = fopen("code.code", "w");
+
+	code[codeLine++][0] = INPP;
+	/* Pula para a main */
+	code[codeLine++][0] = DSVI;
+
 	/*Processa*/
 	yyparse();
+
+	code[1][1] = mainLine;
+	code[codeLine++][0] = PARA;
+	
+	if(generateCode) {
+		fprintf(stderr, "Codigo compilado com sucesso.\n");
+		flushCode(file, code, &codeLine);
+	}
+
+	fclose(file);
 	return 0;
 }
 

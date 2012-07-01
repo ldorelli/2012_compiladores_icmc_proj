@@ -86,7 +86,7 @@ int symbolTable_addParameter(Node * root, char * procedure, STable_Entry paramet
 
 	/* Navega pelos parametros, insere no final */
 	ParameterNode * node = aux->attr->parameters, * prev;
-	aux->attr->paramQty++;
+	
 
 	/* Se nao havia nenhum parametro ainda */
 	if(!node) {
@@ -94,6 +94,7 @@ int symbolTable_addParameter(Node * root, char * procedure, STable_Entry paramet
 		aux->attr->parameters = node;
 		node->value = parameter;
 		node->next = 0;
+		aux->attr->paramQty++;
 		return 1;
 	}
 	int orig = 0;
@@ -108,5 +109,6 @@ int symbolTable_addParameter(Node * root, char * procedure, STable_Entry paramet
 	prev->next = (ParameterNode *) malloc(sizeof(ParameterNode));
 	prev->next->value = parameter;
 	prev->next->next = 0;
+	aux->attr->paramQty++;
 	return 1;
 }
