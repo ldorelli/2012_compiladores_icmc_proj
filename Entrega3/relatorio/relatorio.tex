@@ -22,30 +22,95 @@
 \begin{document}
 \maketitle
 
-\begin{abstract}
-\end{abstract}
+\section{Objetivo} % (fold)
+\label{sec:objetivo}
+	O objetivo dessa parte final do projeto da disciplina é a implementação do analisador semântico para o compilador para a linguagem \verb=LALG= disponibilizado para os alunos. A seguir serão discutidos as mudanças que foram necessárias para a implementação do projeto. Nas seções seguintes mostraremos a abordagem utilizada para lidar com a tabela de símbolos e os tratamentos de erros que são gerados pelo compilador. Por fim, estão listados o meio para compilar o código e o método de executá-lo e alguns exemplos que foram utilizados para testar a compilação e suas respectivas saídas.
+
+% section objetivo (end)
 
 \section{Mudanças realizadas} % (fold)
-\label{sec:mudan_as_realizadas}
+\label{sec:mudancas_realizadas}
+	Sinto muito. Não sei.
 
+	Próximo.
 % section mudan_as_realizadas (end)
 
 \section{Decisões de projeto} % (fold)
-\label{sec:decis_es_de_projeto}
-	\subsubsection{Implementação} % (fold)
-	\label{ssub:implementa_o}
+\label{sec:decisoes_de_projeto}
+	\subsection{Implementação} % (fold)
+	\label{ssub:implementacao}
+		A implementação do compilador para a linguagem \verb=LALG= foi feita utilizando o \verb=yacc= (\em Yet Another Compiler-Compiler\normalfont) em linguagem de programação \verb=C=. Essa decisão foi influenciada principalmente devido à possibilidade de continuidade a partir da entrega anterior. Para a implementação da tabela de símbolos utilizada pela análise semântica foi utilizado a estrutura de dados \emph{trie} e seus detalhes podem ser encontrados na seção \ref{sub:tabela_de_simbolos}.
+
+		((Falar sobre os pseudo-atributos))
 	
 	% subsubsection implementa_o (end)
 
-	\subsubsection{Tratamento de erros} % (fold)
+	\subsection{Tabela de símbolos} % (fold)
+	\label{sub:tabela_de_simbolos}
+		A tabela de símbolos utilizada nessa implementação é baseado na estrutura de dados \emph{trie}. Nesse caso, cada nó da árvore armazena um caracter correspondente ao nome do identificador. Ao se chegar ao fim do da cadeia de caracteres, o nó correspondente armazena os atributos do identificador:
+
+		\begin{itemize}
+			\item \verb=type=: tipo do identificador
+			\item \verb=category=: categoria a que pertence
+			\item \verb=scope=: escopo do identificador
+			\item \verb=ival=: valor carregado pelo identificador
+			\item \verb=paramQty=: quantidade de parâmetros, no caso de procedimentos
+			\item \verb=rval=: valor de retorno (?)
+			\item \verb=line=: linha em que foi declarado
+			\item \verb=parameters=: lista de parâmetros, no caso de procedimentos
+			\item \verb=name=: nome completo do identificador, com um máximo de 20 caracteres
+		\end{itemize}
+	% subsection tabela_de_s_mbolos (end)
+
+	\subsection{Tratamento de erros} % (fold)
 	\label{ssub:tratamento_de_erros}
+		Os seguintes erros são tratados pela análise semântica.
+
+		\begin{itemize}
+			\item Variável ou procedimento não declarado
+			\item Variável ou procedimento declarado mais de uma vez
+			\item Incompatibilidade de parâmetros formais e reais: número, ordem e tipo
+			\item Uso de variáveis de escopo inadequado
+			\item Atribuição de um real a um inteiro
+			\item Divisão que entre números não inteiros
+			\item \verb=readln= e \verb=writeln= com variáveis de tipo diferentes
+		\end{itemize}
 	
 	% subsubsection tratamento_de_erros (end)
+
+	\subsection{Geração de pseudocódigo} % (fold)
+	\label{sub:geracao_de_pseudocodigo}
+		A geração de código pelo compilador é realizado em paralelo com a análise semântica e é interrompido caso seja encontrado algum erro de natureza léxica, sintática e/ou semântica.
+
+	% subsection geracao_de_pseudocodigo (end)
+
 % section decis_es_de_projeto (end)
 
 \section{Compilação} % (fold)
-\label{sec:compila_o}
+\label{sec:compilacao}
+	Para compilação do projeto em sistemas \emph{UNIX}, execute o arquivo \verb=Makefile= disponibilizado por meio do comando \verb=make=. Para o sistema operacional \emph{Windows}, execute a seguinte sequência de comandos:
 
+	\begin{center}
+		\begin{minipage}[ht]{0.5\textwidth}
+			\begin{verbatim}
+				yacc -d -v yacc.yacc --verbose 
+				flex lalg.l
+				gcc lex.yy.c trie.c symbolTable.c -lfl -o t3.exe
+			\end{verbatim}
+		\end{minipage}
+	\end{center}
+
+	Para execução do analisador sintático utilize os comandos:
+
+	\begin{center}
+		\begin{minipage}[ht]{0.5\textwidth}
+			\begin{verbatim}
+				t3.exe <nome_do_arquivo>
+			\end{verbatim}
+		\end{minipage}
+	\end{center}
+
+	Observe que o analisador só termina quando encontra um \emph{end-of-file}.
 % section compila_o (end)
 
 \section{Exemplos} % (fold)
