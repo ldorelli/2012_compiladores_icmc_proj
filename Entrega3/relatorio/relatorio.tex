@@ -30,7 +30,7 @@
 
 \section{Objetivo} % (fold)
 \label{sec:objetivo}
-	O objetivo dessa parte final do projeto da disciplina é a implementação do analisador semântico para o compilador para a linguagem \verb=LALG= disponibilizado para os alunos. A seguir serão discutidos as mudanças que foram necessárias para a implementação do projeto. Nas seções seguintes mostraremos a abordagem utilizada para lidar com a tabela de símbolos e os tratamentos de erros que são gerados pelo compilador. Por fim, estão listados o meio para compilar o código e o método de executá-lo e alguns exemplos que foram utilizados para testar a compilação e suas respectivas saídas.
+	O objetivo dessa parte final do projeto da disciplina é a implementação do analisador semântico para o compilador para a linguagem \verb=LALG= disponibilizada para os alunos. A seguir serão discutidos as mudanças que foram necessárias para a implementação do projeto. Nas seções seguintes mostraremos a abordagem utilizada para lidar com a tabela de símbolos e os tratamentos de erros que são gerados pelo compilador. Por fim, estão listados o meio para compilar o código e o método de executá-lo e alguns exemplos que foram utilizados para testar a compilação e suas respectivas saídas.
 
 % section objetivo (end)
 
@@ -45,7 +45,7 @@
 \label{sec:decisoes_de_projeto}
 	\subsection{Implementação} % (fold)
 	\label{ssub:implementacao}
-		A implementação do compilador para a linguagem \verb=LALG= foi feita utilizando o \verb=yacc= (\em Yet Another Compiler-Compiler\normalfont) em linguagem de programação \verb=C=. Essa decisão foi influenciada principalmente devido à possibilidade de continuidade a partir da entrega anterior. Para a implementação da tabela de símbolos utilizada pela análise semântica foi utilizado a estrutura de dados \emph{trie} e seus detalhes podem ser encontrados na seção \ref{sub:tabela_de_simbolos}.
+		A implementação do compilador para a linguagem \verb=LALG= foi feita utilizando o \verb=yacc= (\em Yet Another Compiler-Compiler\normalfont) em linguagem de programação \verb=C=. Essa decisão foi influenciada principalmente devido à possibilidade de continuidade a partir da entrega anterior. 
 
 		((Falar sobre os pseudo-atributos))
 	
@@ -53,15 +53,15 @@
 
 	\subsection{Tabela de símbolos} % (fold)
 	\label{sub:tabela_de_simbolos}
-		A tabela de símbolos utilizada nessa implementação é baseado na estrutura de dados \emph{trie}. Nesse caso, cada nó da árvore armazena um caracter correspondente ao nome do identificador. Ao se chegar ao fim do da cadeia de caracteres, o nó correspondente armazena os atributos do identificador:
+		A tabela de símbolos utilizada nessa implementação é baseado na estrutura de dados \emph{trie}. Nesse caso, cada nó da árvore armazena um caracter correspondente ao nome do identificador. Ao se chegar ao fim da cadeia de caracteres, o nó correspondente armazena os atributos do identificador:
 
 		\begin{itemize}
-			\item \verb=type=: tipo do identificador
-			\item \verb=category=: categoria a que pertence
+			\item \verb=type=: tipo do identificador (\verb=integer= ou \verb=real=)
+			\item \verb=category=: categoria a que pertence (constante ou variável)
 			\item \verb=scope=: escopo do identificador
-			\item \verb=ival=: valor carregado pelo identificador
+			\item \verb=ival=: valor da variável caso seja um número inteiro
+			\item \verb=rval=: valor da variável caso seja um número real
 			\item \verb=paramQty=: quantidade de parâmetros, no caso de procedimentos
-			\item \verb=rval=: valor de retorno (?)
 			\item \verb=line=: linha em que foi declarado
 			\item \verb=parameters=: lista de parâmetros, no caso de procedimentos
 			\item \verb=name=: nome completo do identificador, com um máximo de 20 caracteres
@@ -76,7 +76,6 @@
 			\item Variável ou procedimento não declarado
 			\item Variável ou procedimento declarado mais de uma vez
 			\item Incompatibilidade de parâmetros formais e reais: número, ordem e tipo
-			\item Uso de variáveis de escopo inadequado
 			\item Atribuição de um real a um inteiro
 			\item Divisão que entre números não inteiros
 			\item \verb=readln= e \verb=writeln= com variáveis de tipo diferentes
