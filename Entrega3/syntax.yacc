@@ -216,7 +216,8 @@ dc_p:
 				for(i = 0; i < paramQty; i++) { 
 					int x = symbolTable_addParameter(&tables[0], $2.name, parameterList[i]);
 					if(x < 0) {
-						printf("Erro na linha %d: parametro %s redefinido. \n" 
+						fprintf(stderr,
+							"Erro na linha %d: parametro %s redefinido. \n" 
 								"\tPreviamente definido como parametro %d.\n", 
 							yylineno, parameterList[i].name, 
 							- x - 1);
@@ -225,13 +226,16 @@ dc_p:
 			}
 			/* Aumenta um escopo - para as variaveis locais */
 			scope++;
+			symbolTable_init(&tables[scope], 0);
 		}
 		SB_PV
 
 		corpo_p ok 
 		{
 			/* Saiu do procedimento */
+			symbolTable_erase(&tables[scope], &tables[scope]);
 			scope--;
+
 		} dc_p
 
 		/*erros na declaracao de parametros*/
@@ -348,32 +352,108 @@ cmd:
 				for(cscope = 0; !entry && cscope <= scope; cscope++) {
 					entry = symbolTable_find(&tables[cscope], parameterList[i].name);
 				}
-				/* Vriavel usada no readln nao existe */
+				/* Variavel usada no readln nao existe */
 				if(!entry) {
 					printf("Erro na linha %d: Variavel %s usada e nao declarada.\n", yylineno, entry->name);
 				} else {
+					/* Se as variaveis sao identificadores de programa ou procedure */
 					if(entry->category == CONST) {
-						printf("Erro na linha %d: Constante %s usada em leitura.\n", yylineno, entry->name);
+						fprintf(stderr,
+							"Erro na linha %d: Constante %s usada em leitura.\n", yylineno, entry->name);
 					} else if(entry->category == PROCEDURE) {
-						printf("Erro na linha %d: Procedimento %s usada em leitura.\n", yylineno, entry->name);
+						fprintf(stderr,
+							"Erro na linha %d: Procedimento %s usada em leitura.\n", yylineno, entry->name);
 					} else if(entry->category == PROGRAM) {
-						printf("Erro na linha %d: Nome do programa usada em leitura.\n", yylineno);
+						fprintf(stderr,
+							"Erro na linha %d: Nome do programa usada em leitura.\n", yylineno);
 					} else if(type == -1) type = entry->type;
 					else if(entry->type != type) badTypes = 1;
 				}
 			}
 			if(badTypes) 
 			{
-				printf("Erro na linha %d: tipos diferentes no comando readln.\n", 
+				/* Tipos diferentes (se nao houve algum erro anterior) */
+				fprintf(stderr,
+					"Erro na linha %d: tipos diferentes no comando readln.\n", 
 					yylineno);
 			}
 		}
 		SB_PC ok 
 
 
-	|	WRITELN ok SB_PO variaveis SB_PC ok
+	|	
+		WRITELN 
+		{
+			paramQty = 0;
+			definedParams = 0;
+		}
+		ok 
+		SB_PO 
+		variaveis 
+		{
+			int type = -1;
+			int badTypes = 0, i, cscope;
+			STable_Entry * entry = 0;
+
+			for(i = 0; i < paramQty; i++) {
+				int found = 0;
+				entry = 0;
+				/* Procura para ver se a variavel sendo impressa existe */
+				for(cscope = 0; !entry && cscope <= scope; cscope++) {
+					entry = symbolTable_find(&tables[cscope], parameterList[i].name);
+				}
+				/* Variavel usada no readln nao existe */
+				if(!entry) {
+					fprintf(stderr,
+						"Erro na linha %d: Variavel %s usada e nao declarada.\n", yylineno, entry->name);
+				} else {
+					/* Se as variaveis sao identificadores de programa ou procedure */
+					if(entry->category == PROCEDURE) {
+						fprintf(stderr, 
+							"Erro na linha %d: Procedimento %s usada em escrita.\n", yylineno, entry->name);
+					} else if(entry->category == PROGRAM) {
+						fprintf(stderr,
+							"Erro na linha %d: Nome do programa usada em escrita.\n", yylineno);
+					} else if(type == -1) type = entry->type;
+					else if(entry->type != type) badTypes = 1;
+				}
+			}
+			if(badTypes) 
+			{
+				/* Tipos diferentes (se nao houve algum erro anterior) */
+				printf("Erro na linha %d: tipos diferentes no comando writeln.\n", 
+					yylineno);
+			}
+		}
+		SB_PC ok
+
+		/* begin end */
 	|	BEG ok comandos END ok
-	|	IDENT ok OP_AT expressao
+	
+	|	/* ident := expr */
+		IDENT ok OP_AT expressao
+		{
+			STable_Entry * entry = 0;
+
+			/* Procura em todos os escopos aceitaveis */
+			int cscope = 0;
+			for(cscope = 0; !entry && cscope <= scope; cscope++) 
+			 	entry = symbolTable_find(&tables[cscope], $1.name);
+
+			 if(!entry) 
+			 {
+			 	/* Variavel nao declarada */
+			 	fprintf(stderr, "Erro na linha %d: Variavel %s nao declarada.\n", 
+			 		yylineno, $1.name);
+			 } else {
+			 	/* Erro de atribuicao */
+			 	if(entry->type == INTEGER && $4.type == REAL) {
+			 		fprintf(stderr, "Erro na linha %d: Atribuicao de real a inteiro.\n", 
+			 			yylineno, $1.name);
+			 	}
+			 }
+		}
+
 	|	REPEAT ok comandos UNTIL ok condicao
 	|	IDENT ok lista_arg ok
 	|	IF ok condicao THEN ok cmd pfalsa
@@ -430,18 +510,32 @@ relacao:
 
 /*regra corretas*/
 expressao:
-		termo outros_termos
+		termo outros_termos 
+		{
+			if($1.type == REAL || $2.type == REAL) $$.type = REAL;
+			else if($1.type == ERROR || $2.type == ERROR) $$.type = ERROR;
+			else $$.type = INTEGER;
+		}
 	;
 
 /*regra correta*/
 termo:
-		op_un fator mais_fatores 
+		op_un fator mais_fatores  
+		{
+			/* 	
+				Se algum fator for real, real. Se algum for erro, erro.
+				Se nao, integer 
+			*/
+			if($2.type == REAL || $3.type == REAL) $$.type = REAL;
+			else if($2.type == ERROR || $3.type == ERROR) $$.type = ERROR;
+			else $$.type = INTEGER;
+		}
 	;
 
 
 /*regras corretas*/
 fator:
-		numero
+		numero { $$.type = $1.type; }
 	| SB_PO expressao SB_PC
 		/*Note que lista_arg pode ser vazia, gerando IDENT*/
 	|	IDENT lista_arg
@@ -450,12 +544,38 @@ fator:
 /*regras corretas*/
 mais_fatores:
 		op_mul fator mais_fatores
+		{
+			/* 	
+				Se algum fator for real, real. Se algum for erro, erro.
+				Se nao, integer 
+			*/
+			if($1.category == OP_DV) {
+				if($2.type != INTEGER || $3.type != INTEGER) 
+				{
+					fprintf(stderr, "Erro na linha %d: Divisao de numeros nao inteiros.\n", 
+						yylineno);
+				}
+			}
+
+			if($2.type == REAL || $3.type == REAL) $$.type = REAL;
+			else if($2.type == ERROR || $3.type == ERROR) $$.type = ERROR;
+			else $$.type = INTEGER;
+		}
 	|
 	;
 	
 /*regras corretas*/
 outros_termos:
 		op_ad termo outros_termos
+		{
+			/* 	
+				Se algum fator for real, real. Se algum for erro, erro.
+				Se nao, integer 
+			*/
+			if($2.type == REAL || $3.type == REAL) $$.type = REAL;
+			else if($2.type == ERROR || $3.type == ERROR) $$.type = ERROR;
+			else $$.type = INTEGER;
+		}
 	|
 	;
 

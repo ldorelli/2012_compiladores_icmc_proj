@@ -59,6 +59,6 @@ int symbolTable_addParameter(Node * root, char * procedure, STable_Entry paramet
 /* Busca por uma entrada na tabela de simbolos */
 STable_Entry * symbolTable_find(Node *root, char * name) ;
 /* Deleta uma tabela de simbolos */
-void symbolTable_erase(Node * root) ;
+void symbolTable_erase(Node * current, Node * root) ;
 
 #endif

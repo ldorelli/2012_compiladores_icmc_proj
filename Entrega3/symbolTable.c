@@ -42,26 +42,29 @@ STable_Entry * symbolTable_find(Node *root, char * name) {
 	return 0;
 }
 
-void symbolTable_erase(Node * root) {
+void symbolTable_erase(Node * cur, Node * root) {
+	
 	int i;
 	ParameterNode * old;
 	/* Limpa a tabela de simbolos */
 	for(i = 0; i < 256; i++) 
-		if(root->next[i]) symbolTable_erase(root->next[i]);
-
-	if(root->attr) {
-		ParameterNode * aux = root->attr->parameters;
+		if(cur->next[i]) 
+			symbolTable_erase(cur->next[i], root);
+			
+	/* Limpa os parametros */
+	if(cur->attr) {
+		ParameterNode * aux = cur->attr->parameters;
 		while(aux) {
 			old = aux;
 			aux = aux->next;
 			free(old);
 		}
-
-		root->attr->paramQty = 0;
-		if(root->attr) free(root->attr);
+		/* Libera os atributos */
+		if(cur->attr) free(cur->attr);
 	}
 
-	free(root);
+	/* Libera a memoria, se nao for a raiz */
+	if(cur != root) free(cur);
 } 
 
 int symbolTable_addParameter(Node * root, char * procedure, STable_Entry parameter)
