@@ -12,11 +12,13 @@ program ursinhoPimpao;
 begin
 	readln(a,b); 
 	c:=5;
-	while a<b do 
+	
+	repeat
 	begin 
 		a:=a+1; 
 		c:=c*a;
 	end; 
+	until a < c;
 	
 	a := 1 * 2 + a;
 	writeln(c); 

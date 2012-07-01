@@ -512,6 +512,9 @@ cmd:
 			for(cscope = 0; !entry && cscope <= scope; cscope++) 
 			 	entry = symbolTable_find(&tables[cscope], $1.name);
 
+
+		//	 printf("Expressao Type %d : %s\n", yylineno, $4.type==REAL?"real":"integer");
+
 			 if(!entry) 
 			 {
 			 	generateCode = 0; 
@@ -544,7 +547,22 @@ cmd:
 			 }
 		}
 
-	|	REPEAT ok comandos UNTIL ok condicao
+	|	
+		REPEAT
+		{
+			/* Endereco de retorno de Loop */
+			//$1.codeLine = codeLine;
+		}
+		ok comandos UNTIL
+		ok condicao 
+		{
+			//code[codeLine][0] = DSVF;
+			/* Pula para a linha duas abaixo! A proxima eh um jump incondicional voltando */
+			//code[codeLine][1] = codeLine + 2; 
+			//codeLine++;
+			//code[codeLine][0] = DSVI;
+			//code[codeLine++][1] = $1.codeLine;
+		}
 	
 	|
 		/* Chamada de procedimento */
@@ -710,9 +728,15 @@ termo:
 				Se algum fator for real, real. Se algum for erro, erro.
 				Se nao, integer 
 			*/
+			printf("Em Termo, mais fatores %d: %s - %s\n", yylineno, yytext, 
+				$3.type==REAL?"real":"integer" );
+
+
 			if($2.type == REAL || $3.type == REAL) $$.type = REAL;
 			else if($2.type == ERROR || $3.type == ERROR) $$.type = ERROR;
 			else $$.type = INTEGER;
+
+
 		}
 	;
 
@@ -728,9 +752,14 @@ fator:
 				code[codeLine++][1] = $1.rval;
 			else code[codeLine++][1] = $1.ival;
 
+			printf("Fator %d: %s - %s\n", yylineno, yytext, $1.type==REAL?"real":"integer" );
 			$$.type = $1.type; 
 		}
-	| SB_PO expressao SB_PC
+	| 	
+		SB_PO expressao SB_PC
+		{ 
+			$$.type = $2.type; 
+		}
 		/*Note que lista_arg pode ser vazia, gerando IDENT*/
 	|	IDENT 
 		{
@@ -762,6 +791,7 @@ fator:
 						yylineno);
 					$$.type = ERROR;
 				}
+				printf("lol %d: %s - %s\n", yylineno, yytext, $$.type==REAL?"real":"integer" );
 
 				/* Geração de código */
 				code[codeLine][0] = CRVL;
@@ -796,11 +826,17 @@ mais_fatores:
 				}
 			}
 
+			printf("mais fatores %d: %s - %s and %s\n", yylineno, yytext, 
+				$2.type==REAL?"real":"integer",
+				$3.type==REAL?"real":"integer" );
 			if($2.type == REAL || $3.type == REAL) $$.type = REAL;
 			else if($2.type == ERROR || $3.type == ERROR) $$.type = ERROR;
 			else $$.type = INTEGER;
-		}
-	|
+
+			printf("after mais fatores %d: %s - %s\n", yylineno, yytext, 
+				$$.type==REAL?"real":"integer");
+			}
+	| 	{ $$.type = INTEGER; }
 	;
 	
 /*regras corretas*/
@@ -821,7 +857,9 @@ outros_termos:
 			else if($2.type == ERROR || $3.type == ERROR) $$.type = ERROR;
 			else $$.type = INTEGER;
 		}
-	|
+	
+	|	{ $$.type = INTEGER; }	
+
 	;
 
 /*regras corretas e sincronizacao apos identificador*/
@@ -861,15 +899,26 @@ op_mul:
 
 /*regras corretas*/
 numero:
-		NRO_REAL
-	|	NRO_INTEIRO 
+		NRO_REAL 
+		{ $$.type = REAL; }
+	
+	|	
+		NRO_INTEIRO 
+		{ $$.type = INTEGER; }
 	;
 
 /*regras corretas*/
 tipo_var:
 		INTEGER 
+		{ 
+			$$.type = INTEGER; 
+		}
+	
 	|	REAL 
+		{ $$.type = REAL; }
+
 	|	CHAR 
+		{ $$.type = CHAR; }
 	;
 
 /*regra para abreviar o comando*/

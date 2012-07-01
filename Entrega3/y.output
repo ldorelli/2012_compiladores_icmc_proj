@@ -24,8 +24,8 @@ State 164 conflicts: 1 shift/reduce
 State 182 conflicts: 1 shift/reduce, 1 reduce/reduce
 State 190 conflicts: 1 shift/reduce
 State 211 conflicts: 1 shift/reduce
-State 219 conflicts: 1 shift/reduce
-State 221 conflicts: 1 reduce/reduce
+State 220 conflicts: 1 shift/reduce
+State 222 conflicts: 1 reduce/reduce
 
 
 Grammar
@@ -126,143 +126,146 @@ Grammar
    64 cmd: "writeln" @12 ok "(" variaveis @13 ")" ok
    65    | "begin" ok comandos "end" ok
    66    | "identificador" ok ":=" expressao
-   67    | "repeat" ok comandos "until" ok condicao
 
-   68 @14: /* empty */
+   67 @14: /* empty */
+
+   68 cmd: "repeat" @14 ok comandos "until" ok condicao
 
    69 @15: /* empty */
 
-   70 cmd: "identificador" @14 ok lista_arg @15 ok
-   71    | "if" ok condicao "then" ok cmd pfalsa
-   72    | "while" ok condicao "do" ok cmd
+   70 @16: /* empty */
 
-   73 pfalsa: "else" ok cmd
-   74       | /* empty */
+   71 cmd: "identificador" @15 ok lista_arg @16 ok
+   72    | "if" ok condicao "then" ok cmd pfalsa
+   73    | "while" ok condicao "do" ok cmd
 
-   75 lista_arg: "(" argumentos ")"
-   76          | "(" error ")"
-   77          | /* empty */
+   74 pfalsa: "else" ok cmd
+   75       | /* empty */
 
-   78 @16: /* empty */
+   76 lista_arg: "(" argumentos ")"
+   77          | "(" error ")"
+   78          | /* empty */
 
-   79 argumentos: "identificador" @16 ok mais_ident ok
-   80           | error
+   79 @17: /* empty */
 
-   81 mais_ident: ";" ok argumentos ok
-   82           | error argumentos ok
-   83           | error
-   84           | /* empty */
+   80 argumentos: "identificador" @17 ok mais_ident ok
+   81           | error
 
-   85 condicao: expressao relacao expressao
-   86         | expressao error
+   82 mais_ident: ";" ok argumentos ok
+   83           | error argumentos ok
+   84           | error
+   85           | /* empty */
 
-   87 relacao: "="
-   88        | "<>"
-   89        | ">="
-   90        | "<="
-   91        | ">"
-   92        | "<"
+   86 condicao: expressao relacao expressao
+   87         | expressao error
 
-   93 expressao: termo outros_termos
+   88 relacao: "="
+   89        | "<>"
+   90        | ">="
+   91        | "<="
+   92        | ">"
+   93        | "<"
 
-   94 @17: /* empty */
+   94 expressao: termo outros_termos
 
-   95 termo: op_un fator @17 mais_fatores
+   95 @18: /* empty */
 
-   96 fator: numero
-   97      | "(" expressao ")"
+   96 termo: op_un fator @18 mais_fatores
 
-   98 @18: /* empty */
+   97 fator: numero
+   98      | "(" expressao ")"
 
-   99 fator: "identificador" @18 lista_arg
+   99 @19: /* empty */
 
-  100 @19: /* empty */
+  100 fator: "identificador" @19 lista_arg
 
-  101 mais_fatores: op_mul fator @19 mais_fatores
-  102             | /* empty */
+  101 @20: /* empty */
 
-  103 @20: /* empty */
+  102 mais_fatores: op_mul fator @20 mais_fatores
+  103             | /* empty */
 
-  104 outros_termos: op_ad termo @20 outros_termos
-  105              | /* empty */
+  104 @21: /* empty */
 
-  106 @21: /* empty */
+  105 outros_termos: op_ad termo @21 outros_termos
+  106              | /* empty */
 
-  107 variaveis: "identificador" @21 ok mais_var
+  107 @22: /* empty */
 
-  108 mais_var: SB_VG variaveis
-  109         | /* empty */
+  108 variaveis: "identificador" @22 ok mais_var
 
-  110 op_un: "+"
-  111      | "-"
-  112      | /* empty */
+  109 mais_var: SB_VG variaveis
+  110         | /* empty */
 
-  113 op_ad: "+"
-  114      | "-"
+  111 op_un: "+"
+  112      | "-"
+  113      | /* empty */
 
-  115 op_mul: "*"
-  116       | "/"
+  114 op_ad: "+"
+  115      | "-"
 
-  117 numero: "numero_real"
-  118       | "numero_inteiro"
+  116 op_mul: "*"
+  117       | "/"
 
-  119 tipo_var: "integer"
-  120         | "real"
-  121         | "char"
+  118 numero: "numero_real"
+  119       | "numero_inteiro"
 
-  122 ok: /* empty */
+  120 tipo_var: "integer"
+  121         | "real"
+  122         | "char"
 
-  123 less: /* empty */
+  123 ok: /* empty */
+
+  124 less: /* empty */
 
 
 Terminals, with rules where they appear
 
 $end (0) 0
-error (256) 3 4 10 11 16 17 23 24 40 44 45 46 48 49 50 54 55 57 76
-    80 82 83 86
-"identificador" (258) 2 9 22 66 70 79 99 107
+error (256) 3 4 10 11 16 17 23 24 40 44 45 46 48 49 50 54 55 57 77
+    81 83 84 87
+"identificador" (258) 2 9 22 66 71 80 100 108
 ":=" (259) 9 66
-"<>" (260) 88
-">=" (261) 89
-"<=" (262) 90
-">" (263) 91
-"<" (264) 92
-"+" (265) 110 113
-"-" (266) 111 114
-"*" (267) 115
-"/" (268) 116
-"=" (269) 87
-";" (270) 2 4 9 15 22 26 31 35 47 48 52 56 81
+"<>" (260) 89
+">=" (261) 90
+"<=" (262) 91
+">" (263) 92
+"<" (264) 93
+"+" (265) 111 114
+"-" (266) 112 115
+"*" (267) 116
+"/" (268) 117
+"=" (269) 88
+";" (270) 2 4 9 15 22 26 31 35 47 48 52 56 82
 "." (271) 2 3 4
 ":" (272) 15 43 44
-SB_VG (273) 108
-"(" (274) 39 40 61 64 75 76 97
-")" (275) 39 40 61 64 75 76 97
+SB_VG (273) 109
+"(" (274) 39 40 61 64 76 77 98
+")" (275) 39 40 61 64 76 77 98
 "Identificador_muito_grande" (276)
 "Inteiro_fora_dos_limites" (277)
 "Numero_mal_formado" (278)
 "Caracter_nao_identificado" (279)
 "Comentario_nao_fechado" (280)
-"numero_inteiro" (281) 118
-"numero_real" (282) 117
+"numero_inteiro" (281) 119
+"numero_real" (282) 118
 "program" (283) 2 3
 "begin" (284) 6 30 34 37 52 53 65
 "end" (285) 6 38 52 53 65
 "const" (286) 9 11 27
 "var" (287) 15 17 28 32
-"real" (288) 120
-"integer" (289) 119
-"char" (290) 121
+"real" (288) 121
+"integer" (289) 120
+"char" (290) 122
 "procedure" (291) 22 23 29 33 36
-"if" (292) 71
-"else" (293) 73
+"if" (292) 72
+"else" (293) 74
 "readln" (294) 61
 "writeln" (295) 64
-"repeat" (296) 67
-"then" (297) 71
-"until" (298) 67
-"while" (299) 72
-"do" (300) 72
+"repeat" (296) 68
+"then" (297) 72
+"until" (298) 68
+"while" (299) 73
+"do" (300) 73
 "function" (301)
 
 
@@ -315,9 +318,9 @@ mais_par (68)
 corpo_p (69)
     on left: 52 53 54 55, on right: 22 23 55
 comandos (70)
-    on left: 56 57 58, on right: 6 52 53 56 57 65 67
+    on left: 56 57 58, on right: 6 52 53 56 57 65 68
 cmd (71)
-    on left: 61 64 65 66 67 70 71 72, on right: 56 71 72 73
+    on left: 61 64 65 66 68 71 72 73, on right: 56 72 73 74
 @10 (72)
     on left: 59, on right: 61
 @11 (73)
@@ -327,62 +330,64 @@ cmd (71)
 @13 (75)
     on left: 63, on right: 64
 @14 (76)
-    on left: 68, on right: 70
+    on left: 67, on right: 68
 @15 (77)
-    on left: 69, on right: 70
-pfalsa (78)
-    on left: 73 74, on right: 71
-lista_arg (79)
-    on left: 75 76 77, on right: 70 99
-argumentos (80)
-    on left: 79 80, on right: 75 81 82
-@16 (81)
-    on left: 78, on right: 79
-mais_ident (82)
-    on left: 81 82 83 84, on right: 79
-condicao (83)
-    on left: 85 86, on right: 67 71 72
-relacao (84)
-    on left: 87 88 89 90 91 92, on right: 85
-expressao (85)
-    on left: 93, on right: 66 85 86 97
-termo (86)
-    on left: 95, on right: 93 104
-@17 (87)
-    on left: 94, on right: 95
-fator (88)
-    on left: 96 97 99, on right: 95 101
-@18 (89)
-    on left: 98, on right: 99
-mais_fatores (90)
-    on left: 101 102, on right: 95 101
-@19 (91)
-    on left: 100, on right: 101
-outros_termos (92)
-    on left: 104 105, on right: 93 104
-@20 (93)
-    on left: 103, on right: 104
-variaveis (94)
-    on left: 107, on right: 15 43 44 61 64 108
-@21 (95)
-    on left: 106, on right: 107
-mais_var (96)
-    on left: 108 109, on right: 107
-op_un (97)
-    on left: 110 111 112, on right: 95
-op_ad (98)
-    on left: 113 114, on right: 104
-op_mul (99)
-    on left: 115 116, on right: 101
-numero (100)
-    on left: 117 118, on right: 9 96
-tipo_var (101)
-    on left: 119 120 121, on right: 15 43 44
-ok (102)
-    on left: 122, on right: 4 6 9 10 15 16 22 23 24 44 45 48 52 53
-    56 61 64 65 66 67 70 71 72 73 79 81 82 107
-less (103)
-    on left: 123, on right: 27 28 29 30 32 33 34 36 37
+    on left: 69, on right: 71
+@16 (78)
+    on left: 70, on right: 71
+pfalsa (79)
+    on left: 74 75, on right: 72
+lista_arg (80)
+    on left: 76 77 78, on right: 71 100
+argumentos (81)
+    on left: 80 81, on right: 76 82 83
+@17 (82)
+    on left: 79, on right: 80
+mais_ident (83)
+    on left: 82 83 84 85, on right: 80
+condicao (84)
+    on left: 86 87, on right: 68 72 73
+relacao (85)
+    on left: 88 89 90 91 92 93, on right: 86
+expressao (86)
+    on left: 94, on right: 66 86 87 98
+termo (87)
+    on left: 96, on right: 94 105
+@18 (88)
+    on left: 95, on right: 96
+fator (89)
+    on left: 97 98 100, on right: 96 102
+@19 (90)
+    on left: 99, on right: 100
+mais_fatores (91)
+    on left: 102 103, on right: 96 102
+@20 (92)
+    on left: 101, on right: 102
+outros_termos (93)
+    on left: 105 106, on right: 94 105
+@21 (94)
+    on left: 104, on right: 105
+variaveis (95)
+    on left: 108, on right: 15 43 44 61 64 109
+@22 (96)
+    on left: 107, on right: 108
+mais_var (97)
+    on left: 109 110, on right: 108
+op_un (98)
+    on left: 111 112 113, on right: 96
+op_ad (99)
+    on left: 114 115, on right: 105
+op_mul (100)
+    on left: 116 117, on right: 102
+numero (101)
+    on left: 118 119, on right: 9 97
+tipo_var (102)
+    on left: 120 121 122, on right: 15 43 44
+ok (103)
+    on left: 123, on right: 4 6 9 10 15 16 22 23 24 44 45 48 52 53
+    56 61 64 65 66 68 71 72 73 74 80 82 83 108
+less (104)
+    on left: 124, on right: 27 28 29 30 32 33 34 36 37
 
 
 state 0
@@ -422,7 +427,7 @@ state 4
 
     4 program: error ";" . ok corpo "."
 
-    $default  reduce using rule 122 (ok)
+    $default  reduce using rule 123 (ok)
 
     ok  go to state 8
 
@@ -552,7 +557,7 @@ state 17
 
    30 err_c: "begin" . less
 
-    $default  reduce using rule 123 (less)
+    $default  reduce using rule 124 (less)
 
     less  go to state 31
 
@@ -561,7 +566,7 @@ state 18
 
    27 err_c: "const" . less
 
-    $default  reduce using rule 123 (less)
+    $default  reduce using rule 124 (less)
 
     less  go to state 32
 
@@ -570,7 +575,7 @@ state 19
 
    28 err_c: "var" . less
 
-    $default  reduce using rule 123 (less)
+    $default  reduce using rule 124 (less)
 
     less  go to state 33
 
@@ -579,7 +584,7 @@ state 20
 
    29 err_c: "procedure" . less
 
-    $default  reduce using rule 123 (less)
+    $default  reduce using rule 124 (less)
 
     less  go to state 34
 
@@ -588,7 +593,7 @@ state 21
 
    10 dc_c: error err_c . ok dc_c
 
-    $default  reduce using rule 122 (ok)
+    $default  reduce using rule 123 (ok)
 
     ok  go to state 35
 
@@ -612,7 +617,7 @@ state 23
 
     9 dc_c: "const" "identificador" . ok ":=" numero ";" @3 dc_c
 
-    $default  reduce using rule 122 (ok)
+    $default  reduce using rule 123 (ok)
 
     ok  go to state 37
 
@@ -780,7 +785,7 @@ state 40
 
    34 err_v: "begin" . less
 
-    $default  reduce using rule 123 (less)
+    $default  reduce using rule 124 (less)
 
     less  go to state 62
 
@@ -789,7 +794,7 @@ state 41
 
    32 err_v: "var" . less
 
-    $default  reduce using rule 123 (less)
+    $default  reduce using rule 124 (less)
 
     less  go to state 63
 
@@ -798,7 +803,7 @@ state 42
 
    33 err_v: "procedure" . less
 
-    $default  reduce using rule 123 (less)
+    $default  reduce using rule 124 (less)
 
     less  go to state 64
 
@@ -807,7 +812,7 @@ state 43
 
    16 dc_v: error err_v . ok dc_v
 
-    $default  reduce using rule 122 (ok)
+    $default  reduce using rule 123 (ok)
 
     ok  go to state 65
 
@@ -910,12 +915,12 @@ state 52
 state 53
 
    66 cmd: "identificador" . ok ":=" expressao
-   70    | "identificador" . @14 ok lista_arg @15 ok
+   71    | "identificador" . @15 ok lista_arg @16 ok
 
-    ":="      reduce using rule 122 (ok)
-    $default  reduce using rule 68 (@14)
+    ":="      reduce using rule 123 (ok)
+    $default  reduce using rule 69 (@15)
 
-    @14  go to state 81
+    @15  go to state 81
     ok   go to state 82
 
 
@@ -923,16 +928,16 @@ state 54
 
    65 cmd: "begin" . ok comandos "end" ok
 
-    $default  reduce using rule 122 (ok)
+    $default  reduce using rule 123 (ok)
 
     ok  go to state 83
 
 
 state 55
 
-   71 cmd: "if" . ok condicao "then" ok cmd pfalsa
+   72 cmd: "if" . ok condicao "then" ok cmd pfalsa
 
-    $default  reduce using rule 122 (ok)
+    $default  reduce using rule 123 (ok)
 
     ok  go to state 84
 
@@ -941,7 +946,7 @@ state 56
 
    61 cmd: "readln" . ok "(" @10 variaveis @11 ")" ok
 
-    $default  reduce using rule 122 (ok)
+    $default  reduce using rule 123 (ok)
 
     ok  go to state 85
 
@@ -957,18 +962,18 @@ state 57
 
 state 58
 
-   67 cmd: "repeat" . ok comandos "until" ok condicao
+   68 cmd: "repeat" . @14 ok comandos "until" ok condicao
 
-    $default  reduce using rule 122 (ok)
+    $default  reduce using rule 67 (@14)
 
-    ok  go to state 87
+    @14  go to state 87
 
 
 state 59
 
-   72 cmd: "while" . ok condicao "do" ok cmd
+   73 cmd: "while" . ok condicao "do" ok cmd
 
-    $default  reduce using rule 122 (ok)
+    $default  reduce using rule 123 (ok)
 
     ok  go to state 88
 
@@ -1031,18 +1036,18 @@ state 66
 
 state 67
 
-  107 variaveis: "identificador" . @21 ok mais_var
+  108 variaveis: "identificador" . @22 ok mais_var
 
-    $default  reduce using rule 106 (@21)
+    $default  reduce using rule 107 (@22)
 
-    @21  go to state 92
+    @22  go to state 92
 
 
 state 68
 
    15 dc_v: "var" @4 variaveis . ok ":" tipo_var ";" ok @5 dc_v
 
-    $default  reduce using rule 122 (ok)
+    $default  reduce using rule 123 (ok)
 
     ok  go to state 93
 
@@ -1058,7 +1063,7 @@ state 70
 
    37 err_p: "begin" . less
 
-    $default  reduce using rule 123 (less)
+    $default  reduce using rule 124 (less)
 
     less  go to state 94
 
@@ -1074,7 +1079,7 @@ state 72
 
    36 err_p: "procedure" . less
 
-    $default  reduce using rule 123 (less)
+    $default  reduce using rule 124 (less)
 
     less  go to state 95
 
@@ -1083,7 +1088,7 @@ state 73
 
    24 dc_p: error err_p . ok dc_p
 
-    $default  reduce using rule 122 (ok)
+    $default  reduce using rule 123 (ok)
 
     ok  go to state 96
 
@@ -1120,16 +1125,16 @@ state 76
 
 state 77
 
-  118 numero: "numero_inteiro" .
+  119 numero: "numero_inteiro" .
 
-    $default  reduce using rule 118 (numero)
+    $default  reduce using rule 119 (numero)
 
 
 state 78
 
-  117 numero: "numero_real" .
+  118 numero: "numero_real" .
 
-    $default  reduce using rule 117 (numero)
+    $default  reduce using rule 118 (numero)
 
 
 state 79
@@ -1148,9 +1153,9 @@ state 80
 
 state 81
 
-   70 cmd: "identificador" @14 . ok lista_arg @15 ok
+   71 cmd: "identificador" @15 . ok lista_arg @16 ok
 
-    $default  reduce using rule 122 (ok)
+    $default  reduce using rule 123 (ok)
 
     ok  go to state 102
 
@@ -1183,12 +1188,12 @@ state 83
 
 state 84
 
-   71 cmd: "if" ok . condicao "then" ok cmd pfalsa
+   72 cmd: "if" ok . condicao "then" ok cmd pfalsa
 
     "+"  shift, and go to state 105
     "-"  shift, and go to state 106
 
-    $default  reduce using rule 112 (op_un)
+    $default  reduce using rule 113 (op_un)
 
     condicao   go to state 107
     expressao  go to state 108
@@ -1207,38 +1212,28 @@ state 86
 
    64 cmd: "writeln" @12 . ok "(" variaveis @13 ")" ok
 
-    $default  reduce using rule 122 (ok)
+    $default  reduce using rule 123 (ok)
 
     ok  go to state 112
 
 
 state 87
 
-   67 cmd: "repeat" ok . comandos "until" ok condicao
+   68 cmd: "repeat" @14 . ok comandos "until" ok condicao
 
-    error            shift, and go to state 52
-    "identificador"  shift, and go to state 53
-    "begin"          shift, and go to state 54
-    "if"             shift, and go to state 55
-    "readln"         shift, and go to state 56
-    "writeln"        shift, and go to state 57
-    "repeat"         shift, and go to state 58
-    "while"          shift, and go to state 59
+    $default  reduce using rule 123 (ok)
 
-    "until"  reduce using rule 58 (comandos)
-
-    comandos  go to state 113
-    cmd       go to state 61
+    ok  go to state 113
 
 
 state 88
 
-   72 cmd: "while" ok . condicao "do" ok cmd
+   73 cmd: "while" ok . condicao "do" ok cmd
 
     "+"  shift, and go to state 105
     "-"  shift, and go to state 106
 
-    $default  reduce using rule 112 (op_un)
+    $default  reduce using rule 113 (op_un)
 
     condicao   go to state 114
     expressao  go to state 108
@@ -1250,7 +1245,7 @@ state 89
 
     6 corpo: dc "begin" @2 comandos "end" . ok
 
-    $default  reduce using rule 122 (ok)
+    $default  reduce using rule 123 (ok)
 
     ok  go to state 115
 
@@ -1259,7 +1254,7 @@ state 90
 
    56 comandos: cmd ";" . ok comandos
 
-    $default  reduce using rule 122 (ok)
+    $default  reduce using rule 123 (ok)
 
     ok  go to state 116
 
@@ -1273,9 +1268,9 @@ state 91
 
 state 92
 
-  107 variaveis: "identificador" @21 . ok mais_var
+  108 variaveis: "identificador" @22 . ok mais_var
 
-    $default  reduce using rule 122 (ok)
+    $default  reduce using rule 123 (ok)
 
     ok  go to state 117
 
@@ -1346,7 +1341,7 @@ state 99
 
    23 dc_p: "procedure" error corpo_p . ok dc_p
 
-    $default  reduce using rule 122 (ok)
+    $default  reduce using rule 123 (ok)
 
     ok  go to state 124
 
@@ -1355,7 +1350,7 @@ state 100
 
    22 dc_p: "procedure" "identificador" @6 . ok parametros @7 ";" corpo_p ok @8 dc_p
 
-    $default  reduce using rule 122 (ok)
+    $default  reduce using rule 123 (ok)
 
     ok  go to state 125
 
@@ -1371,11 +1366,11 @@ state 101
 
 state 102
 
-   70 cmd: "identificador" @14 ok . lista_arg @15 ok
+   71 cmd: "identificador" @15 ok . lista_arg @16 ok
 
     "("  shift, and go to state 127
 
-    $default  reduce using rule 77 (lista_arg)
+    $default  reduce using rule 78 (lista_arg)
 
     lista_arg  go to state 128
 
@@ -1387,7 +1382,7 @@ state 103
     "+"  shift, and go to state 105
     "-"  shift, and go to state 106
 
-    $default  reduce using rule 112 (op_un)
+    $default  reduce using rule 113 (op_un)
 
     expressao  go to state 129
     termo      go to state 109
@@ -1403,29 +1398,29 @@ state 104
 
 state 105
 
-  110 op_un: "+" .
-
-    $default  reduce using rule 110 (op_un)
-
-
-state 106
-
-  111 op_un: "-" .
+  111 op_un: "+" .
 
     $default  reduce using rule 111 (op_un)
 
 
+state 106
+
+  112 op_un: "-" .
+
+    $default  reduce using rule 112 (op_un)
+
+
 state 107
 
-   71 cmd: "if" ok condicao . "then" ok cmd pfalsa
+   72 cmd: "if" ok condicao . "then" ok cmd pfalsa
 
     "then"  shift, and go to state 131
 
 
 state 108
 
-   85 condicao: expressao . relacao expressao
-   86         | expressao . error
+   86 condicao: expressao . relacao expressao
+   87         | expressao . error
 
     error  shift, and go to state 132
     "<>"   shift, and go to state 133
@@ -1440,12 +1435,12 @@ state 108
 
 state 109
 
-   93 expressao: termo . outros_termos
+   94 expressao: termo . outros_termos
 
     "+"  shift, and go to state 140
     "-"  shift, and go to state 141
 
-    $default  reduce using rule 105 (outros_termos)
+    $default  reduce using rule 106 (outros_termos)
 
     outros_termos  go to state 142
     op_ad          go to state 143
@@ -1453,7 +1448,7 @@ state 109
 
 state 110
 
-   95 termo: op_un . fator @17 mais_fatores
+   96 termo: op_un . fator @18 mais_fatores
 
     "identificador"   shift, and go to state 144
     "("               shift, and go to state 145
@@ -1482,14 +1477,26 @@ state 112
 
 state 113
 
-   67 cmd: "repeat" ok comandos . "until" ok condicao
+   68 cmd: "repeat" @14 ok . comandos "until" ok condicao
 
-    "until"  shift, and go to state 150
+    error            shift, and go to state 52
+    "identificador"  shift, and go to state 53
+    "begin"          shift, and go to state 54
+    "if"             shift, and go to state 55
+    "readln"         shift, and go to state 56
+    "writeln"        shift, and go to state 57
+    "repeat"         shift, and go to state 58
+    "while"          shift, and go to state 59
+
+    "until"  reduce using rule 58 (comandos)
+
+    comandos  go to state 150
+    cmd       go to state 61
 
 
 state 114
 
-   72 cmd: "while" ok condicao . "do" ok cmd
+   73 cmd: "while" ok condicao . "do" ok cmd
 
     "do"  shift, and go to state 151
 
@@ -1523,11 +1530,11 @@ state 116
 
 state 117
 
-  107 variaveis: "identificador" @21 ok . mais_var
+  108 variaveis: "identificador" @22 ok . mais_var
 
     SB_VG  shift, and go to state 153
 
-    $default  reduce using rule 109 (mais_var)
+    $default  reduce using rule 110 (mais_var)
 
     mais_var  go to state 154
 
@@ -1558,10 +1565,10 @@ state 120
 
     error  shift, and go to state 44
 
-    error            [reduce using rule 123 (less)]
+    error            [reduce using rule 124 (less)]
     "identificador"  reduce using rule 13 (@4)
-    "begin"          reduce using rule 123 (less)
-    "var"            reduce using rule 123 (less)
+    "begin"          reduce using rule 124 (less)
+    "var"            reduce using rule 124 (less)
 
     @4    go to state 45
     less  go to state 63
@@ -1586,7 +1593,7 @@ state 123
    52 corpo_p: dc_v "begin" . ok comandos "end" ";"
    53        | dc_v "begin" . ok comandos "end"
 
-    $default  reduce using rule 122 (ok)
+    $default  reduce using rule 123 (ok)
 
     ok  go to state 159
 
@@ -1631,8 +1638,8 @@ state 126
 
 state 127
 
-   75 lista_arg: "(" . argumentos ")"
-   76          | "(" . error ")"
+   76 lista_arg: "(" . argumentos ")"
+   77          | "(" . error ")"
 
     error            shift, and go to state 164
     "identificador"  shift, and go to state 165
@@ -1642,11 +1649,11 @@ state 127
 
 state 128
 
-   70 cmd: "identificador" @14 ok lista_arg . @15 ok
+   71 cmd: "identificador" @15 ok lista_arg . @16 ok
 
-    $default  reduce using rule 69 (@15)
+    $default  reduce using rule 70 (@16)
 
-    @15  go to state 167
+    @16  go to state 167
 
 
 state 129
@@ -1660,77 +1667,77 @@ state 130
 
    65 cmd: "begin" ok comandos "end" . ok
 
-    $default  reduce using rule 122 (ok)
+    $default  reduce using rule 123 (ok)
 
     ok  go to state 168
 
 
 state 131
 
-   71 cmd: "if" ok condicao "then" . ok cmd pfalsa
+   72 cmd: "if" ok condicao "then" . ok cmd pfalsa
 
-    $default  reduce using rule 122 (ok)
+    $default  reduce using rule 123 (ok)
 
     ok  go to state 169
 
 
 state 132
 
-   86 condicao: expressao error .
+   87 condicao: expressao error .
 
-    $default  reduce using rule 86 (condicao)
+    $default  reduce using rule 87 (condicao)
 
 
 state 133
 
-   88 relacao: "<>" .
-
-    $default  reduce using rule 88 (relacao)
-
-
-state 134
-
-   89 relacao: ">=" .
+   89 relacao: "<>" .
 
     $default  reduce using rule 89 (relacao)
 
 
-state 135
+state 134
 
-   90 relacao: "<=" .
+   90 relacao: ">=" .
 
     $default  reduce using rule 90 (relacao)
 
 
-state 136
+state 135
 
-   91 relacao: ">" .
+   91 relacao: "<=" .
 
     $default  reduce using rule 91 (relacao)
 
 
-state 137
+state 136
 
-   92 relacao: "<" .
+   92 relacao: ">" .
 
     $default  reduce using rule 92 (relacao)
 
 
+state 137
+
+   93 relacao: "<" .
+
+    $default  reduce using rule 93 (relacao)
+
+
 state 138
 
-   87 relacao: "=" .
+   88 relacao: "=" .
 
-    $default  reduce using rule 87 (relacao)
+    $default  reduce using rule 88 (relacao)
 
 
 state 139
 
-   85 condicao: expressao relacao . expressao
+   86 condicao: expressao relacao . expressao
 
     "+"  shift, and go to state 105
     "-"  shift, and go to state 106
 
-    $default  reduce using rule 112 (op_un)
+    $default  reduce using rule 113 (op_un)
 
     expressao  go to state 170
     termo      go to state 109
@@ -1739,33 +1746,33 @@ state 139
 
 state 140
 
-  113 op_ad: "+" .
-
-    $default  reduce using rule 113 (op_ad)
-
-
-state 141
-
-  114 op_ad: "-" .
+  114 op_ad: "+" .
 
     $default  reduce using rule 114 (op_ad)
 
 
+state 141
+
+  115 op_ad: "-" .
+
+    $default  reduce using rule 115 (op_ad)
+
+
 state 142
 
-   93 expressao: termo outros_termos .
+   94 expressao: termo outros_termos .
 
-    $default  reduce using rule 93 (expressao)
+    $default  reduce using rule 94 (expressao)
 
 
 state 143
 
-  104 outros_termos: op_ad . termo @20 outros_termos
+  105 outros_termos: op_ad . termo @21 outros_termos
 
     "+"  shift, and go to state 105
     "-"  shift, and go to state 106
 
-    $default  reduce using rule 112 (op_un)
+    $default  reduce using rule 113 (op_un)
 
     termo  go to state 171
     op_un  go to state 110
@@ -1773,21 +1780,21 @@ state 143
 
 state 144
 
-   99 fator: "identificador" . @18 lista_arg
+  100 fator: "identificador" . @19 lista_arg
 
-    $default  reduce using rule 98 (@18)
+    $default  reduce using rule 99 (@19)
 
-    @18  go to state 172
+    @19  go to state 172
 
 
 state 145
 
-   97 fator: "(" . expressao ")"
+   98 fator: "(" . expressao ")"
 
     "+"  shift, and go to state 105
     "-"  shift, and go to state 106
 
-    $default  reduce using rule 112 (op_un)
+    $default  reduce using rule 113 (op_un)
 
     expressao  go to state 173
     termo      go to state 109
@@ -1796,18 +1803,18 @@ state 145
 
 state 146
 
-   95 termo: op_un fator . @17 mais_fatores
+   96 termo: op_un fator . @18 mais_fatores
 
-    $default  reduce using rule 94 (@17)
+    $default  reduce using rule 95 (@18)
 
-    @17  go to state 174
+    @18  go to state 174
 
 
 state 147
 
-   96 fator: numero .
+   97 fator: numero .
 
-    $default  reduce using rule 96 (fator)
+    $default  reduce using rule 97 (fator)
 
 
 state 148
@@ -1830,18 +1837,16 @@ state 149
 
 state 150
 
-   67 cmd: "repeat" ok comandos "until" . ok condicao
+   68 cmd: "repeat" @14 ok comandos . "until" ok condicao
 
-    $default  reduce using rule 122 (ok)
-
-    ok  go to state 177
+    "until"  shift, and go to state 177
 
 
 state 151
 
-   72 cmd: "while" ok condicao "do" . ok cmd
+   73 cmd: "while" ok condicao "do" . ok cmd
 
-    $default  reduce using rule 122 (ok)
+    $default  reduce using rule 123 (ok)
 
     ok  go to state 178
 
@@ -1855,7 +1860,7 @@ state 152
 
 state 153
 
-  108 mais_var: SB_VG . variaveis
+  109 mais_var: SB_VG . variaveis
 
     "identificador"  shift, and go to state 67
 
@@ -1864,30 +1869,30 @@ state 153
 
 state 154
 
-  107 variaveis: "identificador" @21 ok mais_var .
+  108 variaveis: "identificador" @22 ok mais_var .
 
-    $default  reduce using rule 107 (variaveis)
+    $default  reduce using rule 108 (variaveis)
 
 
 state 155
 
-  120 tipo_var: "real" .
+  121 tipo_var: "real" .
 
-    $default  reduce using rule 120 (tipo_var)
+    $default  reduce using rule 121 (tipo_var)
 
 
 state 156
 
-  119 tipo_var: "integer" .
+  120 tipo_var: "integer" .
 
-    $default  reduce using rule 119 (tipo_var)
+    $default  reduce using rule 120 (tipo_var)
 
 
 state 157
 
-  121 tipo_var: "char" .
+  122 tipo_var: "char" .
 
-    $default  reduce using rule 121 (tipo_var)
+    $default  reduce using rule 122 (tipo_var)
 
 
 state 158
@@ -1954,35 +1959,35 @@ state 163
 
 state 164
 
-   76 lista_arg: "(" error . ")"
-   80 argumentos: error .
+   77 lista_arg: "(" error . ")"
+   81 argumentos: error .
 
     ")"  shift, and go to state 186
 
-    ")"  [reduce using rule 80 (argumentos)]
+    ")"  [reduce using rule 81 (argumentos)]
 
 
 state 165
 
-   79 argumentos: "identificador" . @16 ok mais_ident ok
+   80 argumentos: "identificador" . @17 ok mais_ident ok
 
-    $default  reduce using rule 78 (@16)
+    $default  reduce using rule 79 (@17)
 
-    @16  go to state 187
+    @17  go to state 187
 
 
 state 166
 
-   75 lista_arg: "(" argumentos . ")"
+   76 lista_arg: "(" argumentos . ")"
 
     ")"  shift, and go to state 188
 
 
 state 167
 
-   70 cmd: "identificador" @14 ok lista_arg @15 . ok
+   71 cmd: "identificador" @15 ok lista_arg @16 . ok
 
-    $default  reduce using rule 122 (ok)
+    $default  reduce using rule 123 (ok)
 
     ok  go to state 189
 
@@ -1996,7 +2001,7 @@ state 168
 
 state 169
 
-   71 cmd: "if" ok condicao "then" ok . cmd pfalsa
+   72 cmd: "if" ok condicao "then" ok . cmd pfalsa
 
     "identificador"  shift, and go to state 53
     "begin"          shift, and go to state 54
@@ -2011,46 +2016,46 @@ state 169
 
 state 170
 
-   85 condicao: expressao relacao expressao .
+   86 condicao: expressao relacao expressao .
 
-    $default  reduce using rule 85 (condicao)
+    $default  reduce using rule 86 (condicao)
 
 
 state 171
 
-  104 outros_termos: op_ad termo . @20 outros_termos
+  105 outros_termos: op_ad termo . @21 outros_termos
 
-    $default  reduce using rule 103 (@20)
+    $default  reduce using rule 104 (@21)
 
-    @20  go to state 191
+    @21  go to state 191
 
 
 state 172
 
-   99 fator: "identificador" @18 . lista_arg
+  100 fator: "identificador" @19 . lista_arg
 
     "("  shift, and go to state 127
 
-    $default  reduce using rule 77 (lista_arg)
+    $default  reduce using rule 78 (lista_arg)
 
     lista_arg  go to state 192
 
 
 state 173
 
-   97 fator: "(" expressao . ")"
+   98 fator: "(" expressao . ")"
 
     ")"  shift, and go to state 193
 
 
 state 174
 
-   95 termo: op_un fator @17 . mais_fatores
+   96 termo: op_un fator @18 . mais_fatores
 
     "*"  shift, and go to state 194
     "/"  shift, and go to state 195
 
-    $default  reduce using rule 102 (mais_fatores)
+    $default  reduce using rule 103 (mais_fatores)
 
     mais_fatores  go to state 196
     op_mul        go to state 197
@@ -2076,22 +2081,16 @@ state 176
 
 state 177
 
-   67 cmd: "repeat" ok comandos "until" ok . condicao
+   68 cmd: "repeat" @14 ok comandos "until" . ok condicao
 
-    "+"  shift, and go to state 105
-    "-"  shift, and go to state 106
+    $default  reduce using rule 123 (ok)
 
-    $default  reduce using rule 112 (op_un)
-
-    condicao   go to state 200
-    expressao  go to state 108
-    termo      go to state 109
-    op_un      go to state 110
+    ok  go to state 200
 
 
 state 178
 
-   72 cmd: "while" ok condicao "do" ok . cmd
+   73 cmd: "while" ok condicao "do" ok . cmd
 
     "identificador"  shift, and go to state 53
     "begin"          shift, and go to state 54
@@ -2106,16 +2105,16 @@ state 178
 
 state 179
 
-  108 mais_var: SB_VG variaveis .
+  109 mais_var: SB_VG variaveis .
 
-    $default  reduce using rule 108 (mais_var)
+    $default  reduce using rule 109 (mais_var)
 
 
 state 180
 
    15 dc_v: "var" @4 variaveis ok ":" tipo_var ";" . ok @5 dc_v
 
-    $default  reduce using rule 122 (ok)
+    $default  reduce using rule 123 (ok)
 
     ok  go to state 202
 
@@ -2170,54 +2169,54 @@ state 185
 
 state 186
 
-   76 lista_arg: "(" error ")" .
+   77 lista_arg: "(" error ")" .
 
-    $default  reduce using rule 76 (lista_arg)
+    $default  reduce using rule 77 (lista_arg)
 
 
 state 187
 
-   79 argumentos: "identificador" @16 . ok mais_ident ok
+   80 argumentos: "identificador" @17 . ok mais_ident ok
 
-    $default  reduce using rule 122 (ok)
+    $default  reduce using rule 123 (ok)
 
     ok  go to state 212
 
 
 state 188
 
-   75 lista_arg: "(" argumentos ")" .
+   76 lista_arg: "(" argumentos ")" .
 
-    $default  reduce using rule 75 (lista_arg)
+    $default  reduce using rule 76 (lista_arg)
 
 
 state 189
 
-   70 cmd: "identificador" @14 ok lista_arg @15 ok .
+   71 cmd: "identificador" @15 ok lista_arg @16 ok .
 
-    $default  reduce using rule 70 (cmd)
+    $default  reduce using rule 71 (cmd)
 
 
 state 190
 
-   71 cmd: "if" ok condicao "then" ok cmd . pfalsa
+   72 cmd: "if" ok condicao "then" ok cmd . pfalsa
 
     "else"  shift, and go to state 213
 
-    "else"    [reduce using rule 74 (pfalsa)]
-    $default  reduce using rule 74 (pfalsa)
+    "else"    [reduce using rule 75 (pfalsa)]
+    $default  reduce using rule 75 (pfalsa)
 
     pfalsa  go to state 214
 
 
 state 191
 
-  104 outros_termos: op_ad termo @20 . outros_termos
+  105 outros_termos: op_ad termo @21 . outros_termos
 
     "+"  shift, and go to state 140
     "-"  shift, and go to state 141
 
-    $default  reduce using rule 105 (outros_termos)
+    $default  reduce using rule 106 (outros_termos)
 
     outros_termos  go to state 215
     op_ad          go to state 143
@@ -2225,42 +2224,42 @@ state 191
 
 state 192
 
-   99 fator: "identificador" @18 lista_arg .
+  100 fator: "identificador" @19 lista_arg .
 
-    $default  reduce using rule 99 (fator)
+    $default  reduce using rule 100 (fator)
 
 
 state 193
 
-   97 fator: "(" expressao ")" .
+   98 fator: "(" expressao ")" .
 
-    $default  reduce using rule 97 (fator)
+    $default  reduce using rule 98 (fator)
 
 
 state 194
 
-  115 op_mul: "*" .
-
-    $default  reduce using rule 115 (op_mul)
-
-
-state 195
-
-  116 op_mul: "/" .
+  116 op_mul: "*" .
 
     $default  reduce using rule 116 (op_mul)
 
 
+state 195
+
+  117 op_mul: "/" .
+
+    $default  reduce using rule 117 (op_mul)
+
+
 state 196
 
-   95 termo: op_un fator @17 mais_fatores .
+   96 termo: op_un fator @18 mais_fatores .
 
-    $default  reduce using rule 95 (termo)
+    $default  reduce using rule 96 (termo)
 
 
 state 197
 
-  101 mais_fatores: op_mul . fator @19 mais_fatores
+  102 mais_fatores: op_mul . fator @20 mais_fatores
 
     "identificador"   shift, and go to state 144
     "("               shift, and go to state 145
@@ -2287,16 +2286,24 @@ state 199
 
 state 200
 
-   67 cmd: "repeat" ok comandos "until" ok condicao .
+   68 cmd: "repeat" @14 ok comandos "until" ok . condicao
 
-    $default  reduce using rule 67 (cmd)
+    "+"  shift, and go to state 105
+    "-"  shift, and go to state 106
+
+    $default  reduce using rule 113 (op_un)
+
+    condicao   go to state 219
+    expressao  go to state 108
+    termo      go to state 109
+    op_un      go to state 110
 
 
 state 201
 
-   72 cmd: "while" ok condicao "do" ok cmd .
+   73 cmd: "while" ok condicao "do" ok cmd .
 
-    $default  reduce using rule 72 (cmd)
+    $default  reduce using rule 73 (cmd)
 
 
 state 202
@@ -2305,7 +2312,7 @@ state 202
 
     $default  reduce using rule 14 (@5)
 
-    @5  go to state 219
+    @5  go to state 220
 
 
 state 203
@@ -2313,7 +2320,7 @@ state 203
    52 corpo_p: dc_v "begin" ok comandos "end" . ";"
    53        | dc_v "begin" ok comandos "end" .
 
-    ";"  shift, and go to state 220
+    ";"  shift, and go to state 221
 
     $default  reduce using rule 53 (corpo_p)
 
@@ -2324,13 +2331,13 @@ state 204
    49         | error . lista_par
    50         | error .
 
-    error            shift, and go to state 221
+    error            shift, and go to state 222
     "identificador"  shift, and go to state 67
-    ";"              shift, and go to state 222
+    ";"              shift, and go to state 223
 
     ")"  reduce using rule 50 (mais_par)
 
-    lista_par  go to state 223
+    lista_par  go to state 224
     variaveis  go to state 184
 
 
@@ -2338,10 +2345,10 @@ state 205
 
    47 mais_par: ";" . lista_par
 
-    error            shift, and go to state 221
+    error            shift, and go to state 222
     "identificador"  shift, and go to state 67
 
-    lista_par  go to state 224
+    lista_par  go to state 225
     variaveis  go to state 184
 
 
@@ -2356,16 +2363,16 @@ state 207
 
    45 lista_par: error mais_par . ok
 
-    $default  reduce using rule 122 (ok)
+    $default  reduce using rule 123 (ok)
 
-    ok  go to state 225
+    ok  go to state 226
 
 
 state 208
 
    44 lista_par: error variaveis . ":" tipo_var ok mais_par
 
-    ":"  shift, and go to state 226
+    ":"  shift, and go to state 227
 
 
 state 209
@@ -2383,7 +2390,7 @@ state 210
     "integer"  shift, and go to state 156
     "char"     shift, and go to state 157
 
-    tipo_var  go to state 227
+    tipo_var  go to state 228
 
 
 state 211
@@ -2397,72 +2404,79 @@ state 211
     "begin"  reduce using rule 18 (dc_v)
 
     dc_v     go to state 98
-    corpo_p  go to state 228
+    corpo_p  go to state 229
 
 
 state 212
 
-   79 argumentos: "identificador" @16 ok . mais_ident ok
+   80 argumentos: "identificador" @17 ok . mais_ident ok
 
-    error  shift, and go to state 229
-    ";"    shift, and go to state 230
+    error  shift, and go to state 230
+    ";"    shift, and go to state 231
 
-    ")"  reduce using rule 84 (mais_ident)
+    ")"  reduce using rule 85 (mais_ident)
 
-    mais_ident  go to state 231
+    mais_ident  go to state 232
 
 
 state 213
 
-   73 pfalsa: "else" . ok cmd
+   74 pfalsa: "else" . ok cmd
 
-    $default  reduce using rule 122 (ok)
+    $default  reduce using rule 123 (ok)
 
-    ok  go to state 232
+    ok  go to state 233
 
 
 state 214
 
-   71 cmd: "if" ok condicao "then" ok cmd pfalsa .
+   72 cmd: "if" ok condicao "then" ok cmd pfalsa .
 
-    $default  reduce using rule 71 (cmd)
+    $default  reduce using rule 72 (cmd)
 
 
 state 215
 
-  104 outros_termos: op_ad termo @20 outros_termos .
+  105 outros_termos: op_ad termo @21 outros_termos .
 
-    $default  reduce using rule 104 (outros_termos)
+    $default  reduce using rule 105 (outros_termos)
 
 
 state 216
 
-  101 mais_fatores: op_mul fator . @19 mais_fatores
+  102 mais_fatores: op_mul fator . @20 mais_fatores
 
-    $default  reduce using rule 100 (@19)
+    $default  reduce using rule 101 (@20)
 
-    @19  go to state 233
+    @20  go to state 234
 
 
 state 217
 
    61 cmd: "readln" ok "(" @10 variaveis @11 ")" . ok
 
-    $default  reduce using rule 122 (ok)
+    $default  reduce using rule 123 (ok)
 
-    ok  go to state 234
+    ok  go to state 235
 
 
 state 218
 
    64 cmd: "writeln" @12 ok "(" variaveis @13 ")" . ok
 
-    $default  reduce using rule 122 (ok)
+    $default  reduce using rule 123 (ok)
 
-    ok  go to state 235
+    ok  go to state 236
 
 
 state 219
+
+   68 cmd: "repeat" @14 ok comandos "until" ok condicao .
+
+    $default  reduce using rule 68 (cmd)
+
+
+state 220
 
    15 dc_v: "var" @4 variaveis ok ":" tipo_var ";" ok @5 . dc_v
 
@@ -2473,17 +2487,17 @@ state 219
     "begin"      reduce using rule 18 (dc_v)
     "procedure"  reduce using rule 18 (dc_v)
 
-    dc_v  go to state 236
+    dc_v  go to state 237
 
 
-state 220
+state 221
 
    52 corpo_p: dc_v "begin" ok comandos "end" ";" .
 
     $default  reduce using rule 52 (corpo_p)
 
 
-state 221
+state 222
 
    44 lista_par: error . variaveis ":" tipo_var ok mais_par
    45          | error . mais_par ok
@@ -2500,37 +2514,37 @@ state 221
     variaveis  go to state 208
 
 
-state 222
+state 223
 
    48 mais_par: error ";" . ok lista_par
 
-    $default  reduce using rule 122 (ok)
+    $default  reduce using rule 123 (ok)
 
-    ok  go to state 237
+    ok  go to state 238
 
 
-state 223
+state 224
 
    49 mais_par: error lista_par .
 
     $default  reduce using rule 49 (mais_par)
 
 
-state 224
+state 225
 
    47 mais_par: ";" lista_par .
 
     $default  reduce using rule 47 (mais_par)
 
 
-state 225
+state 226
 
    45 lista_par: error mais_par ok .
 
     $default  reduce using rule 45 (lista_par)
 
 
-state 226
+state 227
 
    44 lista_par: error variaveis ":" . tipo_var ok mais_par
 
@@ -2538,61 +2552,61 @@ state 226
     "integer"  shift, and go to state 156
     "char"     shift, and go to state 157
 
-    tipo_var  go to state 238
+    tipo_var  go to state 239
 
 
-state 227
+state 228
 
    43 lista_par: variaveis ":" tipo_var . @9 mais_par
 
     $default  reduce using rule 42 (@9)
 
-    @9  go to state 239
-
-
-state 228
-
-   22 dc_p: "procedure" "identificador" @6 ok parametros @7 ";" corpo_p . ok @8 dc_p
-
-    $default  reduce using rule 122 (ok)
-
-    ok  go to state 240
+    @9  go to state 240
 
 
 state 229
 
-   82 mais_ident: error . argumentos ok
-   83           | error .
+   22 dc_p: "procedure" "identificador" @6 ok parametros @7 ";" corpo_p . ok @8 dc_p
 
-    error            shift, and go to state 241
-    "identificador"  shift, and go to state 165
+    $default  reduce using rule 123 (ok)
 
-    ")"  reduce using rule 83 (mais_ident)
-
-    argumentos  go to state 242
+    ok  go to state 241
 
 
 state 230
 
-   81 mais_ident: ";" . ok argumentos ok
+   83 mais_ident: error . argumentos ok
+   84           | error .
 
-    $default  reduce using rule 122 (ok)
+    error            shift, and go to state 242
+    "identificador"  shift, and go to state 165
 
-    ok  go to state 243
+    ")"  reduce using rule 84 (mais_ident)
+
+    argumentos  go to state 243
 
 
 state 231
 
-   79 argumentos: "identificador" @16 ok mais_ident . ok
+   82 mais_ident: ";" . ok argumentos ok
 
-    $default  reduce using rule 122 (ok)
+    $default  reduce using rule 123 (ok)
 
     ok  go to state 244
 
 
 state 232
 
-   73 pfalsa: "else" ok . cmd
+   80 argumentos: "identificador" @17 ok mais_ident . ok
+
+    $default  reduce using rule 123 (ok)
+
+    ok  go to state 245
+
+
+state 233
+
+   74 pfalsa: "else" ok . cmd
 
     "identificador"  shift, and go to state 53
     "begin"          shift, and go to state 54
@@ -2602,64 +2616,64 @@ state 232
     "repeat"         shift, and go to state 58
     "while"          shift, and go to state 59
 
-    cmd  go to state 245
+    cmd  go to state 246
 
 
-state 233
+state 234
 
-  101 mais_fatores: op_mul fator @19 . mais_fatores
+  102 mais_fatores: op_mul fator @20 . mais_fatores
 
     "*"  shift, and go to state 194
     "/"  shift, and go to state 195
 
-    $default  reduce using rule 102 (mais_fatores)
+    $default  reduce using rule 103 (mais_fatores)
 
-    mais_fatores  go to state 246
+    mais_fatores  go to state 247
     op_mul        go to state 197
 
 
-state 234
+state 235
 
    61 cmd: "readln" ok "(" @10 variaveis @11 ")" ok .
 
     $default  reduce using rule 61 (cmd)
 
 
-state 235
+state 236
 
    64 cmd: "writeln" @12 ok "(" variaveis @13 ")" ok .
 
     $default  reduce using rule 64 (cmd)
 
 
-state 236
+state 237
 
    15 dc_v: "var" @4 variaveis ok ":" tipo_var ";" ok @5 dc_v .
 
     $default  reduce using rule 15 (dc_v)
 
 
-state 237
+state 238
 
    48 mais_par: error ";" ok . lista_par
 
-    error            shift, and go to state 221
+    error            shift, and go to state 222
     "identificador"  shift, and go to state 67
 
-    lista_par  go to state 247
+    lista_par  go to state 248
     variaveis  go to state 184
 
 
-state 238
+state 239
 
    44 lista_par: error variaveis ":" tipo_var . ok mais_par
 
-    $default  reduce using rule 122 (ok)
+    $default  reduce using rule 123 (ok)
 
-    ok  go to state 248
+    ok  go to state 249
 
 
-state 239
+state 240
 
    43 lista_par: variaveis ":" tipo_var @9 . mais_par
 
@@ -2668,73 +2682,73 @@ state 239
 
     ")"  reduce using rule 51 (mais_par)
 
-    mais_par  go to state 249
+    mais_par  go to state 250
 
 
-state 240
+state 241
 
    22 dc_p: "procedure" "identificador" @6 ok parametros @7 ";" corpo_p ok . @8 dc_p
 
     $default  reduce using rule 21 (@8)
 
-    @8  go to state 250
-
-
-state 241
-
-   80 argumentos: error .
-
-    $default  reduce using rule 80 (argumentos)
+    @8  go to state 251
 
 
 state 242
 
-   82 mais_ident: error argumentos . ok
+   81 argumentos: error .
 
-    $default  reduce using rule 122 (ok)
-
-    ok  go to state 251
+    $default  reduce using rule 81 (argumentos)
 
 
 state 243
 
-   81 mais_ident: ";" ok . argumentos ok
+   83 mais_ident: error argumentos . ok
 
-    error            shift, and go to state 241
-    "identificador"  shift, and go to state 165
+    $default  reduce using rule 123 (ok)
 
-    argumentos  go to state 252
+    ok  go to state 252
 
 
 state 244
 
-   79 argumentos: "identificador" @16 ok mais_ident ok .
+   82 mais_ident: ";" ok . argumentos ok
 
-    $default  reduce using rule 79 (argumentos)
+    error            shift, and go to state 242
+    "identificador"  shift, and go to state 165
+
+    argumentos  go to state 253
 
 
 state 245
 
-   73 pfalsa: "else" ok cmd .
+   80 argumentos: "identificador" @17 ok mais_ident ok .
 
-    $default  reduce using rule 73 (pfalsa)
+    $default  reduce using rule 80 (argumentos)
 
 
 state 246
 
-  101 mais_fatores: op_mul fator @19 mais_fatores .
+   74 pfalsa: "else" ok cmd .
 
-    $default  reduce using rule 101 (mais_fatores)
+    $default  reduce using rule 74 (pfalsa)
 
 
 state 247
+
+  102 mais_fatores: op_mul fator @20 mais_fatores .
+
+    $default  reduce using rule 102 (mais_fatores)
+
+
+state 248
 
    48 mais_par: error ";" ok lista_par .
 
     $default  reduce using rule 48 (mais_par)
 
 
-state 248
+state 249
 
    44 lista_par: error variaveis ":" tipo_var ok . mais_par
 
@@ -2743,17 +2757,17 @@ state 248
 
     ")"  reduce using rule 51 (mais_par)
 
-    mais_par  go to state 253
+    mais_par  go to state 254
 
 
-state 249
+state 250
 
    43 lista_par: variaveis ":" tipo_var @9 mais_par .
 
     $default  reduce using rule 43 (lista_par)
 
 
-state 250
+state 251
 
    22 dc_p: "procedure" "identificador" @6 ok parametros @7 ";" corpo_p ok @8 . dc_p
 
@@ -2762,41 +2776,41 @@ state 250
 
     "begin"  reduce using rule 25 (dc_p)
 
-    dc_p  go to state 254
-
-
-state 251
-
-   82 mais_ident: error argumentos ok .
-
-    $default  reduce using rule 82 (mais_ident)
+    dc_p  go to state 255
 
 
 state 252
 
-   81 mais_ident: ";" ok argumentos . ok
+   83 mais_ident: error argumentos ok .
 
-    $default  reduce using rule 122 (ok)
-
-    ok  go to state 255
+    $default  reduce using rule 83 (mais_ident)
 
 
 state 253
+
+   82 mais_ident: ";" ok argumentos . ok
+
+    $default  reduce using rule 123 (ok)
+
+    ok  go to state 256
+
+
+state 254
 
    44 lista_par: error variaveis ":" tipo_var ok mais_par .
 
     $default  reduce using rule 44 (lista_par)
 
 
-state 254
+state 255
 
    22 dc_p: "procedure" "identificador" @6 ok parametros @7 ";" corpo_p ok @8 dc_p .
 
     $default  reduce using rule 22 (dc_p)
 
 
-state 255
+state 256
 
-   81 mais_ident: ";" ok argumentos ok .
+   82 mais_ident: ";" ok argumentos ok .
 
-    $default  reduce using rule 81 (mais_ident)
+    $default  reduce using rule 82 (mais_ident)
