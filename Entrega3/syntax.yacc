@@ -66,6 +66,7 @@
 	int paramQty;
 	/* Numero de parametros da lista de parametros que ja tem tipo definido */
 	int definedParams;
+	int validProcedure;
 %}
 %{ void yyerror(const char*); %}
 
@@ -111,6 +112,7 @@ dc_c:
 			constEntry.ival = $5.ival;
 			constEntry.rval = $5.rval;
 			constEntry.line = yylineno;
+			strcpy(constEntry.name, $2.name);
 			symbolTable_add(&tables[scope], constEntry);
 		}
 		dc_c
@@ -126,7 +128,7 @@ dc_v:
 		/*regra correta*/
 		VAR 
 		/* Zera a lista de parametros */
-		{ paramQty = 0; } 
+		{ paramQty = 0; definedParams = 0; } 
 		variaveis ok SB_DP tipo_var SB_PV ok
 		{
 			int i;
@@ -136,14 +138,24 @@ dc_v:
 				STable_Entry * entry = 
 					symbolTable_find(&tables[scope], parameterList[i].name);
 				if(entry) {
-					/* Se ja existe a variavel */
-					fprintf(stderr, "Erro na linha %d: redeclaracao da variavel %s.\n"
-						"Definicao previa na linha %d.\n", 
-						yylineno,
-						parameterList[i].name, entry->line);
+					if(entry->category == VAR) {
+						/* Se ja existe a variavel */
+						fprintf(stderr, "Erro na linha %d: redeclaracao da variavel %s.\n"
+							"\tDefinicao previa na linha %d.\n", 
+							yylineno,
+							parameterList[i].name, entry->line);
+					} else if(entry->category == PROCEDURE) {
+						fprintf(stderr, "Erro na linha %d: %s previamente definido como procedimento.\n"
+							"Definicao previa na linha %d.\n",
+							yylineno, parameterList[i].name, entry->line );
+					} else if(entry->category == CONST) {
+						fprintf(stderr, "Erro na linha %d: %s previamente definido como constante.\n"
+							"Definicao previa na linha %d.\n",
+							yylineno, parameterList[i].name, entry->line );
+					}
 				} else {
 					/* Se nao existe ainda */
-					parameterList[i].type = $5.type;
+					parameterList[i].type = $6.type;
 					parameterList[i].category = VAR;
 					parameterList[i].line = yylineno;
 					symbolTable_add(&tables[scope], parameterList[i]);
@@ -171,22 +183,44 @@ dc_p:
 			procEntry.category = PROCEDURE;
 			/* Copia o identificador para o nome da entrada da tabela */
 			strcpy(procEntry.name, $2.name);
-			symbolTable_add(&tables[scope], procEntry);
+			STable_Entry * entry;
+			entry = symbolTable_find(&tables[scope], procEntry.name);
+			validProcedure = 1;
+
+			if(entry) {
+				validProcedure = 0;
+				if(entry->category == PROCEDURE) {
+					fprintf(stderr, "Erro na linha %d: Redefinicao do procedimento %s.\n"
+							"\tPreviamente definido na linha %d\n", 
+							yylineno, entry->name, entry->line
+						);
+				} else if(entry->category == VAR) {
+					fprintf(stderr, "Erro na linha %d: %s previamente definido como variavel.\n"
+							"\tPreviamente definido na linha %d.\n", 
+							yylineno, entry->name, entry->line
+						);
+				} else if(entry->category == PROGRAM) {
+					fprintf(stderr, "Erro na linha %d: %s previamente definido como nome do programa.\n"
+							"\tDefinicao previa na linha %d.\n",
+							yylineno, entry->name, entry->line );
+				}
+			} else symbolTable_add(&tables[scope], procEntry);
 		}
 		ok 
 		parametros 
 		{
-			printf("Done\n");
 			int i;
 			/* Adiciona os parametros na tabela de simbolos do escopo global -
 				que contem todos os procedimentos */
-			for(i = 0; i < paramQty; i++) { 
-				int x = symbolTable_addParameter(&tables[0], $2.name, parameterList[i]);
-				if(x < 0) {
-					printf("Erro na linha %d: parametro %s redefinido. \n" 
-							"Previamente definido como parametro %d.", 
-						yylineno, parameterList[i].name, 
-						- x - 1);
+			if(validProcedure) {
+				for(i = 0; i < paramQty; i++) { 
+					int x = symbolTable_addParameter(&tables[0], $2.name, parameterList[i]);
+					if(x < 0) {
+						printf("Erro na linha %d: parametro %s redefinido. \n" 
+								"\tPreviamente definido como parametro %d.\n", 
+							yylineno, parameterList[i].name, 
+							- x - 1);
+					}
 				}
 			}
 			/* Aumenta um escopo - para as variaveis locais */
@@ -277,7 +311,8 @@ corpo_p:
 		/*regra correta*/
 		dc_v BEG ok comandos END SB_PV
 		/*tratamento especial para 'end' sem ';'*/
-	|	dc_v BEG ok comandos END { sprintf(errv, "syntax error, unexpected %s, expecting ;", yytext); yyerror (errv); yyerrok; }
+	|	dc_v BEG ok comandos END { 
+			sprintf(errv, "syntax error, unexpected %s, expecting ;", yytext); yyerror (errv); yyerrok; }
 		/*passa erro no corpo para o err_cp*/
 	|	dc_v error
 		/*erro vindo da declaracao do procedimento*/
@@ -294,7 +329,48 @@ comandos:
 
 /*comandos corretos e sincronizacao*/
 cmd:
-		READLN ok SB_PO variaveis SB_PC ok 
+		READLN ok SB_PO 
+		{ 
+			/* Prepara os parametros */
+			paramQty = 0;
+			definedParams = 0;
+		}
+		variaveis 
+		{
+			int type = -1;
+			int badTypes = 0, i, cscope;
+			STable_Entry * entry = 0;
+
+			for(i = 0; i < paramQty; i++) {
+				int found = 0;
+				entry = 0;
+				/* Procura para ver se a variavel sendo impressa existe */
+				for(cscope = 0; !entry && cscope <= scope; cscope++) {
+					entry = symbolTable_find(&tables[cscope], parameterList[i].name);
+				}
+				/* Vriavel usada no readln nao existe */
+				if(!entry) {
+					printf("Erro na linha %d: Variavel %s usada e nao declarada.\n", yylineno, entry->name);
+				} else {
+					if(entry->category == CONST) {
+						printf("Erro na linha %d: Constante %s usada em leitura.\n", yylineno, entry->name);
+					} else if(entry->category == PROCEDURE) {
+						printf("Erro na linha %d: Procedimento %s usada em leitura.\n", yylineno, entry->name);
+					} else if(entry->category == PROGRAM) {
+						printf("Erro na linha %d: Nome do programa usada em leitura.\n", yylineno);
+					} else if(type == -1) type = entry->type;
+					else if(entry->type != type) badTypes = 1;
+				}
+			}
+			if(badTypes) 
+			{
+				printf("Erro na linha %d: tipos diferentes no comando readln.\n", 
+					yylineno);
+			}
+		}
+		SB_PC ok 
+
+
 	|	WRITELN ok SB_PO variaveis SB_PC ok
 	|	BEG ok comandos END ok
 	|	IDENT ok OP_AT expressao
@@ -421,14 +497,14 @@ op_mul:
 /*regras corretas*/
 numero:
 		NRO_REAL
-	|	NRO_INTEIRO
+	|	NRO_INTEIRO 
 	;
 
 /*regras corretas*/
 tipo_var:
-		INTEGER
-	|	REAL
-	|	CHAR
+		INTEGER 
+	|	REAL 
+	|	CHAR 
 	;
 
 /*regra para abreviar o comando*/
