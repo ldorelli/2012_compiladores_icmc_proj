@@ -12,18 +12,22 @@ typedef struct STEntry
 	int type;
 	int category;
 	int scope;
-	
 	int paramQty;
+
+	/* Para auxiliar na resolucao de jumps */
+	int codeLine;
+	/* Endereco da variavel no programa */
+	int address;
 	
 	/* Valor caso seja inteiro */
 	int ival;
 	/* Valor caso seja real */
 	double rval;
-	
+
 	int line; /* Linha original da definicao */
 
-	// Se eh um procedimento, parametros
-	// Valor dificilmente ultrapassavel
+	/* Se eh um procedimento, parametros
+	  Valor dificilmente ultrapassavel */
 	struct ParamNode * parameters;
 	/* Ident pode ir ate 20 */
 	char name[21];
