@@ -146,11 +146,11 @@ dc_v:
 							parameterList[i].name, entry->line);
 					} else if(entry->category == PROCEDURE) {
 						fprintf(stderr, "Erro na linha %d: %s previamente definido como procedimento.\n"
-							"Definicao previa na linha %d.\n",
+							"\tDefinicao previa na linha %d.\n",
 							yylineno, parameterList[i].name, entry->line );
 					} else if(entry->category == CONST) {
 						fprintf(stderr, "Erro na linha %d: %s previamente definido como constante.\n"
-							"Definicao previa na linha %d.\n",
+							"\tDefinicao previa na linha %d.\n",
 							yylineno, parameterList[i].name, entry->line );
 					}
 				} else {
@@ -191,12 +191,12 @@ dc_p:
 				validProcedure = 0;
 				if(entry->category == PROCEDURE) {
 					fprintf(stderr, "Erro na linha %d: Redefinicao do procedimento %s.\n"
-							"\tPreviamente definido na linha %d\n", 
+							"\tDefinicao previa na linha %d\n", 
 							yylineno, entry->name, entry->line
 						);
 				} else if(entry->category == VAR) {
 					fprintf(stderr, "Erro na linha %d: %s previamente definido como variavel.\n"
-							"\tPreviamente definido na linha %d.\n", 
+							"\tDefinicao previa na linha %d.\n", 
 							yylineno, entry->name, entry->line
 						);
 				} else if(entry->category == PROGRAM) {

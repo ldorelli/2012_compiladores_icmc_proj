@@ -482,7 +482,6 @@ char *yytext;
 #include"symbolTable.h"
 
 Trie pr;
-Node stRoot;
 char ctext[100001];
 double num_real;
 int num_int;

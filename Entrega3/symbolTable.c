@@ -68,7 +68,7 @@ void symbolTable_erase(Node * cur, Node * root) {
 } 
 
 int symbolTable_addParameter(Node * root, char * procedure, STable_Entry parameter)
-{
+{	
 	/* 
 		Busca primeiramente a entrada na arvore 
 		Se não achar o procedimento (Note que deveria!), retorna 0
@@ -93,6 +93,7 @@ int symbolTable_addParameter(Node * root, char * procedure, STable_Entry paramet
 		node = (ParameterNode *) malloc(sizeof(ParameterNode));
 		aux->attr->parameters = node;
 		node->value = parameter;
+		node->next = 0;
 		return 1;
 	}
 	int orig = 0;
@@ -106,5 +107,6 @@ int symbolTable_addParameter(Node * root, char * procedure, STable_Entry paramet
 	/* Insere os valores */
 	prev->next = (ParameterNode *) malloc(sizeof(ParameterNode));
 	prev->next->value = parameter;
+	prev->next->next = 0;
 	return 1;
 }
