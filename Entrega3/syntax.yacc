@@ -196,7 +196,6 @@ dc_p:
 
 		corpo_p ok 
 		{
-
 			/* Saiu do procedimento */
 			scope--;
 		} dc_p

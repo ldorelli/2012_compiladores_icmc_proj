@@ -488,7 +488,7 @@ int num_int;
 int tok_idx; /* Será retornado pelo yylex() */
 	/*int yylineno = 1;*/
 
-#define YYSTYPE  STable_Entry
+extern YYSTYPE yylval;
 
 #line 494 "lex.yy.c"
 
@@ -777,12 +777,18 @@ YY_RULE_SETUP
 	
 	long long x;
 	sscanf (yytext, "%lld", &x);
+
 	
 	if (x < INT_MAX && x > -INT_MAX) {
 		tok_idx = NRO_INTEIRO; /* Número inteiro */
 	} else {
+		yylval.type = ERROR;
 		tok_idx = ER_IFL; /* Inteiro fora dos limites */
 	}
+
+	yylval.type = INTEGER;
+	yylval.category = NRO_INTEIRO;
+	sscanf (yytext, "%d", &yylval.ival);
 
 	strcpy(ctext, yytext);
 	return (tok_idx);
@@ -791,10 +797,14 @@ YY_RULE_SETUP
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 49 "lalg.l"
+#line 55 "lalg.l"
 {	/* numero real */
 	
 	strcpy(ctext, yytext);
+
+	yylval.type = REAL;
+	yylval.category = NRO_REAL;
+	sscanf (yytext, "%lf", &yylval.rval);
 
 	return NRO_REAL;
 
@@ -802,7 +812,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 57 "lalg.l"
+#line 67 "lalg.l"
 {	/* identificador ou palavra reservada */
 	
 	const char * identifier; 
@@ -811,14 +821,16 @@ YY_RULE_SETUP
 
 	if(identifier == NULL) {
 
-		if (yyleng <= 20) 
+		if (yyleng <= 20) {
 			tok_idx = IDENT; /* Identificador */
-		else 
+			yylval.category=IDENT;
+			strcpy(yylval.name, yytext);
+		} else 
 			tok_idx = ER_IDG; /* Erro de identificador grande */
 	} 
 
 	/* Se não entrou no if anterior eh palavra reservada */
-
+	yylval.type = tok_idx;
 	strcpy(ctext, yytext); /* Copia o texto */
 
 	return (tok_idx);
@@ -828,99 +840,99 @@ YY_RULE_SETUP
 /* operadores */
 case 5:
 YY_RULE_SETUP
-#line 83 "lalg.l"
+#line 95 "lalg.l"
 { 
-	strcpy(ctext, yytext); 
+	yylval.category=OP_AT;
 	return OP_AT; /* ATtribution */
 	
 	}
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 89 "lalg.l"
+#line 101 "lalg.l"
 {
-	strcpy(ctext, yytext); 
+	yylval.category=OP_DF; 
 	return OP_DF; /* DiFference */
 
 	}
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 95 "lalg.l"
+#line 107 "lalg.l"
 {
-	strcpy(ctext, yytext); 
+	yylval.category=OP_GE; 
 	return OP_GE; /* Greater Equal */
 
 	}
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 101 "lalg.l"
+#line 113 "lalg.l"
 {
-	strcpy(ctext, yytext); 
+	yylval.category=OP_LE; 
 	return OP_LE; /* Less Equal */
 
 	}
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 107 "lalg.l"
+#line 119 "lalg.l"
 {
-	strcpy(ctext, yytext); 
+	yylval.category=OP_GR; 
 	return OP_GR; /* GReater */
 	
 	}
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 113 "lalg.l"
+#line 125 "lalg.l"
 {
-	strcpy(ctext, yytext); 
+	yylval.category=OP_LS; 
 	return OP_LS; /* LesS */
 	
 	}
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 119 "lalg.l"
+#line 131 "lalg.l"
 {
-	strcpy(ctext, yytext); 
+	yylval.category=OP_PL;
 	return OP_PL; /* PLus */
 	
 	}
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 125 "lalg.l"
+#line 137 "lalg.l"
 {
-	strcpy(ctext, yytext); 
+	yylval.category=OP_MI; 
 	return OP_MI; /* MInus */
 	
 	}
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 131 "lalg.l"
+#line 143 "lalg.l"
 {
-	strcpy(ctext, yytext); 
+	yylval.category=OP_ML; 
 	return OP_ML; /* MultipLation */
 
 	}
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 137 "lalg.l"
+#line 149 "lalg.l"
 {
-	strcpy(ctext, yytext); 
+	yylval.category=OP_DV; 
 	return OP_DV; /* DiVision */
 	
 	}
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 143 "lalg.l"
+#line 155 "lalg.l"
 {
-	strcpy(ctext, yytext); 
+	yylval.category=OP_EQ; 
 	return OP_EQ; /* EQual */
 	
 	}
@@ -928,54 +940,54 @@ YY_RULE_SETUP
 /* simbolos */
 case 16:
 YY_RULE_SETUP
-#line 151 "lalg.l"
+#line 163 "lalg.l"
 {
-	strcpy(ctext, yytext); 
+	yylval.category=SB_PV; 
 	return SB_PV; /* Ponto e Virgula */
 
 	}
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 157 "lalg.l"
+#line 169 "lalg.l"
 {
-	strcpy(ctext, yytext); 
+	yylval.category=SB_PF; 
 	return SB_PF; /* Ponto Final */
 	
 	}
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 163 "lalg.l"
+#line 175 "lalg.l"
 {
-	strcpy(ctext, yytext); 
+	yylval.category=SB_DP; 
 	return SB_DP; /* Dois Pontos */
 
 	}
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 169 "lalg.l"
+#line 181 "lalg.l"
 {
-	strcpy(ctext, yytext); 
+	yylval.category=SB_VG; 
 	return SB_VG; /* VirGula */
 
 	}
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 175 "lalg.l"
+#line 187 "lalg.l"
 {
-	strcpy(ctext, yytext); 
+	yylval.category=SB_PO;  
 	return SB_PO; /* Parenthesis Opening */
 
 	}
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 181 "lalg.l"
+#line 193 "lalg.l"
 {
-	strcpy(ctext, yytext); 
+	yylval.category=SB_PC;  
 	return SB_PC; /* Parenthesis Closing */
 
 	}
@@ -983,7 +995,7 @@ YY_RULE_SETUP
 case 22:
 /* rule 22 can match eol */
 YY_RULE_SETUP
-#line 188 "lalg.l"
+#line 200 "lalg.l"
 {
 	/* apaga comentario (pode ter mais de uma linha) */
 		int skip = 0;
@@ -994,19 +1006,19 @@ YY_RULE_SETUP
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 195 "lalg.l"
+#line 207 "lalg.l"
 /* apaga caracteres inuteis */
 	YY_BREAK
 case 24:
 /* rule 24 can match eol */
 YY_RULE_SETUP
-#line 198 "lalg.l"
+#line 210 "lalg.l"
 yylineno++;	
 	YY_BREAK
 /* outros erros */
 case 25:
 YY_RULE_SETUP
-#line 200 "lalg.l"
+#line 212 "lalg.l"
 {
 	
 	strcpy(ctext, yytext); 
@@ -1016,7 +1028,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 207 "lalg.l"
+#line 219 "lalg.l"
 {
 	
 	strcpy(ctext, yytext); 
@@ -1026,7 +1038,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 214 "lalg.l"
+#line 226 "lalg.l"
 {
 	strcpy(ctext, yytext); 
 	return ER_NMF;	/* Numero Mal Formado */	
@@ -1034,12 +1046,12 @@ YY_RULE_SETUP
 	}	
 	YY_BREAK
 case YY_STATE_EOF(INITIAL):
-#line 220 "lalg.l"
+#line 232 "lalg.l"
 {  yyterminate(); }
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 222 "lalg.l"
+#line 234 "lalg.l"
 {
 	
 	strcpy(ctext, yytext); 
@@ -1049,10 +1061,10 @@ YY_RULE_SETUP
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 229 "lalg.l"
+#line 241 "lalg.l"
 ECHO;
 	YY_BREAK
-#line 1056 "lex.yy.c"
+#line 1068 "lex.yy.c"
 
 	case YY_END_OF_BUFFER:
 		{
@@ -2048,7 +2060,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 229 "lalg.l"
+#line 241 "lalg.l"
 
 
 
