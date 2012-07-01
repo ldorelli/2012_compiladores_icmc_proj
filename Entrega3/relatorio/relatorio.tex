@@ -12,12 +12,18 @@
 \usepackage{subcaption}
 \usepackage{multirow}
 \usepackage{amsfonts}
+\usepackage{color}
+\usepackage{listings}
 
 \title{Introdução à Compilação\\Entrega 3}
 \author{Bianca Madoka Shimizu Oe\\
 		Luis Fernando Dorelli de Abreu\\
 		Rafael Umino Nakanishi}
 \date{}
+
+\definecolor{gray}{RGB}{124,124,124}
+\lstset{language=Pascal,numbers=left,stepnumber=1,frame=bottom|top,tabsize=2,breaklines=true,basicstyle=\small\ttfamily,
+		keywordstyle=\color{blue}\bfseries,commentstyle=\color{gray}, numbersep=-7pt}
 
 \begin{document}
 \maketitle
@@ -110,7 +116,7 @@
 		\end{minipage}
 	\end{center}
 
-	Observe que o analisador só termina quando encontra um \emph{end-of-file}.
+	Observe que o analisador só termina quando encontra um \emph{end-of-file}. Caso o arquivo de entrada esteja gramaticamente correto, obtém-se como saída um arquivo com o \emph{bytecode} referente ao código dado como entrada denominado \emph{code.code}.
 % section compila_o (end)
 
 \section{Exemplos} % (fold)
