@@ -29,4 +29,6 @@ begin
 	readln(k , y);
 	readln(i, t);
 	i := 5 + 3.43;
+	x := y + 1;
+	x := a + b;
 end.
