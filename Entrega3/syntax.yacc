@@ -423,6 +423,7 @@ cmd:
 			int type = -1;
 			int badTypes = 0, i, cscope;
 			STable_Entry * entry = 0;
+			
 
 			for(i = 0; i < paramQty; i++) {
 				int found = 0;
@@ -434,7 +435,8 @@ cmd:
 				/* Variavel usada no readln nao existe */
 				if(!entry) {
 					generateCode = 0; 
-					fprintf(stderr, "Erro na linha %d: Variavel %s usada e nao declarada.\n", yylineno, parameterList[i].name);
+					fprintf(stderr, "Erro na linha %d: Variavel %s usada e nao declarada.\n",
+						 yylineno, parameterList[i].name);
 				} else {
 					/* Se as variaveis sao identificadores de programa ou procedure */
 					if(entry->category == CONST) {
@@ -497,7 +499,8 @@ cmd:
 				if(!entry) {
 					generateCode = 0; 
 					fprintf(stderr,
-						"Erro na linha %d: Variavel %s usada e nao declarada.\n", yylineno, entry->name);
+						"Erro na linha %d: Variavel %s usada e nao declarada.\n", yylineno, 
+						parameterList[i].name);
 				} else {
 					/* Se as variaveis sao identificadores de programa ou procedure */
 					if(entry->category == PROCEDURE) {
