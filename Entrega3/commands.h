@@ -34,8 +34,20 @@
 #define PARAM 28
 #define DIVI 29
 
-void printCommand(FILE *f, int cmd, int arg);	
+#define NOARG 30
 
-void flushCode(FILE * f, int code[][2], int * qty);
+typedef struct {
+	int opCode;
+	
+	/* REAL, INTEIRO, NOARG */
+	int type;
+
+	int iArg;
+	double rArg;
+} CodeLine;
+
+void printCommand(FILE *f, CodeLine line);
+
+void flushCode(FILE * f, CodeLine code[], int * qty);
 
 #endif

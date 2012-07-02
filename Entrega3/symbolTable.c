@@ -95,7 +95,7 @@ int symbolTable_addParameter(Node * root, char * procedure, STable_Entry paramet
 		aux->attr->parameters = node;
 		node->value = parameter;
 		node->next = 0;
-		aux->attr->paramQty = 0;
+		aux->attr->paramQty = 1;
 		return 1;
 	}
 	int orig = 0;

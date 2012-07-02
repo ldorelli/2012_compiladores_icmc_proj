@@ -56,12 +56,14 @@
 	#include "commands.h"
 
 	/* Código */
-	int code[50000][2];
+	CodeLine code[5000000];
 	int codeLine;
 	int usedAddress;
 	int procedureCount ;
 	int generateCode;
 	int mainLine;
+	int desvLine;
+	int scope0procedures;
 
 	char errv[100]; 
 	int yydebug = 1;
@@ -116,7 +118,7 @@ corpo:
 
 dc:
 		/*regra correta*/
-		dc_c dc_v dc_p
+		dc_c dc_v { desvLine = codeLine; } dc_p
 	;
 
 dc_c:
@@ -183,8 +185,9 @@ dc_v:
 					 	Aumenta 1 no espaco para variaveis globais 
 						Codigo de alocacao 
 					 */
-					code[codeLine][0] = ALME;
-					code[codeLine++][1] = 1;
+					code[codeLine].opCode = ALME;
+					code[codeLine].type = INTEGER;
+					code[codeLine++].iArg = 1;
 					parameterList[i].address = usedAddress++;
 					variablesPerScope[scope]++;
 					symbolTable_add(&tables[scope], parameterList[i]);
@@ -201,15 +204,27 @@ dc_v:
 dc_p:
 		/*regra correta*/
 		PROCEDURE
+
 		/* Entrou em procedimento */
 		IDENT  
 		{ 
+
+			if(scope == 0) {
+				if(!scope0procedures)
+				{
+					desvLine = codeLine;
+					code[codeLine].type = INTEGER;
+					code[codeLine++].opCode = DSVI;
+				}
+				scope0procedures++;
+			}
 			/* Zera a quantidade de parametros - sera calculada pela regra parametros */
 			paramQty = 0;
 			definedParams = 0;
 			STable_Entry procEntry;
 			procEntry.category = PROCEDURE;
 			procEntry.parameters = NULL;
+			procEntry.address = codeLine;
 			/* Copia o identificador para o nome da entrada da tabela */
 			strcpy(procEntry.name, $2.name);
 			STable_Entry * entry;
@@ -244,6 +259,8 @@ dc_p:
 		ok 
 		parametros 
 		{
+			/* Endereço de retorno */
+			usedAddress++;
 			/* Inicia a tabela para o novo escopo */
 			symbolTable_init(&tables[scope+1], 0);
 			int i;
@@ -260,14 +277,16 @@ dc_p:
 							yylineno, parameterList[i].name, 
 							- x - 1);
 					} 
+
 					/* Adiciona a variavel no escopo novo */
 					parameterList[i].address = usedAddress++;
 					
-					code[codeLine++][0] = COPVL; 
+					code[codeLine].opCode = COPVL; 
+					code[codeLine++].type = NOARG;
 					symbolTable_add(&tables[scope+1], parameterList[i]);
 				}
 			}
-			usedAddress -= paramQty;
+			
 			/* Aumenta um escopo - para as variaveis locais */
 			scope++;
 		}
@@ -276,16 +295,22 @@ dc_p:
 		corpo_p ok 
 		{
 			STable_Entry * entry = symbolTable_find(&tables[0], $2.name);
+
 			/* Saiu do procedimento */
 			if(entry) {
 
 				/* Desaloca memoria */
-				code[codeLine][0] = DESM;
-				code[codeLine++][1] = variablesPerScope[scope] + entry->paramQty;	
+				code[codeLine].opCode = DESM;
+				code[codeLine].type = INTEGER;
+				code[codeLine++].iArg = variablesPerScope[scope] + entry->paramQty;	
+				usedAddress += -entry->paramQty - variablesPerScope[scope] - 1;
 			}
-			code[codeLine++][0] = RTPR;
+			code[codeLine].type = NOARG;
+			code[codeLine++].opCode = RTPR;
 			symbolTable_erase(&tables[scope], &tables[scope]);
 			variablesPerScope[scope] = 0;
+
+			
 			scope--;
 
 		} dc_p
@@ -402,7 +427,7 @@ cmd:
 				int found = 0;
 				entry = 0;
 				/* Procura para ver se a variavel sendo impressa existe */
-				for(cscope = 0; !entry && cscope <= scope; cscope++) {
+				for(cscope = scope; !entry && cscope >= 0; cscope--) {
 					entry = symbolTable_find(&tables[cscope], parameterList[i].name);
 				}
 				/* Variavel usada no readln nao existe */
@@ -427,9 +452,11 @@ cmd:
 					else if(entry->type != type) badTypes = 1, generateCode = 0; ;
 					
 					/* Geração de código */
-					code[codeLine++][0] = LEIT;
-					code[codeLine][0] = ARMZ;
-					code[codeLine++][1] = entry->address;
+					code[codeLine].type = NOARG;
+					code[codeLine++].opCode = LEIT;
+					code[codeLine].type = INTEGER;
+					code[codeLine].opCode = ARMZ;
+					code[codeLine++].iArg = entry->address;
 				}
 			}
 			if(badTypes) 
@@ -462,7 +489,7 @@ cmd:
 				int found = 0;
 				entry = 0;
 				/* Procura para ver se a variavel sendo impressa existe */
-				for(cscope = 0; !entry && cscope <= scope; cscope++) {
+				for(cscope = scope; !entry && cscope >= 0; cscope--) {
 					entry = symbolTable_find(&tables[cscope], parameterList[i].name);
 				}
 				/* Variavel usada no readln nao existe */
@@ -484,9 +511,11 @@ cmd:
 					else if(entry->type != type) badTypes = 1, generateCode = 0; 
 					
 					/* Geração de código */
-					code[codeLine][0] = CRVL;
-					code[codeLine++][1] = entry->address;
-					code[codeLine++][0] = IMPR;
+					code[codeLine].opCode = CRVL;
+					code[codeLine].type = INTEGER;
+					code[codeLine++].iArg = entry->address;
+					code[codeLine].type = NOARG;
+					code[codeLine++].opCode = IMPR;
 				} 
 			}
 			if(badTypes) 
@@ -508,8 +537,8 @@ cmd:
 			STable_Entry * entry = 0;
 
 			/* Procura em todos os escopos aceitaveis */
-			int cscope = 0;
-			for(cscope = 0; !entry && cscope <= scope; cscope++) 
+			int cscope;
+			for(cscope = scope; !entry && cscope >= 0; cscope--) 
 			 	entry = symbolTable_find(&tables[cscope], $1.name);
 
 
@@ -543,8 +572,9 @@ cmd:
 			 	} 
 
 			 	/* Geração de código */
-			 	code[codeLine][0] = ARMZ;
-			 	code[codeLine++][1] = entry->address;
+			 	code[codeLine].opCode = ARMZ;
+			 	code[codeLine].type = INTEGER;
+			 	code[codeLine++].iArg = entry->address;
 			 }
 		}
 
@@ -557,12 +587,14 @@ cmd:
 		ok comandos UNTIL
 		ok condicao 
 		{
-			code[codeLine][0] = DSVF;
+			code[codeLine].opCode = DSVF;
+			code[codeLine].type = INTEGER;
 			/* Pula para a linha duas abaixo! A proxima eh um jump incondicional voltando */
-			code[codeLine][1] = codeLine + 2; 
+			code[codeLine].iArg = codeLine + 2; 
 			codeLine++;
-			code[codeLine][0] = DSVI;
-			code[codeLine++][1] = $1.codeLine;
+			code[codeLine].opCode = DSVI;
+			code[codeLine].type = INTEGER;
+			code[codeLine++].iArg = $1.codeLine;
 		}
 	
 	|
@@ -608,7 +640,14 @@ cmd:
 				
 				int i;
 				int checkCount = (paramQty<qty)?paramQty:qty;
+				int pushLine = codeLine;
+				/* End. de retorno */
+				code[codeLine].opCode = PUSHER;
+				code[codeLine].type = NOARG; 
+				codeLine++;
+
 				for(i = 0; i < checkCount ; i++) {
+
 					if(parameterList[i].type != node->value.type) {
 						generateCode = 0; 
 						fprintf(stderr, "Erro na linha %d: Parametro %d do procedimento %s:\n\t"
@@ -616,21 +655,101 @@ cmd:
 							yylineno, i+1, entry->name,
 							(parameterList[i].type==REAL)?"Real":"Inteiro",
 							(node->value.type==REAL)?"Real":"Inteiro" );
-						node = node->next;
-					}				
+					}	else {
+						/* Gera o codigo */
+						code[codeLine].type = INTEGER;
+						code[codeLine].iArg = parameterList[i].address;
+						code[codeLine++].opCode = PARAM;
+ 						node = node->next;
+					}
 				}
-			} 
+				/* Chamada de procedimento */
+				code[codeLine].opCode = CHPR;
+				code[codeLine].type = INTEGER;
+				code[codeLine++].iArg = entry->address;
+				code[pushLine].iArg = codeLine;
+ 			} 
 		}
 		ok
 
-	|	IF ok condicao THEN ok cmd pfalsa
-	|	WHILE ok condicao DO ok cmd
+	|	
+		IF 
+
+		ok condicao 
+		{
+
+			/* 
+				Linha do desvio 
+				COND
+				DSVF ELSE
+				CODIF
+				DESVI DPS
+				ELSE
+				COD
+				DPS 
+			*/
+			$1.codeLine = codeLine;
+			code[codeLine].opCode = DSVF;
+			code[codeLine].type = INTEGER;
+			codeLine++;
+		}
+		THEN ok cmd 
+		
+		pfalsa
+		{
+			/* Jump do IF - vai para o ELSE */
+			code[$1.codeLine].iArg = $8.codeLine;
+			
+		}
+
+	|	
+		WHILE 
+		{
+			/* Linha do inicio do while */
+			$1.codeLine = codeLine;
+		}
+		ok 
+		condicao 
+		{
+			/* Linha do pulo do while */
+			$2.codeLine = codeLine;
+			code[codeLine].opCode = DSVF;
+			code[codeLine++].type = INTEGER; 
+		}
+		DO
+		ok
+		cmd
+		{
+			/* Desvia incondicionalmente para o inicio do while */
+			code[$2.codeLine].iArg = codeLine + 1;
+			code[codeLine].opCode = DSVI;
+			code[codeLine].type = INTEGER;
+			code[codeLine++].iArg = $1.codeLine;
+		}
 	;
 
 pfalsa:
 		/*sincronizacao no else*/
-		ELSE ok cmd
-	|
+		ELSE ok
+		{
+
+			$1.codeLine = codeLine;
+			/* Logo no inicio do else, desvia para o final (para o IF pular) */
+			code[codeLine].opCode = DSVI;
+			code[codeLine].type = NOARG;
+			codeLine++;
+		}
+		cmd
+		{
+			/* Final do Else - Preenche o pulo para o IF */
+			code[$1.codeLine].iArg = codeLine;
+			$$.codeLine = $1.codeLine + 1;
+		}
+		
+	|   {  
+			/* Pulo para o if */
+			$$.codeLine = codeLine; 
+		}
 	;
 
 lista_arg:
@@ -646,17 +765,18 @@ argumentos:
 		IDENT 
 		{
 			STable_Entry * entry = 0;
-			int cscope = 0;
-			for(cscope = 0; !entry && cscope <= scope; cscope++) {
+			int cscope;
+			for(cscope = scope; !entry && cscope >= 0; cscope--) {
 				entry = symbolTable_find(&tables[cscope], $1.name);
 			}
 			if(!entry) {
 				generateCode = 0; 
-				fprintf(stderr, "Erro na linha %d: Parametro %s nao declarada.\n",
+				fprintf(stderr, "Erro na linha %d: Parametro %s nao declarado.\n",
 					yylineno, $1.name);
-			} 
-			/* Adiciona na lista de parametros, mesmo que seja nao declarada */
-			parameterList[paramQty++] = $1;
+				/* Adiciona na lista de parametros */
+				parameterList[paramQty++] = $1; 
+			} else parameterList[paramQty++] =  *entry;
+
 		}
 		ok mais_ident ok
 		/*passa o erro para a regra "lista_arg"*/
@@ -678,17 +798,23 @@ condicao:
 		expressao relacao expressao
 		{
 			if($2.category == OP_EQ) {
-				code[codeLine++][0] = CPIG;
+				code[codeLine].type = NOARG;
+				code[codeLine++].opCode = CPIG;
 			} else if($2.category == OP_DF) {
-				code[codeLine++][0] = CDES;
+				code[codeLine].type = NOARG;
+				code[codeLine++].opCode = CDES;
 			} else if($2.category == OP_GR) {
-				code[codeLine++][0] = CPMA;
+				code[codeLine].type = NOARG;
+				code[codeLine++].opCode = CPMA;
 			} else if($2.category == OP_LS) {
-				code[codeLine++][0] = CPME;
+				code[codeLine].type = NOARG;
+				code[codeLine++].opCode = CPME;
 			} else if($2.category == OP_GE) {
-				code[codeLine++][0] = CPMI;
+				code[codeLine].type = NOARG;
+				code[codeLine++].opCode = CPMI;
 			} else if($2.category == OP_LE) {
-				code[codeLine++][0] = CPMI;
+				code[codeLine].type = NOARG;
+				code[codeLine++].opCode = CPMI;
 			}
 		}
 		/*erro no lado direito da condicao*/
@@ -719,8 +845,10 @@ expressao:
 termo:
 		op_un fator 
 		{
-			if($1.category == OP_MI)
-				code[codeLine++][0] = INVE;
+			if($1.category == OP_MI) {
+				code[codeLine].type = NOARG;
+				code[codeLine++].opCode = INVE;
+			}
 		}
 		mais_fatores  
 		{
@@ -741,11 +869,15 @@ fator:
 		numero 
 		{ 
 			/* Geração de código */
-			code[codeLine][0] = CRCT;
+			code[codeLine].opCode = CRCT;
 			/* Checa o tipo do numero, para usar o campo correto */
-			if($1.category == NRO_REAL)
-				code[codeLine++][1] = $1.rval;
-			else code[codeLine++][1] = $1.ival;
+			if($1.type == REAL) {
+				code[codeLine].type = REAL;
+				code[codeLine++].rArg = $1.rval;
+			} else  {
+				code[codeLine].type = INTEGER;
+				code[codeLine++].iArg = $1.ival;
+			}
 
 			$$.type = $1.type; 
 		}
@@ -760,7 +892,7 @@ fator:
 			/* Busca o identificador na tabela de simbolos */
 			STable_Entry * entry = 0;
 			int cscope;
-			for(cscope = 0; !entry && cscope <= scope; cscope++)
+			for(cscope = scope; !entry && cscope >= 0; cscope--)
 				entry = symbolTable_find(&tables[cscope], $1.name);
 			
 			if(!entry) {
@@ -772,6 +904,25 @@ fator:
 			} else {
 				if(entry->category == VAR || entry->category == CONST)
 				{
+
+					if(entry->category == VAR) {
+						/* Geracao de codigo se for variavel */
+						code[codeLine].opCode = CRVL;
+						code[codeLine].type = INTEGER;
+						code[codeLine++].iArg = entry->address;
+					} else {
+						/* Geracao de codigo para constante */
+						code[codeLine].opCode = CRCT;
+						if(entry->type == REAL) {
+							code[codeLine].type = REAL;
+							code[codeLine++].rArg = entry->rval;
+						} else {
+							code[codeLine].type = INTEGER;
+							code[codeLine++].iArg = entry->ival;
+						}
+ 					}
+
+
 					strcpy($$.name, entry->name);
 					$$.type = $1.type;
 				} else if(entry->category == PROCEDURE) {
@@ -786,22 +937,22 @@ fator:
 					$$.type = ERROR;
 				}
 				
-				/* Geração de código */
-				code[codeLine][0] = CRVL;
-				code[codeLine++][1] = entry->address;
 			}
 		}
 
-		lista_arg
 	;
 
 /*regras corretas*/
 mais_fatores:
 		op_mul fator 
 		{
-			if($1.category == OP_ML)
-				code[codeLine++][0] = MULT;
-			else code[codeLine++][1] = DIVI;
+			if($1.category == OP_ML) {
+				code[codeLine].type = NOARG;
+				code[codeLine++].opCode = MULT;
+			} else {
+				code[codeLine].type = NOARG;
+				code[codeLine++].opCode = DIVI;
+			}
 
 		}
 		mais_fatores
@@ -830,9 +981,13 @@ mais_fatores:
 outros_termos:
 		op_ad termo 
 		{
-			if($1.category == OP_PL)
-				code[codeLine++][0] = SOMA;
-			else code[codeLine++][0] = SUBT;
+			if($1.category == OP_PL) {
+				code[codeLine].type = NOARG;
+				code[codeLine++].opCode = SOMA;
+			} else {
+				code[codeLine].type = NOARG;
+				code[codeLine++].opCode = SUBT;
+			}
 		} 
 		outros_termos
 		{
@@ -966,6 +1121,7 @@ int main(int argc, char **argv )
 	codeLine = 0;
 	usedAddress = 0;
 	generateCode = 1;
+	scope0procedures = 0;
 
 	int i;
 
@@ -1005,21 +1161,33 @@ int main(int argc, char **argv )
 	else
 		yyin = stdin;
 
-	file = fopen("code.code", "w");
+	if(argc >= 2) {
+		file = fopen(argv[1], "w");
+	} else {
+		/* Y U NO NAME UR PROGRAM ): */
+		file = fopen("youGiveMe.noName", "w");
+	}
 
-	code[codeLine++][0] = INPP;
-	/* Pula para a main */
-	code[codeLine++][0] = DSVI;
+
+	code[codeLine].type = NOARG;
+	code[codeLine++].opCode = INPP;
+	
+	desvLine = -1;
 
 	/*Processa*/
 	yyparse();
 
-	code[1][1] = mainLine;
-	code[codeLine++][0] = PARA;
+	code[desvLine].iArg = mainLine;
+	code[codeLine].type = NOARG;
+	code[codeLine++].opCode = PARA;
 	
 	if(generateCode) {
 		fprintf(stderr, "Codigo compilado com sucesso.\n");
 		flushCode(file, code, &codeLine);
+	} else {
+		if(argc >= 2)
+			remove(argv[1]);
+		else remove("youGiveMe.noName");
 	}
 
 	fclose(file);

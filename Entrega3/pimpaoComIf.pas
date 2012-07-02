@@ -10,16 +10,19 @@ program ursinhoPimpao;
 	end;
 
 begin
-	readln(a,b); 
-	c:=5;
 	
-	repeat
-	begin 
-		a:=a+1; 
-		c:=c*a;
-	end; 
-	until a < c;
-	p1 (a; c);
-	c := 1.2 * 2 + a;
+	if a < b + (c + 1)  then
+		begin
+			p1 (a; c);
+			c := 1.2 * 2 + a;
+		end
+	else
+		c := 12;
+
+	while b < 19 do
+	begin
+		b := b + 1;
+	end;
+	
 	writeln(c); 
 end.

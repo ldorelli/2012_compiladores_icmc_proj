@@ -1,13 +1,20 @@
 #include "commands.h"
+#include "y.tab.h"
 
-void printCommand(FILE * f, int cmd, int arg)
+void printCommand(FILE * f, CodeLine line)
 {
+	int cmd = line.opCode;
+
 	switch(cmd) {
 		case CRCT:
-			fprintf(f, "CRCT %d\n", arg);
+			
+			if(line.type == REAL)
+				fprintf(f, "CRCT %lf\n", line.rArg);
+			else fprintf(f, "CRCT %d\n", line.iArg);
+
 			break;
 		case CRVL:
-			fprintf(f, "CRVL %d\n", arg);
+			fprintf(f, "CRVL %d\n", line.iArg);
 			break;
 		case SOMA:
 			fprintf(f, "SOMA\n");
@@ -34,72 +41,78 @@ void printCommand(FILE * f, int cmd, int arg)
 			fprintf(f, "CPME\n");
 			break;
 		case CPMA :
-			fprintf(f, "CPMA \n");
+			fprintf(f, "CPMA\n");
 			break;
 		case CPIG :
-			fprintf(f, "CPIG \n");
+			fprintf(f, "CPIG\n");
 			break;
 		case CDES :
-			fprintf(f, "CDES \n");
+			fprintf(f, "CDES\n");
 			break;
 		case CPMI :
-			fprintf(f, "CPMI \n");
+			fprintf(f, "CPMI\n");
 			break;
 		case CMAI :
 			fprintf(f, "CMAI \n");
 			break;
 		case ARMZ :
-			fprintf(f, "ARMZ %d\n", arg);
+			fprintf(f, "ARMZ %d\n", line.iArg);
 			break;
 		case DSVI :
-			fprintf(f, "DSVI %d\n", arg);
+			fprintf(f, "DSVI %d\n", line.iArg);
 			break;
 		case DSVF :
-			fprintf(f, "DSVF %d\n", arg);
+			fprintf(f, "DSVF %d\n", line.iArg);
 			break;
 		case LEIT :
-			fprintf(f, "LEIT \n");
+			fprintf(f, "LEIT\n");
 			break;
 		case IMPR :
-			fprintf(f, "IMPR \n");
+			fprintf(f, "IMPR\n");
 			break;
 		case ALME :
-			fprintf(f, "ALME %d\n", arg);
+			fprintf(f, "ALME%d\n", line.iArg);
 			break;
 		case INPP :
-			fprintf(f, "INPP \n");
+			fprintf(f, "INPP\n");
 			break;
 		case PARA :
-			fprintf(f, "PARA \n");
+			fprintf(f, "PARA\n");
 			break;
 		case PUSHER :
-			fprintf(f, "PUSHER %d\n", arg);
+			fprintf(f, "PUSHER %d\n", line.iArg);
 			break;
 		case CHPR :
-			fprintf(f, "CHPR %d\n", arg);
+			fprintf(f, "CHPR %d\n", line.iArg);
 			break;
 		case DESM :
-			fprintf(f, "DESM %d\n", arg);
+			fprintf(f, "DESM %d\n", line.iArg);
 			break;
 		case RTPR :
-			fprintf(f, "RTPR \n");
+			fprintf(f, "RTPR\n");
 			break;
 		case COPVL :
-			fprintf(f, "COPVL \n");
+			fprintf(f, "COPVL\n");
 			break;
 		case PARAM 	:
-			fprintf(f, "PARAM %d\n", arg);
+			fprintf(f, "PARAM %d\n", line.iArg);
 			break;
 		case DIVI:
-			fprintf(f, "DIVI %d\n", arg);
+			fprintf(f, "DIVI %d\n", line.iArg);
 			break;
 	}
 }
 
 /* Imprime codigo */
-void flushCode(FILE * f, int code[][2], int  * qty) {
+void flushCode(FILE * f, CodeLine code[], int  * qty) {
 	int i;
-	for(i = 0; i < *qty; i++) 
-		printCommand(f, code[i][0], code[i][1]);
+	for(i = 0; i < *qty; i++) {
+		if(code[i].type == INTEGER)
+			printCommand(f, code[i]);
+		else if(code[i].type == REAL)
+			printCommand(f, code[i]);
+		else  /* Aqui tanto faz o segundo argumento */
+			printCommand(f, code[i]);
+	}
 	* qty = 0;
 }
