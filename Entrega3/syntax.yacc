@@ -116,7 +116,7 @@ corpo:
 
 dc:
 		/*regra correta*/
-		dc_c dc_v {fprintf (stderr, "e agora?\n"); } dc_p
+		dc_c dc_v dc_p
 	;
 
 dc_c:
@@ -144,14 +144,13 @@ dc_c:
 	
 dc_v:
 		/*regra correta*/
-		VAR {fprintf (stderr, "dc_v\n"); }
+		VAR
 		/* Zera a lista de parametros */
 		{ paramQty = 0; definedParams = 0; } 
 		variaveis ok SB_DP tipo_var SB_PV ok
 		{
 			int i;
 			/* Navega pelas variaveis declaradas */
-			fprintf (stderr, "inicio\n");
 			for(i = 0; i < paramQty; i++)			
 			{
 				STable_Entry * entry = 
@@ -191,23 +190,21 @@ dc_v:
 					symbolTable_add(&tables[scope], parameterList[i]);
 				}
 			}
-			fprintf (stderr, "fim\n");
 		} dc_v
 		/*erros nao tratatados da declaracao anterio: ex.: falta de ';' */
 	| error err_v ok dc_v { generateCode = 0; }
 		/*erros passados para a proxima declaracao*/
 	|	VAR error dc_v { generateCode = 0; }
-	|	{fprintf (stderr, "acabou o var\n");}
+	|
 	;
 
 dc_p:
 		/*regra correta*/
-		PROCEDURE  {fprintf (stderr, "entorou\n");}
+		PROCEDURE
 		/* Entrou em procedimento */
 		IDENT  
 		{ 
 			/* Zera a quantidade de parametros - sera calculada pela regra parametros */
-			fprintf (stderr, "iden");
 			paramQty = 0;
 			definedParams = 0;
 			STable_Entry procEntry;
@@ -243,7 +240,6 @@ dc_p:
 				procedureCount++;
 				symbolTable_add(&tables[scope], procEntry);
 			}
-			fprintf (stderr, "t\n");
 		}
 		ok 
 		parametros 
@@ -295,10 +291,10 @@ dc_p:
 		} dc_p
 
 		/*erros na declaracao de parametros*/
-	| PROCEDURE error corpo_p ok {fprintf (stderr, "e aqui\n");} dc_p { generateCode = 0; }
+	| PROCEDURE error corpo_p ok dc_p { generateCode = 0; }
 		/*erros nao tratados na declaracao anterior*/
-	|	 {fprintf (stderr, "aqui?\n"); } error err_p ok dc_p { generateCode = 0; }
-	| {fprintf (stderr, "talvez aqui\n");}
+	|	error err_p ok dc_p { generateCode = 0; }
+	|
 	;
 
 /*simbolos de sincronizacao para erros na declaracao de constante*/
@@ -412,7 +408,7 @@ cmd:
 				/* Variavel usada no readln nao existe */
 				if(!entry) {
 					generateCode = 0; 
-					printf("Erro na linha %d: Variavel %s usada e nao declarada.\n", yylineno, entry->name);
+					printf("Erro na linha %d: Variavel %s usada e nao declarada.\n", yylineno, parameterList[i].name);
 				} else {
 					/* Se as variaveis sao identificadores de programa ou procedure */
 					if(entry->category == CONST) {
