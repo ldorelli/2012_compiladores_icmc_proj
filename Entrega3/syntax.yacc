@@ -728,13 +728,13 @@ termo:
 				Se algum fator for real, real. Se algum for erro, erro.
 				Se nao, integer 
 			*/
-			printf("Em Termo, mais fatores %d: %s - %s\n", yylineno, $3.name, 
-				$3.type==REAL?"real":"integer" );
-
-
 			if($2.type == REAL || $3.type == REAL) $$.type = REAL;
 			else if($2.type == ERROR || $3.type == ERROR) $$.type = ERROR;
 			else $$.type = INTEGER;
+
+			printf("Termo %d: %s - %s %s\n", yylineno, yytext, 
+				$1.type==REAL?"real":"integer",
+				$2.type==REAL?"real":"integer" );
 		}
 	;
 
@@ -777,6 +777,7 @@ fator:
 				if(entry->category == VAR || entry->category == CONST)
 				{
 					strcpy($$.name, entry->name);
+					printf("%d: %s - %s\n", yylineno, yytext, entry->type==REAL?"real":"integer" );
 					$$.type = entry->type;
 				} else if(entry->category == PROCEDURE) {
 					generateCode = 0; 
@@ -789,7 +790,6 @@ fator:
 						yylineno);
 					$$.type = ERROR;
 				}
-				printf("lol %d: %s - %s\n", yylineno, yytext, $$.type==REAL?"real":"integer" );
 
 				/* Geração de código */
 				code[codeLine][0] = CRVL;
@@ -824,22 +824,11 @@ mais_fatores:
 				}
 			}
 
-			printf("mais fatores %d: %s - %s and %s\n", yylineno, yytext, 
-				$2.type==REAL?"real":"integer",
-				$3.type==REAL?"real":"integer" );
 			if($2.type == REAL || $3.type == REAL) $$.type = REAL;
 			else if($2.type == ERROR || $3.type == ERROR) $$.type = ERROR;
 			else $$.type = INTEGER;
-
-			printf("after mais fatores %d: %s - %s\n", yylineno, yytext, 
-				$$.type==REAL?"real":"integer");
-			
-			strcpy($$.name,  "Bobao");
-			printf("Copiei bobao\n");
 		}
-
-			
-	| 	{ $$.type = INTEGER; strcpy($$.name,  "Babao"); }
+	| 	{ $$.type = INTEGER; }
 	;
 	
 /*regras corretas*/

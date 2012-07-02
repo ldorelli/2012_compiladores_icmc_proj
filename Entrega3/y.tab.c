@@ -576,9 +576,9 @@ static const yytype_uint16 yyrline[] =
      570,   583,   569,   625,   626,   631,   632,   637,   639,   640,
      646,   645,   662,   667,   669,   671,   672,   677,   694,   699,
      700,   701,   702,   703,   704,   709,   720,   719,   744,   757,
-     763,   762,   806,   805,   842,   848,   847,   864,   870,   870,
-     880,   881,   886,   887,   888,   893,   894,   899,   900,   905,
-     909,   915,   920,   923,   929,   934
+     763,   762,   806,   805,   831,   837,   836,   853,   859,   859,
+     869,   870,   875,   876,   877,   882,   883,   888,   889,   894,
+     898,   904,   909,   912,   918,   923
 };
 #endif
 
@@ -2271,13 +2271,13 @@ yyreduce:
 				Se algum fator for real, real. Se algum for erro, erro.
 				Se nao, integer 
 			*/
-			printf("Em Termo, mais fatores %d: %s - %s\n", yylineno, (yyvsp[(3) - (4)]).name, 
-				(yyvsp[(3) - (4)]).type==REAL?"real":"integer" );
-
-
 			if((yyvsp[(2) - (4)]).type == REAL || (yyvsp[(3) - (4)]).type == REAL) (yyval).type = REAL;
 			else if((yyvsp[(2) - (4)]).type == ERROR || (yyvsp[(3) - (4)]).type == ERROR) (yyval).type = ERROR;
 			else (yyval).type = INTEGER;
+
+			printf("Termo %d: %s - %s %s\n", yylineno, yytext, 
+				(yyvsp[(1) - (4)]).type==REAL?"real":"integer",
+				(yyvsp[(2) - (4)]).type==REAL?"real":"integer" );
 		}
     break;
 
@@ -2322,6 +2322,7 @@ yyreduce:
 				if(entry->category == VAR || entry->category == CONST)
 				{
 					strcpy((yyval).name, entry->name);
+					printf("%d: %s - %s\n", yylineno, yytext, entry->type==REAL?"real":"integer" );
 					(yyval).type = entry->type;
 				} else if(entry->category == PROCEDURE) {
 					generateCode = 0; 
@@ -2334,7 +2335,6 @@ yyreduce:
 						yylineno);
 					(yyval).type = ERROR;
 				}
-				printf("lol %d: %s - %s\n", yylineno, yytext, (yyval).type==REAL?"real":"integer" );
 
 				/* Geração de código */
 				code[codeLine][0] = CRVL;
@@ -2369,28 +2369,19 @@ yyreduce:
 				}
 			}
 
-			printf("mais fatores %d: %s - %s and %s\n", yylineno, yytext, 
-				(yyvsp[(2) - (4)]).type==REAL?"real":"integer",
-				(yyvsp[(3) - (4)]).type==REAL?"real":"integer" );
 			if((yyvsp[(2) - (4)]).type == REAL || (yyvsp[(3) - (4)]).type == REAL) (yyval).type = REAL;
 			else if((yyvsp[(2) - (4)]).type == ERROR || (yyvsp[(3) - (4)]).type == ERROR) (yyval).type = ERROR;
 			else (yyval).type = INTEGER;
-
-			printf("after mais fatores %d: %s - %s\n", yylineno, yytext, 
-				(yyval).type==REAL?"real":"integer");
-			
-			strcpy((yyval).name,  "Bobao");
-			printf("Copiei bobao\n");
 		}
     break;
 
   case 104:
-#line 842 "syntax.yacc"
-    { (yyval).type = INTEGER; strcpy((yyval).name,  "Babao"); }
+#line 831 "syntax.yacc"
+    { (yyval).type = INTEGER; }
     break;
 
   case 105:
-#line 848 "syntax.yacc"
+#line 837 "syntax.yacc"
     {
 			if((yyvsp[(1) - (2)]).category == OP_PL)
 				code[codeLine++][0] = SOMA;
@@ -2399,7 +2390,7 @@ yyreduce:
     break;
 
   case 106:
-#line 854 "syntax.yacc"
+#line 843 "syntax.yacc"
     {
 			/* 	
 				Se algum fator for real, real. Se algum for erro, erro.
@@ -2412,12 +2403,12 @@ yyreduce:
     break;
 
   case 107:
-#line 864 "syntax.yacc"
+#line 853 "syntax.yacc"
     { (yyval).type = INTEGER; }
     break;
 
   case 108:
-#line 870 "syntax.yacc"
+#line 859 "syntax.yacc"
     { 
 			/* Adiciona a lista de parametros */
 			(yyvsp[(1) - (1)]).category = VAR;
@@ -2426,45 +2417,45 @@ yyreduce:
     break;
 
   case 119:
-#line 906 "syntax.yacc"
+#line 895 "syntax.yacc"
     { (yyval).type = REAL; }
     break;
 
   case 120:
-#line 910 "syntax.yacc"
+#line 899 "syntax.yacc"
     { (yyval).type = INTEGER; }
     break;
 
   case 121:
-#line 916 "syntax.yacc"
+#line 905 "syntax.yacc"
     { 
 			(yyval).type = INTEGER; 
 		}
     break;
 
   case 122:
-#line 921 "syntax.yacc"
+#line 910 "syntax.yacc"
     { (yyval).type = REAL; }
     break;
 
   case 123:
-#line 924 "syntax.yacc"
+#line 913 "syntax.yacc"
     { (yyval).type = CHAR; }
     break;
 
   case 124:
-#line 929 "syntax.yacc"
+#line 918 "syntax.yacc"
     { yyerrok; }
     break;
 
   case 125:
-#line 934 "syntax.yacc"
+#line 923 "syntax.yacc"
     { yyless(0); }
     break;
 
 
 /* Line 1267 of yacc.c.  */
-#line 2468 "y.tab.c"
+#line 2459 "y.tab.c"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
@@ -2678,7 +2669,7 @@ yyreturn:
 }
 
 
-#line 936 "syntax.yacc"
+#line 925 "syntax.yacc"
 
 
 
