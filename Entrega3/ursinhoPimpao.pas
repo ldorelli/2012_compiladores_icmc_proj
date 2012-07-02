@@ -19,7 +19,7 @@ begin
 		c:=c*a;
 	end; 
 	until a < c;
-	
-	a := 1 * 2 + -a;
+	p1 (a, c);
+	c := 1.2 * 2 + a;
 	writeln(c); 
 end.
