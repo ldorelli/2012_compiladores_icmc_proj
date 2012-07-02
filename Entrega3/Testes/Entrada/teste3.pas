@@ -1,24 +1,24 @@
 prog prog; { program escrito errado }
 { declaracao de variaveis }
+const pi=3.14; { constante declarada depois de variavel }
 var x: integer;
-char x; { declaracao em C }
-const y=3; { constante declarada depois de variavel }
-var y:char { falta ; }
+var y:real;
 { declaracao de procedimento }
-procedure proc (int x, int y); { parametros passados em C }
+procedure proc1 (x:real, y:real);
 begin
-	readln(x);
+	readln(x,y);
 	if x > 3 then
 		x := 3
 	else
 		x := 4 { faltou ; }
 end;
-procedure proc (x:integer;) { faltou mais parametros e o ) }
+procedure proc2 (x:integer);
 begin
 	writeln(x);
-	while x > 3 { faltou do }
-		x := x + 2;
+	while x/y > 3 do
+		x := 3x + 2;
 end;
 begin
-	proc (); { nao tem parametros }
+	proc1 (x; y);
+	proc2;
 end.
