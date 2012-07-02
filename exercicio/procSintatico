@@ -1,0 +1,87 @@
+
+procedure cmd ( Seg )
+begin
+	tok = get_Token();
+
+	if( tok == readln ){
+		tok = get_Token();
+		if ( tok == SIMB_ABR_PAR ) {
+			variaveis( Seg + ')' ); //Seguidores
+		} else {
+			erro = "identificador inexperado\n";
+			code_generation = false;
+			return erro;
+		}
+
+
+	} else if( tok == writeln ) {
+		tok = get_Token();
+		if ( tok == SIMB_ABR_PAR ) {
+			variaveis( Seg + ')' ); //Seguidores
+		} else {
+			erro = "identificador inexperado\n";
+			code_generation = false;
+			return erro;
+		}
+
+
+	} else if (tok == while ){
+		condicao ( Seg + 'do' ); //Seguidores
+
+
+	} else if ( tok == if ) {
+		condicao ( Seg + 'then' ); //Seguidores
+
+		tok = get_Token();
+		if( tok == 'then' ){
+			cmd ( Seg + Prim( pfalsa ) );
+		} else {
+			erro = "identificador inexperado\n";
+			code_generation = false;
+			return erro;
+		}
+
+	} else {
+		erro = "identificador inexperado\n";
+		code_generation = false;
+		return erro;
+	}
+end
+
+procedure variaves ( Seg )
+begin
+	tok = get_Token();
+
+	if( tok == ident ){
+
+		var = search_by_ident( tok );
+
+		if( var == null ){
+			erro = "identificador nao declarado";
+			code_generation = false;
+			return erro;
+		} else {
+		}
+		mais_var( Seg );
+	} else {
+		erro = "identificador inexperado\n";
+		code_generation = false;
+		return erro;
+	}
+end
+
+
+procedure mais_var ( Seg )
+begin
+	tok = get_Token();
+
+	if ( tok == SIMB_VIRG ){
+		variaveis ( Seg );
+
+	} else {
+		erro = "identificador inexperado\n";
+		code_generation = false;
+		return erro;
+	}
+
+end
