@@ -493,7 +493,7 @@ cmd:
 			{
 				generateCode = 0; 
 				/* Tipos diferentes (se nao houve algum erro anterior) */
-				printf("Erro na linha %d: tipos diferentes no comando writeln.\n", 
+				fprintf(stderr, "Erro na linha %d: tipos diferentes no comando writeln.\n", 
 					yylineno);
 			}
 		}
@@ -537,6 +537,7 @@ cmd:
 			 			yylineno);
 			 	} else if (entry->type == INTEGER && $4.type == REAL) {
 			 		generateCode = 0; 
+			 		fprintf (stderr, "%s: %d\n", $4.name, $4.type);
 			 		fprintf(stderr, "Erro na linha %d: Atribuicao de real a inteiro.\n", 
 			 			yylineno, $1.name);
 			 	} 
@@ -551,17 +552,17 @@ cmd:
 		REPEAT
 		{
 			/* Endereco de retorno de Loop */
-			//$1.codeLine = codeLine;
+			$1.codeLine = codeLine;
 		}
 		ok comandos UNTIL
 		ok condicao 
 		{
-			//code[codeLine][0] = DSVF;
+			code[codeLine][0] = DSVF;
 			/* Pula para a linha duas abaixo! A proxima eh um jump incondicional voltando */
-			//code[codeLine][1] = codeLine + 2; 
-			//codeLine++;
-			//code[codeLine][0] = DSVI;
-			//code[codeLine++][1] = $1.codeLine;
+			code[codeLine][1] = codeLine + 2; 
+			codeLine++;
+			code[codeLine][0] = DSVI;
+			code[codeLine++][1] = $1.codeLine;
 		}
 	
 	|
@@ -717,8 +718,8 @@ expressao:
 /*regra correta*/
 termo:
 		op_un fator 
-		{ 
-			if($1.category == OP_MI) 
+		{
+			if($1.category == OP_MI)
 				code[codeLine++][0] = INVE;
 		}
 		mais_fatores  
@@ -731,10 +732,6 @@ termo:
 			if($2.type == REAL || $3.type == REAL) $$.type = REAL;
 			else if($2.type == ERROR || $3.type == ERROR) $$.type = ERROR;
 			else $$.type = INTEGER;
-
-			printf("Termo %d: %s - %s %s\n", yylineno, yytext, 
-				$1.type==REAL?"real":"integer",
-				$2.type==REAL?"real":"integer" );
 		}
 	;
 
@@ -750,7 +747,6 @@ fator:
 				code[codeLine++][1] = $1.rval;
 			else code[codeLine++][1] = $1.ival;
 
-			printf("Fator %d: %s - %s\n", yylineno, yytext, $1.type==REAL?"real":"integer" );
 			$$.type = $1.type; 
 		}
 	| 	
@@ -777,8 +773,7 @@ fator:
 				if(entry->category == VAR || entry->category == CONST)
 				{
 					strcpy($$.name, entry->name);
-					printf("%d: %s - %s\n", yylineno, yytext, entry->type==REAL?"real":"integer" );
-					$$.type = entry->type;
+					$$.type = $1.type;
 				} else if(entry->category == PROCEDURE) {
 					generateCode = 0; 
 					fprintf(stderr, "Erro na linha %d: Nome de procedimento usado em artimetica.\n", 
@@ -790,7 +785,7 @@ fator:
 						yylineno);
 					$$.type = ERROR;
 				}
-
+				
 				/* Geração de código */
 				code[codeLine][0] = CRVL;
 				code[codeLine++][1] = entry->address;

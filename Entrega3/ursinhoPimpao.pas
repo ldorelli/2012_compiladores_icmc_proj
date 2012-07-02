@@ -1,5 +1,5 @@
 program ursinhoPimpao; 
-	var a1, b: integer; 
+	var a, b: integer; 
 	var c: real;
 
 	procedure p1(x : integer; y : real);
@@ -20,6 +20,6 @@ begin
 	end; 
 	until a < c;
 	
-	a := 1 * 2 + a;
+	a := 1 * 2 + -a;
 	writeln(c); 
 end.
