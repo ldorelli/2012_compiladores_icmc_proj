@@ -40,7 +40,7 @@
 	\label{sub:implementacao}
 		A implementação do compilador para a linguagem \verb=LALG= foi feita utilizando o \verb=yacc= (\em Yet Another Compiler-Compiler\normalfont) em linguagem de programação \verb=C=. Essa decisão foi influenciada principalmente devido à possibilidade de continuidade a partir da entrega anterior. 
 
-		Para armazenar os atributos, utilizamos o recurso proporcionado pelo \verb=yacc=, que consiste na definição de um tipo, que pode ser uma estrutura. Para acessá-los, utilizamos o símbolo reservado \$.
+		Para armazenar os atributos, utilizamos o recurso proporcionado pelo \verb=yacc=, que consiste na definição de um tipo, que pode ser uma estrutura. Para acessá-los, utilizamos o símbolo reservado \$. Uma variável desse tipo é criada sempre que um token é obtido pelo analizados léxico.
 		
 	% subsubsection implementacao (end)
 
@@ -60,8 +60,11 @@
 			\item \verb=name=: nome completo do identificador, com um máximo de 20 caracteres
 			\item \verb=codeLine=: auxilia na resolução de desvios durante a geração de código intermediário
 			\item \verb=address=: endereço da variável no programa
+			\item \verb=parametros=: Ponteiro inicial para uma lista ligada contendo entradas de tabela de símbolos para os parâmetros (no caso de um procedimento)
 		\end{itemize}
 	% subsection tabela_de_s_mbolos (end)
+
+	Para resolver problemas de escopo, foram criadas diversas tabelas de símbolos separadas, uma para cada escopo. Quando o analisador volta de um escopo (retorna da declaração de um procedimento), deleta-se a tabela de símbolos do escopo anterior. 
 
 	\subsection{Tratamento de erros} % (fold)
 	\label{ssub:tratamento_de_erros}
