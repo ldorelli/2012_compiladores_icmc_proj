@@ -225,6 +225,7 @@ dc_p:
 			procEntry.category = PROCEDURE;
 			procEntry.parameters = NULL;
 			procEntry.address = codeLine;
+			procEntry.paramQty = 0;
 			/* Copia o identificador para o nome da entrada da tabela */
 			strcpy(procEntry.name, $2.name);
 			STable_Entry * entry;
@@ -433,7 +434,7 @@ cmd:
 				/* Variavel usada no readln nao existe */
 				if(!entry) {
 					generateCode = 0; 
-					printf("Erro na linha %d: Variavel %s usada e nao declarada.\n", yylineno, parameterList[i].name);
+					fprintf(stderr, "Erro na linha %d: Variavel %s usada e nao declarada.\n", yylineno, parameterList[i].name);
 				} else {
 					/* Se as variaveis sao identificadores de programa ou procedure */
 					if(entry->category == CONST) {
@@ -540,9 +541,6 @@ cmd:
 			int cscope;
 			for(cscope = scope; !entry && cscope >= 0; cscope--) 
 			 	entry = symbolTable_find(&tables[cscope], $1.name);
-
-
-		//	 printf("Expressao Type %d : %s\n", yylineno, $4.type==REAL?"real":"integer");
 
 			 if(!entry) 
 			 {
@@ -1082,36 +1080,36 @@ void yyerror(const char *s) {
 	/* Pega os tokens esperado e obtido */
 	sscanf(s, "syntax error, unexpected %[^,], expecting%s%n", obtido, esperado, &n);
 	if(strcmp(obtido, "$end") == 0) { /*Fim de arquivo eh representado por $end*/
-		printf("Final inesperado de arquivo.\n");
+		fprintf(stderr, "Final inesperado de arquivo.\n");
 	} else {
 		if(n) {
 			if (!strcmp (obtido, "Comentario_nao_fechado")) {
 				
-				printf ("Erro na linha %d: '%s'\n", yylineno, obtido);
+				fprintf (stderr, "Erro na linha %d: '%s'\n", yylineno, obtido);
 			} else {
 				if (!strcmp (obtido, "SB_VG"))	strcpy (obtido, ",");
 				/*Mostra a linha do erro e o simbolo obtido*/
-				printf("Erro na linha %d: '%s' inesperado", yylineno, obtido);
+				fprintf(stderr, "Erro na linha %d: '%s' inesperado", yylineno, obtido);
 				/*Mostra a cadeia caso seja um erro lexico ou um identificador*/
 				if (!strcmp (obtido, "identificador")
-					|| obtido[0] >= 'A' && obtido[0] <= 'Z')	printf (" [%s]", yytext);
+					|| obtido[0] >= 'A' && obtido[0] <= 'Z')	fprintf (stderr, " [%s]", yytext);
 				/*Renomeia '$end' para 'Fim_de_arquivo'*/
 				if (!strcmp (esperado, "$end"))	strcpy (esperado, "Fim_de_arquivo");
 				/*Mostra o(s) simbolo(s) esperado(s)*/
-				printf (", esperava '%s'",esperado);
+				fprintf (stderr, ", esperava '%s'",esperado);
 				pos = (char*)s+n;
 				len = strlen (s);
 				/*Mostra todos, caso haja mais de um*/
 				while (pos < s+len) {
 					sscanf (pos, " or %s%n", esperado, &n);
 					pos += n;
-					printf (" ou '%s'", esperado);
+					fprintf (stderr, " ou '%s'", esperado);
 				}
-				printf ("\n");
+				fprintf (stderr, "\n");
 			}
 		} else
 				/*Se nao estava esperando nenhum simbolo*/
-				printf("Erro na linha %d: '%s' inesperado.\n", yylineno, obtido);
+				fprintf(stderr, "Erro na linha %d: '%s' inesperado.\n", yylineno, obtido);
 	}
 }
 
