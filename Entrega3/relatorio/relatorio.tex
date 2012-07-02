@@ -23,23 +23,16 @@
 
 \definecolor{gray}{RGB}{124,124,124}
 \lstset{language=Pascal,numbers=left,stepnumber=1,frame=bottom|top,tabsize=2,breaklines=true,basicstyle=\small\ttfamily,
-		keywordstyle=\color{blue}\bfseries,commentstyle=\color{gray}, numbersep=-7pt}
+		keywordstyle=\color{blue}\bfseries,commentstyle=\color{gray}, numbersep=-8pt}
 
 \begin{document}
 \maketitle
 
 \section{Objetivo} % (fold)
 \label{sec:objetivo}
-	O objetivo dessa parte final do projeto da disciplina é a implementação do analisador semântico para o compilador para a linguagem \verb=LALG= disponibilizada para os alunos. A seguir serão discutidos as mudanças que foram necessárias para a implementação do projeto. Nas seções seguintes mostraremos a abordagem utilizada para lidar com a tabela de símbolos e os tratamentos de erros que são gerados pelo compilador. Por fim, estão listados o meio para compilar o código e o método de executá-lo e alguns exemplos que foram utilizados para testar a compilação e suas respectivas saídas.
+	O objetivo dessa parte final do projeto da disciplina é a implementação do analisador semântico para o compilador para a linguagem \verb=LALG= disponibilizada para os alunos e a geração de código intermediário. A seguir serão discutidos a abordagem utilizada para lidar com a tabela de símbolos e os tratamentos de erros que são gerados pelo compilador. Em seguida estão listados o meio para compilar o código e o método de executá-lo e alguns exemplos que foram utilizados para testar a compilação e suas respectivas saídas.
 
 % section objetivo (end)
-
-\section{Mudanças realizadas} % (fold)
-\label{sec:mudancas_realizadas}
-	Sinto muito. Não sei.
-
-	Próximo.
-% section mudan_as_realizadas (end)
 
 \section{Decisões de projeto} % (fold)
 \label{sec:decisoes_de_projeto}
@@ -47,8 +40,7 @@
 	\label{sub:implementacao}
 		A implementação do compilador para a linguagem \verb=LALG= foi feita utilizando o \verb=yacc= (\em Yet Another Compiler-Compiler\normalfont) em linguagem de programação \verb=C=. Essa decisão foi influenciada principalmente devido à possibilidade de continuidade a partir da entrega anterior. 
 
-		 Para armazenar os atributos, utilizamos o recurso proporcionado pelo \verb=yacc=, que consiste na definição de um tipo, que pode ser uma estrutura.
-		 Para acessá-los, utilizamos o símbolo reservado \$.
+		Para armazenar os atributos, utilizamos o recurso proporcionado pelo \verb=yacc=, que consiste na definição de um tipo, que pode ser uma estrutura. Para acessá-los, utilizamos o símbolo reservado \$.
 		
 	% subsubsection implementacao (end)
 
@@ -78,8 +70,8 @@
 			\item Variável ou procedimento declarado mais de uma vez
 			\item Incompatibilidade de parâmetros formais e reais: número, ordem e tipo
 			\item Atribuição de um real a um inteiro
-			\item Divisão que entre números não inteiros
-			\item \verb=readln= e \verb=writeln= com variáveis de tipo diferentes
+			\item Divisão entre números não inteiros
+			\item \verb=readln= e \verb=writeln= com parâmetros de tipo diferentes
 		\end{itemize}
 	
 	% subsubsection tratamento_de_erros (end)
@@ -107,13 +99,16 @@
 			\label{tab:codigos}
 		\end{table}
 	
+	Observe que a tabela de símbolos implementada não armazena os valores das constantes, mas apenas substitui os mesmos no código a ser gerado.
 	% subsection geracao_de_codigo (end)
 
 % section decis_es_de_projeto (end)
 
 \section{Compilação} % (fold)
 \label{sec:compilacao}
-	Para compilação do projeto em sistemas \emph{UNIX}, execute o arquivo \verb=Makefile= disponibilizado por meio do comando \verb=make=. Para o sistema operacional \emph{Windows}, execute a seguinte sequência de comandos:
+	Para compilação do projeto em sistemas \emph{UNIX}, execute o arquivo \verb=Makefile= disponibilizado por meio do comando \verb=make=. 
+
+	Para o sistema operacional \emph{Windows}, execute a seguinte sequência de comandos:
 
 	\begin{center}
 		\begin{minipage}[ht]{0.5\textwidth}
@@ -130,17 +125,243 @@
 	\begin{center}
 		\begin{minipage}[ht]{0.5\textwidth}
 			\begin{verbatim}
-				t3.exe <nome_do_arquivo>
+				t3.exe <nome_do_arquivo> <nome_do_arquivo_bytecode>
 			\end{verbatim}
 		\end{minipage}
 	\end{center}
 
-	Observe que o analisador só termina quando encontra um \emph{end-of-file}. Caso o arquivo de entrada esteja gramaticamente correto, obtém-se como saída um arquivo com o \emph{bytecode} referente ao código dado como entrada denominado ``\emph{code.code}''.
+	Observe que o analisador só termina quando encontra um \emph{end-of-file}. Caso o arquivo de entrada esteja gramaticamente correto, obtém-se como saída um arquivo com o \emph{bytecode} referente ao código dado como entrada denominado ``\emph{youGiveMe.noName}'' caso o usuário não entre com algum nome para o arquivo \emph{bytecode} a ser gerado.
 % section compila_o (end)
 
 \section{Exemplos} % (fold)
 \label{sec:exemplos}
+	
+	\subsection{Exemplo 1} % (fold)
+	\label{sub:exemplo_1}
+		Esse exemplo está gramaticamente correto. E por sinal é o código fornecido na oitava avaliação da disciplina. 
+		O programa foi compilado com sucesso e obteve um código intermediário.
 
+		\subsubsection*{Entrada} % (fold)
+		\label{ssub:entrada}
+		
+		\begin{lstlisting}
+			program fatorial;
+			var n: integer;
+			procedure fat(x : integer);
+			var resultado: integer;
+			begin
+				resultado := 1;
+				while x > 1 do
+				begin
+					resultado := resultado * x;
+					x := x - 1;
+				end;
+
+				writeln(resultado);
+			end;
+
+			begin
+				readln(n);
+				fat(n);
+			end.
+		\end{lstlisting}
+
+		% subsubsection entrada (end)
+
+		\subsubsection*{Saída gerada} % (fold)
+		\label{ssub:sa_da_gerada}
+			\begin{center}
+			\begin{minipage}[t]{0.4\textwidth}
+			\begin{lstlisting}[firstnumber=0]
+			INPP
+			ALME1
+			DSVI 24
+			COPVL
+			ALME1
+			CRCT 1
+			ARMZ 3
+			CRVL 2
+			CRCT 1
+			CPMA
+			DSVF 20
+			CRVL 3
+			CRVL 2
+			MULT
+			ARMZ 3
+			\end{lstlisting}
+			\end{minipage}
+			\begin{minipage}[t]{0.4\textwidth}
+			\begin{lstlisting}[firstnumber=15]
+			CRVL 2
+			CRCT 1
+			SUBT
+			ARMZ 2
+			DSVI 7
+			CRVL 3
+			IMPR
+			DESM 2
+			RTPR
+			LEIT
+			ARMZ 0
+			PUSHER 29
+			PARAM 0
+			CHPR 3
+			PARA
+			\end{lstlisting}
+			\end{minipage}
+			\end{center}
+		% subsubsection sa_da_gerada (end)
+	% subsection exemplo_1 (end)
+
+	\subsection{Exemplo 2} % (fold)
+	\label{sub:exemplo_2}
+
+		\subsubsection*{Entrada} % (fold)
+		\label{ssub:entrada}
+		\begin{lstlisting}
+			prog prog; { program escrito errado }
+			{ declaracao de variaveis }
+			const pi=3.14; { constante declarada depois de variavel }
+			var x: integer;
+			var y:real;
+			{ declaracao de procedimento }
+			procedure proc1 (x:real, y:real);
+			begin
+				readln(x,y);
+				if x > 3 then
+					x := 3
+				else
+					x := 4 { faltou ; }
+			end;
+			procedure proc2 (x:integer);
+			begin
+				writeln(x);
+				while x/y > 3 do
+					x := 3x + 2;
+			end;
+			begin
+				proc1 (x; y);
+				proc2;
+			end.
+		\end{lstlisting}
+		% subsubsection* entrada (end)
+		\subsubsection*{Saída gerada} % (fold)
+		\label{ssub:sa_da_gerada}
+		\begin{lstlisting}[language=TeX]
+		Erro na linha 1: 'identificador' inesperado [prog], esperava 'program'
+		Erro na linha 3: '=' inesperado, esperava ':='
+		Erro na linha 7: ',' inesperado, esperava ';' ou ')'
+		Erro na linha 9: tipos diferentes no comando readln.
+		Erro na linha 14: 'end' inesperado, esperava ';'
+		Erro na linha 18: Divisao de numeros nao inteiros.
+		Erro na linha 19: 'Numero_mal_formado' inesperado [3x], esperava 'identificador' ou '(' ou 'numero_inteiro' ou 'numero_real'
+		Erro na linha 22: Parametro 1 do procedimento proc1:
+			Inteiro obtido, Real esperado. 
+		Erro na linha 23: Falta de parametros na chamada do procedimento proc2. 1 parametro	
+		\end{lstlisting}
+		% subsubsection sa_da_gerada (end)
+	% subsection exemplo_2 (end)
+
+	\subsection{Exemplo 3} % (fold)
+	\label{sub:exemplo_3}
+		\subsubsection*{Entrada} % (fold)
+		\label{ssub:entrada}
+		\lstinputlisting{../Testes/Entrada/teste1.pas}
+		\subsubsection*{Saída} % (fold)
+		\label{ssub:sa_da}
+		\begin{center}
+		\begin{minipage}[t]{0.3\textwidth}
+		\begin{lstlisting}[firstnumber=0]
+		INPP
+		ALME1
+		ALME1
+		ALME1
+		DSVI 59
+		ALME1
+		LEIT
+		ARMZ 0
+		CRVL 0
+		CRCT 3
+		CPMA
+		DSVF 17
+		CRCT 3.570000
+		ARMZ 1
+		CRCT 3
+		ARMZ 0
+		DSVI 36
+		CRVL 0
+		CRCT 3
+		CPME
+		DSVF 36
+		CRVL 0
+		CRVL 0
+		CRCT 2
+		SOMA
+		CRCT 3
+		\end{lstlisting}
+		\end{minipage}	
+		\begin{minipage}[t]{0.3\textwidth}
+		\begin{lstlisting}[firstnumber=26]
+		DIVI 0
+		SOMA
+		ARMZ 0
+		CRCT 3.570000
+		CRCT 3
+		DIVI 0
+		CRVL 0
+		SOMA
+		ARMZ 0
+		DSVI 17
+		CRVL 4
+		IMPR
+		DESM 1
+		RTPR
+		COPVL
+		COPVL
+		COPVL
+		ALME1
+		CRVL 4
+		CRVL 5
+		SOMA
+		ARMZ 7
+		CRVL 7
+		CRCT 1
+		SUBT
+		ARMZ 6
+		\end{lstlisting}
+		\end{minipage}
+		\begin{minipage}[t]{0.3\textwidth}
+		\begin{lstlisting}[firstnumber=52]
+		CRVL 7
+		CRCT 10
+		CPMA
+		DSVF 57
+		DSVI 44
+		DESM 4
+		RTPR
+		PUSHER 61
+		CHPR 5
+		PUSHER 66
+		PARAM 0
+		PARAM 0
+		PARAM 1
+		CHPR 40
+		CRVL 0
+		CRVL 1
+		CRCT 3
+		CRVL 0
+		MULT
+		SOMA
+		MULT
+		CRCT 5
+		DIVI 0
+		ARMZ 0
+		PARA
+		\end{lstlisting}
+		\end{minipage}
+		\end{center}
+		% subsubsection* entrada (end)
+	% subsection exemplo_3 (end)
 % section exemplos (end)
 
 \end{document}
