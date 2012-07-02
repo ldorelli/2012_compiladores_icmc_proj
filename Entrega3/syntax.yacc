@@ -728,15 +728,13 @@ termo:
 				Se algum fator for real, real. Se algum for erro, erro.
 				Se nao, integer 
 			*/
-			printf("Em Termo, mais fatores %d: %s - %s\n", yylineno, yytext, 
+			printf("Em Termo, mais fatores %d: %s - %s\n", yylineno, $3.name, 
 				$3.type==REAL?"real":"integer" );
 
 
 			if($2.type == REAL || $3.type == REAL) $$.type = REAL;
 			else if($2.type == ERROR || $3.type == ERROR) $$.type = ERROR;
 			else $$.type = INTEGER;
-
-
 		}
 	;
 
@@ -835,8 +833,13 @@ mais_fatores:
 
 			printf("after mais fatores %d: %s - %s\n", yylineno, yytext, 
 				$$.type==REAL?"real":"integer");
-			}
-	| 	{ $$.type = INTEGER; }
+			
+			strcpy($$.name,  "Bobao");
+			printf("Copiei bobao\n");
+		}
+
+			
+	| 	{ $$.type = INTEGER; strcpy($$.name,  "Babao"); }
 	;
 	
 /*regras corretas*/
