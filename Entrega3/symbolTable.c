@@ -4,10 +4,12 @@
 #include <stdio.h>
 
 void symbolTable_init(Node * root, Node * dad) {
+	fprintf (stderr, "st_in");
 	/* Inicia os filhos como Null */
 	memset(root->next, 0, sizeof root->next);
 	root->attr = NULL;
 	root->dad = dad;
+	fprintf (stderr, "it\n");
 }
 
 void symbolTable_add(Node * root, STable_Entry t) {
@@ -18,6 +20,7 @@ void symbolTable_add(Node * root, STable_Entry t) {
 	int i;
 	char * name = t.name;
 
+	fprintf (stderr, "st_ad\n");
 	for(i = 0; name[i] != '\0'; i++) {
 		if(aux->next[name[i]]) aux = aux->next[name[i]];
 		else {
@@ -29,23 +32,26 @@ void symbolTable_add(Node * root, STable_Entry t) {
 	/* Atribui a entrada */
 	aux->attr = (STable_Entry*) malloc(sizeof (STable_Entry));
 	*aux->attr = t;
+		fprintf (stderr, "d %s\n", t.name);
 }
 
 STable_Entry * symbolTable_find(Node *root, char * name) {
 	Node * aux = root;
 	int i;
+		fprintf (stderr, "st_fi");
 	/* Navega na arvore até encontrar o item buscado */
 	for(i = 0; aux && name[i] != '\0'; aux = aux->next[name[i]], i++);
 	/* Se existe, retorna o atributo */
 	if(aux) 
 		return aux->attr;
+			fprintf (stderr, "nd\n");
 	return 0;
 }
 
 void symbolTable_erase(Node * cur, Node * root) {
-	
 	int i;
 	ParameterNode * old;
+	fprintf (stderr, "st_era");
 	/* Limpa a tabela de simbolos */
 	for(i = 0; i < 256; i++) 
 		if(cur->next[i]) {
@@ -67,10 +73,12 @@ void symbolTable_erase(Node * cur, Node * root) {
 
 	/* Libera a memoria, se nao for a raiz */
 	if(cur != root) free(cur);
+		fprintf (stderr, "se\n");
 } 
 
 int symbolTable_addParameter(Node * root, char * procedure, STable_Entry parameter)
 {	
+	fprintf (stderr, "st_addpar\n");
 	/* 
 		Busca primeiramente a entrada na arvore 
 		Se não achar o procedimento (Note que deveria!), retorna 0
@@ -97,19 +105,23 @@ int symbolTable_addParameter(Node * root, char * procedure, STable_Entry paramet
 		node->value = parameter;
 		node->next = 0;
 		aux->attr->paramQty++;
+			fprintf (stderr, "rameter\n");
 		return 1;
 	}
 	int orig = 0;
 	/* Enquanto houver proximo */
+	fprintf (stderr, "test");
 	while(node->next) {
 		if(strcmp(node->value.name, parameter.name) == 0) return -orig - 1;
 		node = node->next;
 		orig++;
 	}
+	fprintf (stderr, "ando\n");
 	/* Insere os valores */
 	node->next = (ParameterNode *) malloc(sizeof(ParameterNode));
 	node->next->value = parameter;
 	node->next->next = 0;
 	aux->attr->paramQty++;
+		fprintf (stderr, "rameter\n");
 	return 1;
 }

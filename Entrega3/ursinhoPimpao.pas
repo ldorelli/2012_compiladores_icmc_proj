@@ -1,5 +1,5 @@
 program ursinhoPimpao; 
-	var a, b: integer; 
+	var a, a1, b: integer; 
 	var c: real;
 
 	procedure p1(x : integer; y : real);

@@ -4,7 +4,7 @@
 typedef struct trie 
 {
 	/* data */
-	struct trie* branch[50];
+	struct trie* branch[256];
 	char*	elem; /* Valor */
 	int 	idx; /* Índice do Token no vetor de tokens */
 } Trie;

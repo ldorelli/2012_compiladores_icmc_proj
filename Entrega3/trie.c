@@ -3,14 +3,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-int mapChar(char c) {
-	if(c >= 'A' && c <= 'Z') {
-		return c - 'A';
-	} else {
-		return 'Z' - 'A' + c - 'a';
-	}
-}
-
 void initializeTrie(Trie * t) {
 	/* Inicializa tudo em nulo */
 	memset(t->branch, 0, sizeof t->branch);
@@ -34,12 +26,12 @@ void insert_i(Trie * node, const char * key, const char * val, int pos, int n, i
 		node->idx = idx;
 	} else {
 		/* Se o nó que precisa ser inserido está nulo, alocar */
-		if(node->branch[mapChar(val[pos])] == NULL) {
-			node->branch[mapChar(val[pos])] = (Trie*) malloc(sizeof(Trie));
-			initializeTrie(node->branch[mapChar(val[pos])]);
+		if(node->branch[val[pos]] == NULL) {
+			node->branch[val[pos]] = (Trie*) malloc(sizeof(Trie));
+			initializeTrie(node->branch[val[pos]]);
 		}
 
- 		insert_i(node->branch[mapChar(val[pos])], key, val, pos+1, n, idx);
+ 		insert_i(node->branch[val[pos]], key, val, pos+1, n, idx);
 	}
 }
 
@@ -57,11 +49,11 @@ char* find2(Trie *node, const char * key, int pos, int n, int *idx)
 		*idx = node->idx;
 		return node->elem;
 	} else {
-		if(node->branch[mapChar(key[pos])] == NULL) {
+		if(node->branch[key[pos]] == NULL) {
 			/* Não Achou */
 			return NULL;	
 		} 
-		else return find2(node->branch[mapChar(key[pos])], key, pos+1, n, idx);
+		else return find2(node->branch[key[pos]], key, pos+1, n, idx);
 	}
 }
 
