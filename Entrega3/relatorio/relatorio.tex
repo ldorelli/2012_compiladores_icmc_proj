@@ -58,6 +58,8 @@
 			\item \verb=line=: linha em que foi declarado
 			\item \verb=parameters=: lista de parâmetros, no caso de procedimentos
 			\item \verb=name=: nome completo do identificador, com um máximo de 20 caracteres
+			\item \verb=codeLine=: auxilia na resolução de desvios durante a geração de código intermediário
+			\item \verb=address=: endereço da variável no programa
 		\end{itemize}
 	% subsection tabela_de_s_mbolos (end)
 
@@ -130,7 +132,7 @@
 		\end{minipage}
 	\end{center}
 
-	Observe que o analisador só termina quando encontra um \emph{end-of-file}. Caso o arquivo de entrada esteja gramaticamente correto, obtém-se como saída um arquivo com o \emph{bytecode} referente ao código dado como entrada denominado ``\emph{youGiveMe.noName}'' caso o usuário não entre com algum nome para o arquivo \emph{bytecode} a ser gerado.
+	Observe que o analisador só termina quando encontra um \emph{end-of-file}. Caso o arquivo de entrada esteja gramaticamente correto, obtém-se como saída um arquivo com código intermediário referente ao código dado como entrada denominado ``\emph{youGiveMe.noName}'' caso o usuário não entre com algum nome para tal arquivo.
 % section compila_o (end)
 
 \section{Exemplos} % (fold)
