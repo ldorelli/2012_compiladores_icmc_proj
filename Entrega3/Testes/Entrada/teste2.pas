@@ -8,8 +8,8 @@ var variavel:integer;
 procedure 1erro (param1:integer) { identificador invalido }
 var variavelLocal:char;
 begin
-	readln(variavelLocal); { falta ';' }
-	writeln (variavelLoca)
+	readln(variavelLocal);
+	writeln (variavelLoca);
 end;
 procedure SPtEVgNoFim;
 begin

@@ -1,24 +1,23 @@
-/* A Bison parser, made by GNU Bison 2.3.  */
+
+/* A Bison parser, made by GNU Bison 2.4.1.  */
 
 /* Skeleton implementation for Bison's Yacc-like parsers in C
-
-   Copyright (C) 1984, 1989, 1990, 2000, 2001, 2002, 2003, 2004, 2005, 2006
+   
+      Copyright (C) 1984, 1989, 1990, 2000, 2001, 2002, 2003, 2004, 2005, 2006
    Free Software Foundation, Inc.
-
-   This program is free software; you can redistribute it and/or modify
+   
+   This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 2, or (at your option)
-   any later version.
-
+   the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
+   
    This program is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
    GNU General Public License for more details.
-
+   
    You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin Street, Fifth Floor,
-   Boston, MA 02110-1301, USA.  */
+   along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 
 /* As a special exception, you may create a larger work that contains
    part or all of the Bison parser skeleton and distribute that work
@@ -29,7 +28,7 @@
    special exception, which will cause the skeleton and the resulting
    Bison output files to be licensed under the GNU General Public
    License without this special exception.
-
+   
    This special exception was added by the Free Software Foundation in
    version 2.2 of Bison.  */
 
@@ -47,7 +46,7 @@
 #define YYBISON 1
 
 /* Bison version.  */
-#define YYBISON_VERSION "2.3"
+#define YYBISON_VERSION "2.4.1"
 
 /* Skeleton name.  */
 #define YYSKELETON_NAME "yacc.c"
@@ -55,9 +54,80 @@
 /* Pure parsers.  */
 #define YYPURE 0
 
+/* Push parsers.  */
+#define YYPUSH 0
+
+/* Pull parsers.  */
+#define YYPULL 1
+
 /* Using locations.  */
 #define YYLSP_NEEDED 0
 
+
+
+/* Copy the first part of user declarations.  */
+
+/* Line 189 of yacc.c  */
+#line 51 "syntax.yacc"
+ 
+	#include "symbolTable.h"
+	#define YYSTYPE  STable_Entry
+	#include  "lex.yy.c"
+	#include <string.h>
+	#include "commands.h"
+
+	/* Código */
+	CodeLine code[5000000];
+	int codeLine;
+	int usedAddress;
+	int procedureCount ;
+	int generateCode;
+	int mainLine;
+	int desvLine;
+	int scope0procedures;
+
+	char errv[100]; 
+	int yydebug = 1;
+	extern int yylineno;
+	
+	SymbolTable tables[10]; // ate 10 escopo
+	int variablesPerScope[10];
+	int scope;
+	
+	FILE * file;	
+
+	/* Tamanho realista */
+	/* Vai guardar coisas como lista de parametros ou variaveis */
+	STable_Entry parameterList[400];
+	int paramQty;
+	/* Numero de parametros da lista de parametros que ja tem tipo definido */
+	int definedParams;
+	int validProcedure;
+
+/* Line 189 of yacc.c  */
+#line 86 "syntax.yacc"
+ void yyerror(const char*); 
+
+/* Line 189 of yacc.c  */
+#line 113 "y.tab.c"
+
+/* Enabling traces.  */
+#ifndef YYDEBUG
+# define YYDEBUG 0
+#endif
+
+/* Enabling verbose error messages.  */
+#ifdef YYERROR_VERBOSE
+# undef YYERROR_VERBOSE
+# define YYERROR_VERBOSE 1
+#else
+# define YYERROR_VERBOSE 1
+#endif
+
+/* Enabling the token table.  */
+#ifndef YYTOKEN_TABLE
+# define YYTOKEN_TABLE 0
+#endif
 
 
 /* Tokens.  */
@@ -161,77 +231,19 @@
 
 
 
-/* Copy the first part of user declarations.  */
-#line 51 "syntax.yacc"
- 
-	#include "symbolTable.h"
-	#define YYSTYPE  STable_Entry
-	#include  "lex.yy.c"
-	#include <string.h>
-	#include "commands.h"
-
-	/* Código */
-	CodeLine code[5000000];
-	int codeLine;
-	int usedAddress;
-	int procedureCount ;
-	int generateCode;
-	int mainLine;
-	int desvLine;
-	int scope0procedures;
-
-	char errv[100]; 
-	int yydebug = 1;
-	extern int yylineno;
-	
-	SymbolTable tables[10]; // ate 10 escopo
-	int variablesPerScope[10];
-	int scope;
-	
-	FILE * file;	
-
-	/* Tamanho realista */
-	/* Vai guardar coisas como lista de parametros ou variaveis */
-	STable_Entry parameterList[400];
-	int paramQty;
-	/* Numero de parametros da lista de parametros que ja tem tipo definido */
-	int definedParams;
-	int validProcedure;
-#line 86 "syntax.yacc"
- void yyerror(const char*); 
-
-/* Enabling traces.  */
-#ifndef YYDEBUG
-# define YYDEBUG 0
-#endif
-
-/* Enabling verbose error messages.  */
-#ifdef YYERROR_VERBOSE
-# undef YYERROR_VERBOSE
-# define YYERROR_VERBOSE 1
-#else
-# define YYERROR_VERBOSE 1
-#endif
-
-/* Enabling the token table.  */
-#ifndef YYTOKEN_TABLE
-# define YYTOKEN_TABLE 0
-#endif
-
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 typedef int YYSTYPE;
+# define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1
-# define YYSTYPE_IS_TRIVIAL 1
 #endif
-
 
 
 /* Copy the second part of user declarations.  */
 
 
-/* Line 216 of yacc.c.  */
-#line 235 "y.tab.c"
+/* Line 264 of yacc.c  */
+#line 247 "y.tab.c"
 
 #ifdef short
 # undef short
@@ -281,7 +293,7 @@ typedef short int yytype_int16;
 #define YYSIZE_MAXIMUM ((YYSIZE_T) -1)
 
 #ifndef YY_
-# if defined YYENABLE_NLS && YYENABLE_NLS
+# if YYENABLE_NLS
 #  if ENABLE_NLS
 #   include <libintl.h> /* INFRINGES ON USER NAME SPACE */
 #   define YY_(msgid) dgettext ("bison-runtime", msgid)
@@ -306,14 +318,14 @@ typedef short int yytype_int16;
 #if (defined __STDC__ || defined __C99__FUNC__ \
      || defined __cplusplus || defined _MSC_VER)
 static int
-YYID (int i)
+YYID (int yyi)
 #else
 static int
-YYID (i)
-    int i;
+YYID (yyi)
+    int yyi;
 #endif
 {
-  return i;
+  return yyi;
 }
 #endif
 
@@ -394,9 +406,9 @@ void free (void *); /* INFRINGES ON USER NAME SPACE */
 /* A type that is properly aligned for any stack member.  */
 union yyalloc
 {
-  yytype_int16 yyss;
-  YYSTYPE yyvs;
-  };
+  yytype_int16 yyss_alloc;
+  YYSTYPE yyvs_alloc;
+};
 
 /* The size of the maximum gap between one aligned stack and the next.  */
 # define YYSTACK_GAP_MAXIMUM (sizeof (union yyalloc) - 1)
@@ -430,12 +442,12 @@ union yyalloc
    elements in the stack, and YYPTR gives the new location of the
    stack.  Advance YYPTR to a properly aligned location for the next
    stack.  */
-# define YYSTACK_RELOCATE(Stack)					\
+# define YYSTACK_RELOCATE(Stack_alloc, Stack)				\
     do									\
       {									\
 	YYSIZE_T yynewbytes;						\
-	YYCOPY (&yyptr->Stack, Stack, yysize);				\
-	Stack = &yyptr->Stack;						\
+	YYCOPY (&yyptr->Stack_alloc, Stack, yysize);			\
+	Stack = &yyptr->Stack_alloc;					\
 	yynewbytes = yystacksize * sizeof (*Stack) + YYSTACK_GAP_MAXIMUM; \
 	yyptr += yynewbytes / sizeof (*yyptr);				\
       }									\
@@ -571,17 +583,17 @@ static const yytype_uint16 yyrline[] =
 {
        0,    95,    95,    94,   104,   106,   112,   111,   121,   121,
      127,   126,   141,   143,   144,   151,   153,   149,   198,   200,
-     201,   210,   261,   296,   206,   319,   321,   322,   327,   328,
-     329,   330,   331,   336,   337,   338,   339,   344,   345,   346,
-     347,   352,   354,   355,   363,   360,   372,   374,   376,   381,
-     383,   385,   387,   388,   393,   395,   399,   401,   406,   408,
-     409,   415,   421,   414,   476,   483,   475,   532,   535,   583,
-     582,   603,   616,   602,   679,   676,   707,   713,   706,   734,
-     733,   749,   757,   759,   760,   766,   765,   783,   788,   790,
-     792,   793,   798,   821,   826,   827,   828,   829,   830,   831,
-     836,   847,   846,   869,   885,   890,   948,   947,   977,   983,
-     982,  1003,  1009,  1009,  1019,  1020,  1025,  1026,  1027,  1032,
-    1033,  1038,  1039,  1044,  1048,  1054,  1057,  1060,  1066,  1071
+     201,   210,   262,   297,   206,   320,   322,   323,   328,   329,
+     330,   331,   332,   337,   338,   339,   340,   345,   346,   347,
+     348,   353,   355,   356,   364,   361,   373,   375,   377,   382,
+     384,   386,   388,   389,   394,   396,   400,   402,   407,   409,
+     410,   416,   422,   415,   479,   486,   478,   536,   539,   584,
+     583,   604,   617,   603,   680,   677,   708,   714,   707,   735,
+     734,   750,   758,   760,   761,   767,   766,   784,   789,   791,
+     793,   794,   799,   822,   827,   828,   829,   830,   831,   832,
+     837,   848,   847,   870,   886,   891,   949,   948,   978,   984,
+     983,  1004,  1010,  1010,  1020,  1021,  1026,  1027,  1028,  1033,
+    1034,  1039,  1040,  1045,  1049,  1055,  1058,  1061,  1067,  1072
 };
 #endif
 
@@ -600,14 +612,15 @@ static const char *const yytname[] =
   "\"real\"", "\"integer\"", "\"char\"", "\"procedure\"", "\"if\"",
   "\"else\"", "\"readln\"", "\"writeln\"", "\"repeat\"", "\"then\"",
   "\"until\"", "\"while\"", "\"do\"", "\"function\"", "$accept", "program",
-  "@1", "corpo", "@2", "dc", "@3", "dc_c", "@4", "dc_v", "@5", "@6",
-  "dc_p", "@7", "@8", "@9", "err_c", "err_v", "err_p", "parametros",
-  "lista_par", "@10", "mais_par", "corpo_p", "comandos", "cmd", "@11",
-  "@12", "@13", "@14", "@15", "@16", "@17", "@18", "@19", "@20", "pfalsa",
-  "@21", "lista_arg", "argumentos", "@22", "mais_ident", "condicao",
-  "relacao", "expressao", "termo", "@23", "fator", "mais_fatores", "@24",
-  "outros_termos", "@25", "variaveis", "@26", "mais_var", "op_un", "op_ad",
-  "op_mul", "numero", "tipo_var", "ok", "less", 0
+  "$@1", "corpo", "$@2", "dc", "$@3", "dc_c", "$@4", "dc_v", "$@5", "$@6",
+  "dc_p", "$@7", "$@8", "$@9", "err_c", "err_v", "err_p", "parametros",
+  "lista_par", "$@10", "mais_par", "corpo_p", "comandos", "cmd", "$@11",
+  "$@12", "$@13", "$@14", "$@15", "$@16", "$@17", "$@18", "@19", "$@20",
+  "pfalsa", "$@21", "lista_arg", "argumentos", "$@22", "mais_ident",
+  "condicao", "relacao", "expressao", "termo", "@23", "fator",
+  "mais_fatores", "@24", "outros_termos", "@25", "variaveis", "$@26",
+  "mais_var", "op_un", "op_ad", "op_mul", "numero", "tipo_var", "ok",
+  "less", 0
 };
 #endif
 
@@ -920,7 +933,7 @@ while (YYID (0))
    we won't break user code: when these are the locations we know.  */
 
 #ifndef YY_LOCATION_PRINT
-# if defined YYLTYPE_IS_TRIVIAL && YYLTYPE_IS_TRIVIAL
+# if YYLTYPE_IS_TRIVIAL
 #  define YY_LOCATION_PRINT(File, Loc)			\
      fprintf (File, "%d.%d-%d.%d",			\
 	      (Loc).first_line, (Loc).first_column,	\
@@ -1031,17 +1044,20 @@ yy_symbol_print (yyoutput, yytype, yyvaluep)
 #if (defined __STDC__ || defined __C99__FUNC__ \
      || defined __cplusplus || defined _MSC_VER)
 static void
-yy_stack_print (yytype_int16 *bottom, yytype_int16 *top)
+yy_stack_print (yytype_int16 *yybottom, yytype_int16 *yytop)
 #else
 static void
-yy_stack_print (bottom, top)
-    yytype_int16 *bottom;
-    yytype_int16 *top;
+yy_stack_print (yybottom, yytop)
+    yytype_int16 *yybottom;
+    yytype_int16 *yytop;
 #endif
 {
   YYFPRINTF (stderr, "Stack now");
-  for (; bottom <= top; ++bottom)
-    YYFPRINTF (stderr, " %d", *bottom);
+  for (; yybottom <= yytop; yybottom++)
+    {
+      int yybot = *yybottom;
+      YYFPRINTF (stderr, " %d", yybot);
+    }
   YYFPRINTF (stderr, "\n");
 }
 
@@ -1075,11 +1091,11 @@ yy_reduce_print (yyvsp, yyrule)
   /* The symbols being reduced.  */
   for (yyi = 0; yyi < yynrhs; yyi++)
     {
-      fprintf (stderr, "   $%d = ", yyi + 1);
+      YYFPRINTF (stderr, "   $%d = ", yyi + 1);
       yy_symbol_print (stderr, yyrhs[yyprhs[yyrule] + yyi],
 		       &(yyvsp[(yyi + 1) - (yynrhs)])
 		       		       );
-      fprintf (stderr, "\n");
+      YYFPRINTF (stderr, "\n");
     }
 }
 
@@ -1359,10 +1375,8 @@ yydestruct (yymsg, yytype, yyvaluep)
 	break;
     }
 }
-
 
 /* Prevent warnings from -Wmissing-prototypes.  */
-
 #ifdef YYPARSE_PARAM
 #if defined __STDC__ || defined __cplusplus
 int yyparse (void *YYPARSE_PARAM);
@@ -1378,11 +1392,10 @@ int yyparse ();
 #endif /* ! YYPARSE_PARAM */
 
 
-
-/* The look-ahead symbol.  */
+/* The lookahead symbol.  */
 int yychar;
 
-/* The semantic value of the look-ahead symbol.  */
+/* The semantic value of the lookahead symbol.  */
 YYSTYPE yylval;
 
 /* Number of syntax errors so far.  */
@@ -1390,9 +1403,9 @@ int yynerrs;
 
 
 
-/*----------.
-| yyparse.  |
-`----------*/
+/*-------------------------.
+| yyparse or yypush_parse.  |
+`-------------------------*/
 
 #ifdef YYPARSE_PARAM
 #if (defined __STDC__ || defined __C99__FUNC__ \
@@ -1416,14 +1429,39 @@ yyparse ()
 #endif
 #endif
 {
-  
-  int yystate;
+
+
+    int yystate;
+    /* Number of tokens to shift before error messages enabled.  */
+    int yyerrstatus;
+
+    /* The stacks and their tools:
+       `yyss': related to states.
+       `yyvs': related to semantic values.
+
+       Refer to the stacks thru separate pointers, to allow yyoverflow
+       to reallocate them elsewhere.  */
+
+    /* The state stack.  */
+    yytype_int16 yyssa[YYINITDEPTH];
+    yytype_int16 *yyss;
+    yytype_int16 *yyssp;
+
+    /* The semantic value stack.  */
+    YYSTYPE yyvsa[YYINITDEPTH];
+    YYSTYPE *yyvs;
+    YYSTYPE *yyvsp;
+
+    YYSIZE_T yystacksize;
+
   int yyn;
   int yyresult;
-  /* Number of tokens to shift before error messages enabled.  */
-  int yyerrstatus;
-  /* Look-ahead token as an internal (translated) token number.  */
-  int yytoken = 0;
+  /* Lookahead token as an internal (translated) token number.  */
+  int yytoken;
+  /* The variables used to return semantic value and location from the
+     action routines.  */
+  YYSTYPE yyval;
+
 #if YYERROR_VERBOSE
   /* Buffer for error messages, and its allocated size.  */
   char yymsgbuf[128];
@@ -1431,51 +1469,28 @@ yyparse ()
   YYSIZE_T yymsg_alloc = sizeof yymsgbuf;
 #endif
 
-  /* Three stacks and their tools:
-     `yyss': related to states,
-     `yyvs': related to semantic values,
-     `yyls': related to locations.
-
-     Refer to the stacks thru separate pointers, to allow yyoverflow
-     to reallocate them elsewhere.  */
-
-  /* The state stack.  */
-  yytype_int16 yyssa[YYINITDEPTH];
-  yytype_int16 *yyss = yyssa;
-  yytype_int16 *yyssp;
-
-  /* The semantic value stack.  */
-  YYSTYPE yyvsa[YYINITDEPTH];
-  YYSTYPE *yyvs = yyvsa;
-  YYSTYPE *yyvsp;
-
-
-
 #define YYPOPSTACK(N)   (yyvsp -= (N), yyssp -= (N))
-
-  YYSIZE_T yystacksize = YYINITDEPTH;
-
-  /* The variables used to return semantic value and location from the
-     action routines.  */
-  YYSTYPE yyval;
-
 
   /* The number of symbols on the RHS of the reduced rule.
      Keep to zero when no symbol should be popped.  */
   int yylen = 0;
+
+  yytoken = 0;
+  yyss = yyssa;
+  yyvs = yyvsa;
+  yystacksize = YYINITDEPTH;
 
   YYDPRINTF ((stderr, "Starting parse\n"));
 
   yystate = 0;
   yyerrstatus = 0;
   yynerrs = 0;
-  yychar = YYEMPTY;		/* Cause a token to be read.  */
+  yychar = YYEMPTY; /* Cause a token to be read.  */
 
   /* Initialize stack pointers.
      Waste one element of value and location stack
      so that they stay on the same level as the state stack.
      The wasted elements are never initialized.  */
-
   yyssp = yyss;
   yyvsp = yyvs;
 
@@ -1505,7 +1520,6 @@ yyparse ()
 	YYSTYPE *yyvs1 = yyvs;
 	yytype_int16 *yyss1 = yyss;
 
-
 	/* Each stack pointer address is followed by the size of the
 	   data in use in that stack, in bytes.  This used to be a
 	   conditional around just the two extra args, but that might
@@ -1513,7 +1527,6 @@ yyparse ()
 	yyoverflow (YY_("memory exhausted"),
 		    &yyss1, yysize * sizeof (*yyssp),
 		    &yyvs1, yysize * sizeof (*yyvsp),
-
 		    &yystacksize);
 
 	yyss = yyss1;
@@ -1536,9 +1549,8 @@ yyparse ()
 	  (union yyalloc *) YYSTACK_ALLOC (YYSTACK_BYTES (yystacksize));
 	if (! yyptr)
 	  goto yyexhaustedlab;
-	YYSTACK_RELOCATE (yyss);
-	YYSTACK_RELOCATE (yyvs);
-
+	YYSTACK_RELOCATE (yyss_alloc, yyss);
+	YYSTACK_RELOCATE (yyvs_alloc, yyvs);
 #  undef YYSTACK_RELOCATE
 	if (yyss1 != yyssa)
 	  YYSTACK_FREE (yyss1);
@@ -1549,7 +1561,6 @@ yyparse ()
       yyssp = yyss + yysize - 1;
       yyvsp = yyvs + yysize - 1;
 
-
       YYDPRINTF ((stderr, "Stack size increased to %lu\n",
 		  (unsigned long int) yystacksize));
 
@@ -1559,6 +1570,9 @@ yyparse ()
 
   YYDPRINTF ((stderr, "Entering state %d\n", yystate));
 
+  if (yystate == YYFINAL)
+    YYACCEPT;
+
   goto yybackup;
 
 /*-----------.
@@ -1567,16 +1581,16 @@ yyparse ()
 yybackup:
 
   /* Do appropriate processing given the current state.  Read a
-     look-ahead token if we need one and don't already have one.  */
+     lookahead token if we need one and don't already have one.  */
 
-  /* First try to decide what to do without reference to look-ahead token.  */
+  /* First try to decide what to do without reference to lookahead token.  */
   yyn = yypact[yystate];
   if (yyn == YYPACT_NINF)
     goto yydefault;
 
-  /* Not known => get a look-ahead token if don't already have one.  */
+  /* Not known => get a lookahead token if don't already have one.  */
 
-  /* YYCHAR is either YYEMPTY or YYEOF or a valid look-ahead symbol.  */
+  /* YYCHAR is either YYEMPTY or YYEOF or a valid lookahead symbol.  */
   if (yychar == YYEMPTY)
     {
       YYDPRINTF ((stderr, "Reading a token: "));
@@ -1608,20 +1622,16 @@ yybackup:
       goto yyreduce;
     }
 
-  if (yyn == YYFINAL)
-    YYACCEPT;
-
   /* Count tokens shifted since error; after three, turn off error
      status.  */
   if (yyerrstatus)
     yyerrstatus--;
 
-  /* Shift the look-ahead token.  */
+  /* Shift the lookahead token.  */
   YY_SYMBOL_PRINT ("Shifting", yytoken, &yylval, &yylloc);
 
-  /* Discard the shifted token unless it is eof.  */
-  if (yychar != YYEOF)
-    yychar = YYEMPTY;
+  /* Discard the shifted token.  */
+  yychar = YYEMPTY;
 
   yystate = yyn;
   *++yyvsp = yylval;
@@ -1661,6 +1671,8 @@ yyreduce:
   switch (yyn)
     {
         case 2:
+
+/* Line 1455 of yacc.c  */
 #line 95 "syntax.yacc"
     {
 			/* Adiciona o programa na tabela de simbolos */
@@ -1672,16 +1684,22 @@ yyreduce:
     break;
 
   case 4:
+
+/* Line 1455 of yacc.c  */
 #line 104 "syntax.yacc"
     { generateCode = 0; }
     break;
 
   case 5:
+
+/* Line 1455 of yacc.c  */
 #line 106 "syntax.yacc"
     { generateCode = 0; }
     break;
 
   case 6:
+
+/* Line 1455 of yacc.c  */
 #line 112 "syntax.yacc"
     {
 			/* Altera a linha do inicio do programa */
@@ -1690,11 +1708,15 @@ yyreduce:
     break;
 
   case 8:
+
+/* Line 1455 of yacc.c  */
 #line 121 "syntax.yacc"
     { desvLine = codeLine; }
     break;
 
   case 10:
+
+/* Line 1455 of yacc.c  */
 #line 127 "syntax.yacc"
     {
 			/* Adiciona constante na tabela de simbolos */
@@ -1710,21 +1732,29 @@ yyreduce:
     break;
 
   case 12:
+
+/* Line 1455 of yacc.c  */
 #line 141 "syntax.yacc"
     { generateCode = 0; }
     break;
 
   case 13:
+
+/* Line 1455 of yacc.c  */
 #line 143 "syntax.yacc"
     { generateCode = 0; }
     break;
 
   case 15:
+
+/* Line 1455 of yacc.c  */
 #line 151 "syntax.yacc"
     { paramQty = 0; definedParams = 0; }
     break;
 
   case 16:
+
+/* Line 1455 of yacc.c  */
 #line 153 "syntax.yacc"
     {
 			int i;
@@ -1773,16 +1803,22 @@ yyreduce:
     break;
 
   case 18:
+
+/* Line 1455 of yacc.c  */
 #line 198 "syntax.yacc"
     { generateCode = 0; }
     break;
 
   case 19:
+
+/* Line 1455 of yacc.c  */
 #line 200 "syntax.yacc"
     { generateCode = 0; }
     break;
 
   case 21:
+
+/* Line 1455 of yacc.c  */
 #line 210 "syntax.yacc"
     { 
 
@@ -1802,6 +1838,7 @@ yyreduce:
 			procEntry.category = PROCEDURE;
 			procEntry.parameters = NULL;
 			procEntry.address = codeLine;
+			procEntry.paramQty = 0;
 			/* Copia o identificador para o nome da entrada da tabela */
 			strcpy(procEntry.name, (yyvsp[(2) - (2)]).name);
 			STable_Entry * entry;
@@ -1836,7 +1873,9 @@ yyreduce:
     break;
 
   case 22:
-#line 261 "syntax.yacc"
+
+/* Line 1455 of yacc.c  */
+#line 262 "syntax.yacc"
     {
 			/* Endereço de retorno */
 			usedAddress++;
@@ -1872,7 +1911,9 @@ yyreduce:
     break;
 
   case 23:
-#line 296 "syntax.yacc"
+
+/* Line 1455 of yacc.c  */
+#line 297 "syntax.yacc"
     {
 			STable_Entry * entry = symbolTable_find(&tables[0], (yyvsp[(2) - (9)]).name);
 
@@ -1897,22 +1938,30 @@ yyreduce:
     break;
 
   case 25:
-#line 319 "syntax.yacc"
+
+/* Line 1455 of yacc.c  */
+#line 320 "syntax.yacc"
     { generateCode = 0; }
     break;
 
   case 26:
-#line 321 "syntax.yacc"
+
+/* Line 1455 of yacc.c  */
+#line 322 "syntax.yacc"
     { generateCode = 0; }
     break;
 
   case 42:
-#line 354 "syntax.yacc"
+
+/* Line 1455 of yacc.c  */
+#line 355 "syntax.yacc"
     { generateCode = 0; }
     break;
 
   case 44:
-#line 363 "syntax.yacc"
+
+/* Line 1455 of yacc.c  */
+#line 364 "syntax.yacc"
     {
 			int i;
 			/* Altera o tipo dos parametros até agora */
@@ -1923,59 +1972,81 @@ yyreduce:
     break;
 
   case 46:
-#line 372 "syntax.yacc"
+
+/* Line 1455 of yacc.c  */
+#line 373 "syntax.yacc"
     { generateCode = 0; }
     break;
 
   case 47:
-#line 374 "syntax.yacc"
+
+/* Line 1455 of yacc.c  */
+#line 375 "syntax.yacc"
     { generateCode = 0; }
     break;
 
   case 48:
-#line 376 "syntax.yacc"
+
+/* Line 1455 of yacc.c  */
+#line 377 "syntax.yacc"
     { generateCode = 0; }
     break;
 
   case 50:
-#line 383 "syntax.yacc"
+
+/* Line 1455 of yacc.c  */
+#line 384 "syntax.yacc"
     { generateCode = 0; }
     break;
 
   case 51:
-#line 385 "syntax.yacc"
+
+/* Line 1455 of yacc.c  */
+#line 386 "syntax.yacc"
     { generateCode = 0; }
     break;
 
   case 52:
-#line 387 "syntax.yacc"
+
+/* Line 1455 of yacc.c  */
+#line 388 "syntax.yacc"
     { generateCode = 0; }
     break;
 
   case 55:
-#line 395 "syntax.yacc"
+
+/* Line 1455 of yacc.c  */
+#line 396 "syntax.yacc"
     { 
 			generateCode = 0; 
 			sprintf(errv, "syntax error, unexpected %s, expecting ;", yytext); yyerror (errv); yyerrok; }
     break;
 
   case 56:
-#line 399 "syntax.yacc"
+
+/* Line 1455 of yacc.c  */
+#line 400 "syntax.yacc"
     { generateCode = 0; }
     break;
 
   case 57:
-#line 401 "syntax.yacc"
+
+/* Line 1455 of yacc.c  */
+#line 402 "syntax.yacc"
     { generateCode = 0; }
     break;
 
   case 59:
-#line 408 "syntax.yacc"
+
+/* Line 1455 of yacc.c  */
+#line 409 "syntax.yacc"
     { generateCode = 0; }
     break;
 
   case 61:
-#line 415 "syntax.yacc"
+
+/* Line 1455 of yacc.c  */
+#line 416 "syntax.yacc"
     { 
 			/* Prepara os parametros */
 			paramQty = 0;
@@ -1984,11 +2055,14 @@ yyreduce:
     break;
 
   case 62:
-#line 421 "syntax.yacc"
+
+/* Line 1455 of yacc.c  */
+#line 422 "syntax.yacc"
     {
 			int type = -1;
 			int badTypes = 0, i, cscope;
 			STable_Entry * entry = 0;
+			
 
 			for(i = 0; i < paramQty; i++) {
 				int found = 0;
@@ -2000,7 +2074,8 @@ yyreduce:
 				/* Variavel usada no readln nao existe */
 				if(!entry) {
 					generateCode = 0; 
-					printf("Erro na linha %d: Variavel %s usada e nao declarada.\n", yylineno, parameterList[i].name);
+					fprintf(stderr, "Erro na linha %d: Variavel %s usada e nao declarada.\n",
+						 yylineno, parameterList[i].name);
 				} else {
 					/* Se as variaveis sao identificadores de programa ou procedure */
 					if(entry->category == CONST) {
@@ -2038,7 +2113,9 @@ yyreduce:
     break;
 
   case 64:
-#line 476 "syntax.yacc"
+
+/* Line 1455 of yacc.c  */
+#line 479 "syntax.yacc"
     {
 			paramQty = 0;
 			definedParams = 0;
@@ -2046,7 +2123,9 @@ yyreduce:
     break;
 
   case 65:
-#line 483 "syntax.yacc"
+
+/* Line 1455 of yacc.c  */
+#line 486 "syntax.yacc"
     {
 			int type = -1;
 			int badTypes = 0, i, cscope;
@@ -2063,7 +2142,8 @@ yyreduce:
 				if(!entry) {
 					generateCode = 0; 
 					fprintf(stderr,
-						"Erro na linha %d: Variavel %s usada e nao declarada.\n", yylineno, entry->name);
+						"Erro na linha %d: Variavel %s usada e nao declarada.\n", yylineno, 
+						parameterList[i].name);
 				} else {
 					/* Se as variaveis sao identificadores de programa ou procedure */
 					if(entry->category == PROCEDURE) {
@@ -2096,7 +2176,9 @@ yyreduce:
     break;
 
   case 68:
-#line 536 "syntax.yacc"
+
+/* Line 1455 of yacc.c  */
+#line 540 "syntax.yacc"
     {
 			STable_Entry * entry = 0;
 
@@ -2104,9 +2186,6 @@ yyreduce:
 			int cscope;
 			for(cscope = scope; !entry && cscope >= 0; cscope--) 
 			 	entry = symbolTable_find(&tables[cscope], (yyvsp[(1) - (4)]).name);
-
-
-		//	 printf("Expressao Type %d : %s\n", yylineno, $4.type==REAL?"real":"integer");
 
 			 if(!entry) 
 			 {
@@ -2144,7 +2223,9 @@ yyreduce:
     break;
 
   case 69:
-#line 583 "syntax.yacc"
+
+/* Line 1455 of yacc.c  */
+#line 584 "syntax.yacc"
     {
 			/* Endereco de retorno de Loop */
 			(yyvsp[(1) - (1)]).codeLine = codeLine;
@@ -2152,7 +2233,9 @@ yyreduce:
     break;
 
   case 70:
-#line 589 "syntax.yacc"
+
+/* Line 1455 of yacc.c  */
+#line 590 "syntax.yacc"
     {
 			code[codeLine].opCode = DSVF;
 			code[codeLine].type = INTEGER;
@@ -2166,7 +2249,9 @@ yyreduce:
     break;
 
   case 71:
-#line 603 "syntax.yacc"
+
+/* Line 1455 of yacc.c  */
+#line 604 "syntax.yacc"
     { 
 			/* Busca o procedimento */
 			STable_Entry * entry = symbolTable_find(&tables[0], (yyvsp[(1) - (1)]).name);
@@ -2181,7 +2266,9 @@ yyreduce:
     break;
 
   case 72:
-#line 616 "syntax.yacc"
+
+/* Line 1455 of yacc.c  */
+#line 617 "syntax.yacc"
     {
 			/* Busca o procedimento */
 			STable_Entry * entry = symbolTable_find(&tables[0], (yyvsp[(1) - (4)]).name);
@@ -2242,7 +2329,9 @@ yyreduce:
     break;
 
   case 74:
-#line 679 "syntax.yacc"
+
+/* Line 1455 of yacc.c  */
+#line 680 "syntax.yacc"
     {
 
 			/* 
@@ -2263,7 +2352,9 @@ yyreduce:
     break;
 
   case 75:
-#line 699 "syntax.yacc"
+
+/* Line 1455 of yacc.c  */
+#line 700 "syntax.yacc"
     {
 			/* Jump do IF - vai para o ELSE */
 			code[(yyvsp[(1) - (8)]).codeLine].iArg = (yyvsp[(8) - (8)]).codeLine;
@@ -2272,7 +2363,9 @@ yyreduce:
     break;
 
   case 76:
-#line 707 "syntax.yacc"
+
+/* Line 1455 of yacc.c  */
+#line 708 "syntax.yacc"
     {
 			/* Linha do inicio do while */
 			(yyvsp[(1) - (1)]).codeLine = codeLine;
@@ -2280,7 +2373,9 @@ yyreduce:
     break;
 
   case 77:
-#line 713 "syntax.yacc"
+
+/* Line 1455 of yacc.c  */
+#line 714 "syntax.yacc"
     {
 			/* Linha do pulo do while */
 			(yyvsp[(2) - (4)]).codeLine = codeLine;
@@ -2290,7 +2385,9 @@ yyreduce:
     break;
 
   case 78:
-#line 722 "syntax.yacc"
+
+/* Line 1455 of yacc.c  */
+#line 723 "syntax.yacc"
     {
 			/* Desvia incondicionalmente para o inicio do while */
 			code[(yyvsp[(2) - (8)]).codeLine].iArg = codeLine + 1;
@@ -2301,7 +2398,9 @@ yyreduce:
     break;
 
   case 79:
-#line 734 "syntax.yacc"
+
+/* Line 1455 of yacc.c  */
+#line 735 "syntax.yacc"
     {
 
 			(yyvsp[(1) - (2)]).codeLine = codeLine;
@@ -2313,7 +2412,9 @@ yyreduce:
     break;
 
   case 80:
-#line 743 "syntax.yacc"
+
+/* Line 1455 of yacc.c  */
+#line 744 "syntax.yacc"
     {
 			/* Final do Else - Preenche o pulo para o IF */
 			code[(yyvsp[(1) - (4)]).codeLine].iArg = codeLine;
@@ -2322,7 +2423,9 @@ yyreduce:
     break;
 
   case 81:
-#line 749 "syntax.yacc"
+
+/* Line 1455 of yacc.c  */
+#line 750 "syntax.yacc"
     {  
 			/* Pulo para o if */
 			(yyval).codeLine = codeLine; 
@@ -2330,12 +2433,16 @@ yyreduce:
     break;
 
   case 83:
-#line 759 "syntax.yacc"
+
+/* Line 1455 of yacc.c  */
+#line 760 "syntax.yacc"
     { generateCode = 0; }
     break;
 
   case 85:
-#line 766 "syntax.yacc"
+
+/* Line 1455 of yacc.c  */
+#line 767 "syntax.yacc"
     {
 			STable_Entry * entry = 0;
 			int cscope;
@@ -2354,22 +2461,30 @@ yyreduce:
     break;
 
   case 87:
-#line 783 "syntax.yacc"
+
+/* Line 1455 of yacc.c  */
+#line 784 "syntax.yacc"
     { generateCode = 0; }
     break;
 
   case 89:
-#line 790 "syntax.yacc"
+
+/* Line 1455 of yacc.c  */
+#line 791 "syntax.yacc"
     { generateCode = 0; }
     break;
 
   case 90:
-#line 792 "syntax.yacc"
+
+/* Line 1455 of yacc.c  */
+#line 793 "syntax.yacc"
     { generateCode = 0; }
     break;
 
   case 92:
-#line 799 "syntax.yacc"
+
+/* Line 1455 of yacc.c  */
+#line 800 "syntax.yacc"
     {
 			if((yyvsp[(2) - (3)]).category == OP_EQ) {
 				code[codeLine].type = NOARG;
@@ -2394,12 +2509,16 @@ yyreduce:
     break;
 
   case 93:
-#line 821 "syntax.yacc"
+
+/* Line 1455 of yacc.c  */
+#line 822 "syntax.yacc"
     { generateCode = 0; }
     break;
 
   case 100:
-#line 837 "syntax.yacc"
+
+/* Line 1455 of yacc.c  */
+#line 838 "syntax.yacc"
     {
 			if((yyvsp[(1) - (2)]).type == REAL || (yyvsp[(2) - (2)]).type == REAL) (yyval).type = REAL;
 			else if((yyvsp[(1) - (2)]).type == ERROR || (yyvsp[(2) - (2)]).type == ERROR) (yyval).type = ERROR;
@@ -2408,7 +2527,9 @@ yyreduce:
     break;
 
   case 101:
-#line 847 "syntax.yacc"
+
+/* Line 1455 of yacc.c  */
+#line 848 "syntax.yacc"
     {
 			if((yyvsp[(1) - (2)]).category == OP_MI) {
 				code[codeLine].type = NOARG;
@@ -2418,7 +2539,9 @@ yyreduce:
     break;
 
   case 102:
-#line 854 "syntax.yacc"
+
+/* Line 1455 of yacc.c  */
+#line 855 "syntax.yacc"
     {
 
 			/* 	
@@ -2432,7 +2555,9 @@ yyreduce:
     break;
 
   case 103:
-#line 870 "syntax.yacc"
+
+/* Line 1455 of yacc.c  */
+#line 871 "syntax.yacc"
     { 
 			/* Geração de código */
 			code[codeLine].opCode = CRCT;
@@ -2450,14 +2575,18 @@ yyreduce:
     break;
 
   case 104:
-#line 886 "syntax.yacc"
+
+/* Line 1455 of yacc.c  */
+#line 887 "syntax.yacc"
     { 
 			(yyval).type = (yyvsp[(2) - (3)]).type; 
 		}
     break;
 
   case 105:
-#line 891 "syntax.yacc"
+
+/* Line 1455 of yacc.c  */
+#line 892 "syntax.yacc"
     {
 			/* Busca o identificador na tabela de simbolos */
 			STable_Entry * entry = 0;
@@ -2512,7 +2641,9 @@ yyreduce:
     break;
 
   case 106:
-#line 948 "syntax.yacc"
+
+/* Line 1455 of yacc.c  */
+#line 949 "syntax.yacc"
     {
 			if((yyvsp[(1) - (2)]).category == OP_ML) {
 				code[codeLine].type = NOARG;
@@ -2526,7 +2657,9 @@ yyreduce:
     break;
 
   case 107:
-#line 959 "syntax.yacc"
+
+/* Line 1455 of yacc.c  */
+#line 960 "syntax.yacc"
     {
 			/* 	
 				Se algum fator for real, real. Se algum for erro, erro.
@@ -2548,12 +2681,16 @@ yyreduce:
     break;
 
   case 108:
-#line 977 "syntax.yacc"
+
+/* Line 1455 of yacc.c  */
+#line 978 "syntax.yacc"
     { (yyval).type = INTEGER; }
     break;
 
   case 109:
-#line 983 "syntax.yacc"
+
+/* Line 1455 of yacc.c  */
+#line 984 "syntax.yacc"
     {
 			if((yyvsp[(1) - (2)]).category == OP_PL) {
 				code[codeLine].type = NOARG;
@@ -2566,7 +2703,9 @@ yyreduce:
     break;
 
   case 110:
-#line 993 "syntax.yacc"
+
+/* Line 1455 of yacc.c  */
+#line 994 "syntax.yacc"
     {
 			/* 	
 				Se algum fator for real, real. Se algum for erro, erro.
@@ -2579,12 +2718,16 @@ yyreduce:
     break;
 
   case 111:
-#line 1003 "syntax.yacc"
+
+/* Line 1455 of yacc.c  */
+#line 1004 "syntax.yacc"
     { (yyval).type = INTEGER; }
     break;
 
   case 112:
-#line 1009 "syntax.yacc"
+
+/* Line 1455 of yacc.c  */
+#line 1010 "syntax.yacc"
     { 
 			/* Adiciona a lista de parametros */
 			(yyvsp[(1) - (1)]).category = VAR;
@@ -2593,43 +2736,58 @@ yyreduce:
     break;
 
   case 123:
-#line 1045 "syntax.yacc"
+
+/* Line 1455 of yacc.c  */
+#line 1046 "syntax.yacc"
     { (yyval).type = REAL; }
     break;
 
   case 124:
-#line 1049 "syntax.yacc"
+
+/* Line 1455 of yacc.c  */
+#line 1050 "syntax.yacc"
     { (yyval).type = INTEGER; }
     break;
 
   case 125:
-#line 1055 "syntax.yacc"
+
+/* Line 1455 of yacc.c  */
+#line 1056 "syntax.yacc"
     { (yyval).type = INTEGER; }
     break;
 
   case 126:
-#line 1058 "syntax.yacc"
+
+/* Line 1455 of yacc.c  */
+#line 1059 "syntax.yacc"
     { (yyval).type = REAL; }
     break;
 
   case 127:
-#line 1061 "syntax.yacc"
+
+/* Line 1455 of yacc.c  */
+#line 1062 "syntax.yacc"
     { (yyval).type = CHAR; }
     break;
 
   case 128:
-#line 1066 "syntax.yacc"
+
+/* Line 1455 of yacc.c  */
+#line 1067 "syntax.yacc"
     { yyerrok; }
     break;
 
   case 129:
-#line 1071 "syntax.yacc"
+
+/* Line 1455 of yacc.c  */
+#line 1072 "syntax.yacc"
     { yyless(0); }
     break;
 
 
-/* Line 1267 of yacc.c.  */
-#line 2633 "y.tab.c"
+
+/* Line 1455 of yacc.c  */
+#line 2791 "y.tab.c"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
@@ -2639,7 +2797,6 @@ yyreduce:
   YY_STACK_PRINT (yyss, yyssp);
 
   *++yyvsp = yyval;
-
 
   /* Now `shift' the result of the reduction.  Determine what state
      that goes to, based on the state we popped back to and the rule
@@ -2705,7 +2862,7 @@ yyerrlab:
 
   if (yyerrstatus == 3)
     {
-      /* If just tried and failed to reuse look-ahead token after an
+      /* If just tried and failed to reuse lookahead token after an
 	 error, discard it.  */
 
       if (yychar <= YYEOF)
@@ -2722,7 +2879,7 @@ yyerrlab:
 	}
     }
 
-  /* Else will try to reuse look-ahead token after shifting the error
+  /* Else will try to reuse lookahead token after shifting the error
      token.  */
   goto yyerrlab1;
 
@@ -2779,9 +2936,6 @@ yyerrlab1:
       YY_STACK_PRINT (yyss, yyssp);
     }
 
-  if (yyn == YYFINAL)
-    YYACCEPT;
-
   *++yyvsp = yylval;
 
 
@@ -2806,7 +2960,7 @@ yyabortlab:
   yyresult = 1;
   goto yyreturn;
 
-#ifndef yyoverflow
+#if !defined(yyoverflow) || YYERROR_VERBOSE
 /*-------------------------------------------------.
 | yyexhaustedlab -- memory exhaustion comes here.  |
 `-------------------------------------------------*/
@@ -2817,7 +2971,7 @@ yyexhaustedlab:
 #endif
 
 yyreturn:
-  if (yychar != YYEOF && yychar != YYEMPTY)
+  if (yychar != YYEMPTY)
      yydestruct ("Cleanup: discarding lookahead",
 		 yytoken, &yylval);
   /* Do not reclaim the symbols of the rule which action triggered
@@ -2843,7 +2997,9 @@ yyreturn:
 }
 
 
-#line 1073 "syntax.yacc"
+
+/* Line 1675 of yacc.c  */
+#line 1074 "syntax.yacc"
 
 
 
@@ -2856,36 +3012,36 @@ void yyerror(const char *s) {
 	/* Pega os tokens esperado e obtido */
 	sscanf(s, "syntax error, unexpected %[^,], expecting%s%n", obtido, esperado, &n);
 	if(strcmp(obtido, "$end") == 0) { /*Fim de arquivo eh representado por $end*/
-		printf("Final inesperado de arquivo.\n");
+		fprintf(stderr, "Final inesperado de arquivo.\n");
 	} else {
 		if(n) {
 			if (!strcmp (obtido, "Comentario_nao_fechado")) {
 				
-				printf ("Erro na linha %d: '%s'\n", yylineno, obtido);
+				fprintf (stderr, "Erro na linha %d: '%s'\n", yylineno, obtido);
 			} else {
 				if (!strcmp (obtido, "SB_VG"))	strcpy (obtido, ",");
 				/*Mostra a linha do erro e o simbolo obtido*/
-				printf("Erro na linha %d: '%s' inesperado", yylineno, obtido);
+				fprintf(stderr, "Erro na linha %d: '%s' inesperado", yylineno, obtido);
 				/*Mostra a cadeia caso seja um erro lexico ou um identificador*/
 				if (!strcmp (obtido, "identificador")
-					|| obtido[0] >= 'A' && obtido[0] <= 'Z')	printf (" [%s]", yytext);
+					|| obtido[0] >= 'A' && obtido[0] <= 'Z')	fprintf (stderr, " [%s]", yytext);
 				/*Renomeia '$end' para 'Fim_de_arquivo'*/
 				if (!strcmp (esperado, "$end"))	strcpy (esperado, "Fim_de_arquivo");
 				/*Mostra o(s) simbolo(s) esperado(s)*/
-				printf (", esperava '%s'",esperado);
+				fprintf (stderr, ", esperava '%s'",esperado);
 				pos = (char*)s+n;
 				len = strlen (s);
 				/*Mostra todos, caso haja mais de um*/
 				while (pos < s+len) {
 					sscanf (pos, " or %s%n", esperado, &n);
 					pos += n;
-					printf (" ou '%s'", esperado);
+					fprintf (stderr, " ou '%s'", esperado);
 				}
-				printf ("\n");
+				fprintf (stderr, "\n");
 			}
 		} else
 				/*Se nao estava esperando nenhum simbolo*/
-				printf("Erro na linha %d: '%s' inesperado.\n", yylineno, obtido);
+				fprintf(stderr, "Erro na linha %d: '%s' inesperado.\n", yylineno, obtido);
 	}
 }
 

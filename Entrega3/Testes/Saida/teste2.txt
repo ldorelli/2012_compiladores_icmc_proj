@@ -1,0 +1,11 @@
+Erro na linha 4: 'const' inesperado, esperava ';'
+Erro na linha 5: 'var' inesperado, esperava ';'
+Erro na linha 6: 'var' inesperado, esperava ';'
+Erro na linha 8: 'Numero_mal_formado' inesperado [1erro], esperava 'identificador'
+Erro na linha 12: Variavel variavelLoca usada e nao declarada.
+Erro na linha 13: 'end' inesperado, esperava ';'
+Erro na linha 19: 'begin' inesperado, esperava ';'
+Erro na linha 21: 'identificador' inesperado [variavel], esperava ';'
+Erro na linha 22: ';' inesperado, esperava 'identificador' ou '(' ou 'numero_inteiro' ou 'numero_real'
+Erro na linha 25: Procedimento resto nao declarado.
+Final inesperado de arquivo.
