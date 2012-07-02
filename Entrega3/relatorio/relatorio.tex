@@ -44,12 +44,13 @@
 \section{Decisões de projeto} % (fold)
 \label{sec:decisoes_de_projeto}
 	\subsection{Implementação} % (fold)
-	\label{ssub:implementacao}
+	\label{sub:implementacao}
 		A implementação do compilador para a linguagem \verb=LALG= foi feita utilizando o \verb=yacc= (\em Yet Another Compiler-Compiler\normalfont) em linguagem de programação \verb=C=. Essa decisão foi influenciada principalmente devido à possibilidade de continuidade a partir da entrega anterior. 
 
-		((Falar sobre os pseudo-atributos))
-	
-	% subsubsection implementa_o (end)
+		 Para armazenar os atributos, utilizamos o recurso proporcionado pelo \verb=yacc=, que consiste na definição de um tipo, que pode ser uma estrutura.
+		 Para acessá-los, utilizamos o símbolo reservado \$.
+		
+	% subsubsection implementacao (end)
 
 	\subsection{Tabela de símbolos} % (fold)
 	\label{sub:tabela_de_simbolos}
@@ -83,11 +84,30 @@
 	
 	% subsubsection tratamento_de_erros (end)
 
-	\subsection{Geração de pseudocódigo} % (fold)
-	\label{sub:geracao_de_pseudocodigo}
-		A geração de código pelo compilador é realizado em paralelo com a análise semântica e é interrompido caso seja encontrado algum erro de natureza léxica, sintática e/ou semântica.
+	\subsection{Geração de código} % (fold)
+	\label{sub:geracao_de_codigo}
+		A geração de código pelo compilador é realizada em paralelo com a análise semântica e é interrompida caso seja encontrado algum erro de natureza léxica, sintática e/ou semântica.
 
-	% subsection geracao_de_pseudocodigo (end)
+		Consideramos que o código inicia na linha 0 e os códigos que são possivelmente gerados podem ser encontrados no Quadro \ref{tab:codigos}. Todos os comando são os mesmos vistos em sala de aula, ao longo da disciplina.
+
+		\begin{table}[h]
+			\centering	
+			\ttfamily
+			\begin{tabular}{c c c c c}
+				\hline
+				CRCT & CRVL & SOMA & SUBT & MULT \\
+				INVE & CONJ & DISJ & NEGA & CPME \\
+				CPMA & CPIG & CDES & CPMI & CMAI \\
+				ARMZ & DSVI & DSVF & LEIT & IMPR \\
+				ALME & INPP & PARA & PUSHER & CHPR \\
+				DESM & RTPR & COPVL & PARAM & DIVI \\
+				\hline
+			\end{tabular}
+			\caption{Códigos possivelmente gerados pela geração de código}
+			\label{tab:codigos}
+		\end{table}
+	
+	% subsection geracao_de_codigo (end)
 
 % section decis_es_de_projeto (end)
 
@@ -115,7 +135,7 @@
 		\end{minipage}
 	\end{center}
 
-	Observe que o analisador só termina quando encontra um \emph{end-of-file}. Caso o arquivo de entrada esteja gramaticamente correto, obtém-se como saída um arquivo com o \emph{bytecode} referente ao código dado como entrada denominado \emph{code.code}.
+	Observe que o analisador só termina quando encontra um \emph{end-of-file}. Caso o arquivo de entrada esteja gramaticamente correto, obtém-se como saída um arquivo com o \emph{bytecode} referente ao código dado como entrada denominado ``\emph{code.code}''.
 % section compila_o (end)
 
 \section{Exemplos} % (fold)
