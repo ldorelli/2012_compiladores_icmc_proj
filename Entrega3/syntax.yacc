@@ -210,6 +210,7 @@ dc_p:
 			definedParams = 0;
 			STable_Entry procEntry;
 			procEntry.category = PROCEDURE;
+			procEntry.parameters = NULL;
 			/* Copia o identificador para o nome da entrada da tabela */
 			strcpy(procEntry.name, $2.name);
 			STable_Entry * entry;

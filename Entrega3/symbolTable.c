@@ -48,8 +48,10 @@ void symbolTable_erase(Node * cur, Node * root) {
 	ParameterNode * old;
 	/* Limpa a tabela de simbolos */
 	for(i = 0; i < 256; i++) 
-		if(cur->next[i]) 
+		if(cur->next[i]) {
 			symbolTable_erase(cur->next[i], root);
+			cur->next[i] = 0;
+		}
 			
 	/* Limpa os parametros */
 	if(cur->attr) {
@@ -85,7 +87,7 @@ int symbolTable_addParameter(Node * root, char * procedure, STable_Entry paramet
 	if(!aux->attr) return 0;
 
 	/* Navega pelos parametros, insere no final */
-	ParameterNode * node = aux->attr->parameters, * prev;
+	ParameterNode * node = aux->attr->parameters;
 	
 
 	/* Se nao havia nenhum parametro ainda */
@@ -99,16 +101,15 @@ int symbolTable_addParameter(Node * root, char * procedure, STable_Entry paramet
 	}
 	int orig = 0;
 	/* Enquanto houver proximo */
-	while(node) {
+	while(node->next) {
 		if(strcmp(node->value.name, parameter.name) == 0) return -orig - 1;
-		prev = node;
 		node = node->next;
 		orig++;
 	}
 	/* Insere os valores */
-	prev->next = (ParameterNode *) malloc(sizeof(ParameterNode));
-	prev->next->value = parameter;
-	prev->next->next = 0;
+	node->next = (ParameterNode *) malloc(sizeof(ParameterNode));
+	node->next->value = parameter;
+	node->next->next = 0;
 	aux->attr->paramQty++;
 	return 1;
 }
